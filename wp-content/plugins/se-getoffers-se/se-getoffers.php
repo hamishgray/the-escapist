@@ -266,7 +266,7 @@ function offers_display($atts,$content=null) {
 									 <span class='offer__location'>".$json_body_offers['values'][$count][3]."</span><br>
 									 <span class='offer__description'>".$json_body_offers['values'][$count][2]."</span><br>
 							 	   Upp till <span class='offer__price'>-".$json_body_offers['values'][$count][6]."%</span><br>
-									 <a class='offer__button' href='".$offer_link."'>Se Erbjudanden</a>
+									 <a class='offer__button' href='".$offer_link."'>Se Erbjudande</a>
 								</div>
 							</div>
 						</div>
