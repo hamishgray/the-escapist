@@ -1,0 +1,32 @@
+
+/*=============================
+#  Genericons
+-------------------------------*/
+
+blockquote:before,
+.back-top:before,
+.comment-navigation .nav-next a:after,
+.comment-navigation .nav-previous a:before,
+.dropdown-toggle:before,
+.main-navigation .menu-item-has-children > a:after,
+.menu-toggle:before,
+.posts-navigation .nav-next a:after,
+.posts-navigation .nav-previous a:before,
+.search-form:before,
+.search-toggle:before,
+.sidebar-toggle:before,
+.social-navigation a:before {
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	display: inline-block;
+	font-family: Genericons;
+	font-size: 24px;
+	font-style: normal;
+	font-weight: normal;
+	height: 30px;
+	line-height: 1.25;
+	speak: none;
+	text-decoration: inherit;
+	vertical-align: top;
+	width: 30px;
+}

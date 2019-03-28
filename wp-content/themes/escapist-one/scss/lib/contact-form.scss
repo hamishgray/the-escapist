@@ -1,0 +1,22 @@
+
+/*=============================
+#  Contact form
+-------------------------------*/
+
+.site-content .contact-form > div {
+	margin-bottom: 30px;
+}
+.site-content .contact-form label {
+	margin-bottom: 0;
+}
+.site-content .contact-form input[type="text"],
+.site-content .contact-form input[type="email"],
+.site-content .contact-form input[type="url"],
+.site-content .contact-form textarea {
+	margin-bottom: 0;
+	width: 100%;
+	max-width: 100%;
+}
+.site-content .contact-form label span {
+	color: #ff8c00;
+}

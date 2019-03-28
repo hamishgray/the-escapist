@@ -1,0 +1,62 @@
+/*
+Theme Name: Escapist
+Version: 1.0.0
+Author: Hamish Gray
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: escapist
+*/
+
+
+/* Variables */
+@import "variables/colours";
+@import "variables/fonts";
+
+/* Default */
+@import "base/normalize";
+@import "base/default";
+@import "components/genericons";
+
+/* Typography */
+@import "typography/default";
+@import "typography/lists";
+@import "typography/tables";
+
+/* Forms */
+@import "forms/forms";
+
+/* Navigation */
+@import "navigation/navigation";
+
+/* Accessibility */
+@import "base/accessibility";
+
+/* Layout */
+@import "layout/alignment";
+@import "layout/clearings";
+
+/* Widgets */
+@import "components/widgets";
+
+/* Site */
+@import "site/header";
+@import "site/footer";
+
+/* Featured content */
+@import "site/featured";
+
+/* Posts & Pages */
+@import "posts/posts";
+@import "posts/comments";
+@import "posts/media";
+@import "posts/gallery";
+
+@import "lib/jetpack";
+
+@import "responsive/responsive";
+
+@import "components/core-header";
+@import "components/offers";
+
+@import "typography/titles";
+

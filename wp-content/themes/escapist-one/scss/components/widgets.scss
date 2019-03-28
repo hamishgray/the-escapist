@@ -1,0 +1,250 @@
+
+/*=============================
+#  Widgets
+-------------------------------*/
+
+.widget {
+	font-size: 16px;
+	line-height: 1.5;
+	margin: 0;
+	padding: 0;
+	word-break: break-word;
+}
+.widget-title,
+.widgettitle {
+	font-size: 25px;
+	line-height: 1.2;
+	margin-bottom: 15px;
+}
+.widget select {
+	margin-bottom: 30px;
+	max-width: 100%;
+}
+.widget-area:before {
+	background: #ddd;
+	content: "";
+	display: block;
+	height: 1px;
+	left: 0;
+	margin-top: -30px;
+	position: absolute;
+	width: 100%;
+}
+
+/* Sidebar Toggle */
+.sidebar-toggle {
+	background: #fff;
+	border: 1px solid #ddd;
+	border-radius: 50%;
+	color: #222;
+	height: 45px;
+	margin-bottom: 30px;
+	margin-left: -22.5px;
+	padding: 0;
+	position: relative;
+	left: 50%;
+	width: 45px;
+	z-index: 1;
+}
+.sidebar-toggle:active,
+.sidebar-toggle:focus,
+.sidebar-toggle:hover {
+	background: #eee;
+	border-color: #ddd;
+	color: #ff8c00;
+}
+.sidebar-toggle.toggled {
+	background: #222;
+	border-color: #222;
+	color: #fff;
+}
+.sidebar-toggle.toggled:active,
+.sidebar-toggle.toggled:focus,
+.sidebar-toggle.toggled:hover {
+	background: #444;
+	border-color: #444;
+}
+.sidebar-toggle:before {
+	content: "\f476";
+	font-size: 16px;
+	height: 43px;
+	line-height: 43px;
+	width: 43px;
+}
+.toggled.sidebar-toggle:before {
+	content: "\f406";
+}
+.widget-area {
+	display: none;
+}
+.toggled.widget-area {
+	display: block;
+}
+
+/* Footer Widget */
+.footer-widget {
+	border-top: 1px solid #ddd;
+	padding: 30px 0 0;
+}
+.footer-widget-inner .widget {
+	border-bottom: 1px solid #ddd;
+	margin-bottom: 30px;
+}
+.footer-widget-inner .widget:last-of-type {
+	border-bottom: 0;
+	margin-bottom: 0;
+}
+.footer-widget-inner .widget:nth-of-type(4n+1) {
+	clear: left;
+	margin-left: 0;
+}
+.footer-widget-inner .widget:nth-of-type(4n+4) {
+	clear: right;
+	margin-right: 0;
+}
+
+/* Calendar */
+.widget_calendar table {
+	text-align: center;
+}
+.widget_calendar tfoot {
+	font-family: Lato, sans-serif;
+	text-transform: uppercase;
+}
+
+/* Custom Menu */
+.widget_nav_menu .page_item_has_children > a,
+.widget_nav_menu .menu-item-has-children > a {
+	display: block;
+	padding-right: 45px;
+	position: relative;
+}
+.widget_nav_menu .sub-menu {
+	display: none;
+}
+.widget_nav_menu .sub-menu.toggled {
+	display: block;
+}
+
+/* Lists */
+.widget_archive ul,
+.widget_categories ul,
+.widget_links ul,
+.widget_meta ul,
+.widget_nav_menu ul,
+.widget_pages ul,
+.widget_recent_comments ul,
+.widget_recent_entries ul,
+.widget_rss ul {
+	border-bottom: 1px solid #eee;
+	list-style: none;
+	margin-left: 0;
+}
+.widget_archive li,
+.widget_categories li,
+.widget_links li,
+.widget_meta li,
+.widget_nav_menu li,
+.widget_pages li,
+.widget_recent_comments li,
+.widget_recent_entries li,
+.widget_rss li {
+	border-top: 1px solid #eee;
+	padding-bottom: 7.5px;
+	padding-top: 7.5px;
+}
+.widget_categories .children,
+.widget_nav_menu .sub-menu,
+.widget_pages .children {
+	border-bottom: 0;
+	margin-bottom: -7.5px;
+	margin-top: 7.5px;
+	padding-left: 30px;
+}
+
+/* Recent Posts */
+.widget_recent_entries .post-date {
+	color: #777;
+	display: block;
+	font-family: Lato, sans-serif;
+	font-size: 13px;
+	font-weight: bold;
+	line-height: 1.54;
+	padding: 5px 0;
+	text-transform: uppercase;
+}
+
+/* RSS */
+.widget_rss cite,
+.widget_rss .rss-date {
+	color: #777;
+	display: block;
+	font-family: Lato, sans-serif;
+	font-size: 13px;
+	font-style: normal;
+	font-weight: bold;
+	line-height: 1.54;
+	padding: 5px 0;
+	text-transform: uppercase;
+}
+
+/* Tag Cloud */
+.widget_tag_cloud > div {
+	padding-bottom: 30px;
+}
+.widget_tag_cloud a {
+	font-size: inherit !important;
+	line-height: 1.5;
+	text-decoration: none;
+}
+.widget_tag_cloud a:before {
+	color: #222;
+	content: "\0023";
+	margin-right: 0.125em;
+}
+
+/*--------------------------------------------------------------
+# Content
+--------------------------------------------------------------*/
+/*--------------------------------------------------------------
+## Grid
+--------------------------------------------------------------*/
+/* Widths */
+.bottom-navigation > div,
+.bottom-social > div,
+.entry-header-inner,
+.featured-content-inner,
+.footer-navigation > div,
+.footer-widget-inner,
+.search-navigation-inner,
+.site-branding,
+.site-content-inner,
+.site-info,
+.site-top-inner {
+	width: 90%;
+}
+
+/* Floats and Other Properties */
+.author-info {
+	border: 1px solid #ddd;
+	margin: 0 0 30px;
+	padding: 30px 30px 0;
+}
+.bottom-navigation > div,
+.bottom-social > div,
+.entry-header-inner,
+.featured-content-inner,
+.footer-navigation > div,
+.footer-widget-inner,
+.header-image-inner,
+.search-navigation-inner,
+.site-branding,
+.site-content-inner,
+.site-info,
+.site-top-inner {
+	margin: 0 auto;
+}
+.site-main,
+.widget-area {
+	padding-top: 30px;
+}
