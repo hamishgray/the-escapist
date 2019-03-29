@@ -322,7 +322,7 @@ img {
   }
 }
 /*=============================
- #  Lists
+ #  Typography / Lists
  -------------------------------*/
 ul, ol {
   margin: 0 0 30px 0;
@@ -348,7 +348,7 @@ dd {
   margin: 0 0 30px;
 }
 /*=============================
- #  Tables
+ #  Typography / Tables
  -------------------------------*/
 table {
   border-top: 1px solid #ddd;
@@ -370,6 +370,91 @@ th, td {
 }
 thead {
   background: #dadcdf;
+}
+/*=============================
+ #  Typography / Title
+ -------------------------------*/
+/* Fonts & base rules */
+h1, h2, h3, h4, h5, h6 {
+  clear: both;
+  font-family: "Source Serif Pro", Georgia, serif;
+  font-weight: 600;
+  margin-top: 0;
+}
+h4, h5, h6 {
+  font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 600;
+  font-style: normal;
+}
+/* Sizing */
+h1 {
+  font-size: 45px;
+  line-height: 1.225;
+  margin-bottom: 30px;
+}
+h2 {
+  font-size: 36px;
+  line-height: 1.54;
+  margin-bottom: 30px;
+}
+h3 {
+  font-size: 28px;
+  line-height: 1.452;
+  margin-bottom: 30px;
+}
+h4 {
+  font-size: 22px;
+  line-height: 1.2;
+  margin-bottom: 20px;
+}
+h5 {
+  font-size: 18px;
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+h6 {
+  font-size: 15px;
+  line-height: 1.5;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
+  font-weight: inherit;
+}
+p {
+  margin-bottom: 10px;
+}
+p + h1, p + h2, p + h3, p + h4, p + h5, p + h6 {
+  margin-top: 20px;
+}
+.wp-caption .wp-caption-text {
+  font-size: 12px;
+  border-bottom: 1px solid #dadcdf;
+}
+p + .wp-caption, img.alignnone {
+  margin-top: 25px;
+}
+.title--xxs {
+  font-size: 1rem;
+}
+.title--xs {
+  font-size: 1.2rem;
+}
+.title--sm {
+  font-size: 1.4rem;
+}
+.title--md {
+  font-size: 1.6rem;
+}
+.title--lg {
+  font-size: 1.8rem;
+}
+.title--xl {
+  font-size: 2rem;
+}
+.title--xxl {
+  font-size: 2.4rem;
 }
 /* Forms */
 /*=============================
@@ -723,8 +808,11 @@ a:visited {
     padding-left: 0;
   }
   .main-navigation li {
+    padding: 0;
     border-top: 0;
     float: left;
+  }
+  .main-navigation li a {
     padding: 0 15px;
   }
   .main-navigation .nav-menu > li + li {
@@ -1600,7 +1688,7 @@ a:visited {
   .widget-area {
     width: 331px;
   }
-  .entry-footer, .footer-widget-inner .widget {
+  .footer-widget-inner .widget {
     width: 270px;
   }
   div#jp-relatedposts, .comments-area, .single .entry-content {
@@ -1918,8 +2006,6 @@ a:visited {
  -------------------------------*/
 .core {
   background-color: #000;
-  padding-top: 16px;
-  padding-bottom: 16px;
   overflow-x: scroll;
   padding-left: 15px;
   padding-right: 15px;
@@ -1931,16 +2017,6 @@ a:visited {
   display: flex;
   flex-direction: row;
   align-items: center;
-}
-.core__logo {
-  display: flex;
-  width: 200px;
-  height: 32px;
-  background-image: url('../../uploads/core-white.png');
-  background-size: contain;
-  background-position: left center;
-  background-repeat: no-repeat;
-  margin-top: 5px;
 }
 /* Rules for both navs */
 .core__nav, .core__nav-item, .core__subnav, .core__subnav-item {
@@ -1982,22 +2058,21 @@ a:visited {
 .core__subnav-link:hover, .core__subnav-link--orange {
   color: #ff8c00;
 }
-@media screen and (min-width: 960px) {
+@media (min-width: 960px) {
   .core__inner {
     max-width: 840px;
   }
 }
-@media screen and (min-width: 1080px) {
+@media (min-width: 1080px) {
   .core__inner {
     max-width: 960px;
   }
 }
-@media screen and (min-width: 1380px) {
+@media (min-width: 1380px) {
   .core__inner {
     max-width: 1260px;
   }
 }
-/* Featured content */
 /*=============================
  #  Featured Content
  -------------------------------*/
@@ -2129,6 +2204,25 @@ a:visited {
   }
   .blog .featured-content .hentry:nth-of-type(5) {
     margin-left: 330px;
+  }
+}
+@media (min-width: 1380px) {
+  .blog .featured-content .hentry:first-of-type {
+    height: 500px;
+    width: 830px;
+  }
+  .blog .featured-content .hentry:nth-of-type(2), .blog .featured-content .hentry:nth-of-type(3) {
+    height: 375px;
+    margin-left: 30px;
+    width: 400px;
+  }
+  .blog .featured-content .hentry:nth-of-type(4), .blog .featured-content .hentry:nth-of-type(5) {
+    height: 250px;
+    margin-top: -280px;
+    width: 400px;
+  }
+  .blog .featured-content .hentry:nth-of-type(5) {
+    margin-left: 430px;
   }
 }
 /* Posts & Pages */
@@ -2718,6 +2812,29 @@ body:not(.single) .content-area .format-gallery .post-thumbnail:before, body:not
     width: 419px;
   }
 }
+@media (min-width: 1380px) {
+  /* Posts & Pages */
+  /* Post Formats */
+  .content-area .format-standard a.post-thumbnail {
+    width: 270px;
+  }
+  .content-area .format-standard.has-post-thumbnail .entry-header {
+    width: 569px;
+  }
+  .author-info .author-heading {
+    max-width: 180px;
+  }
+  .post-link {
+    height: 240px;
+    width: 270px;
+  }
+  .archive .format-link .entry-header, .blog .format-link .entry-header, .search .format-link .entry-header {
+    width: 569px;
+  }
+  .entry-footer {
+    width: 270px;
+  }
+}
 /*=============================
  #  Comments
  -------------------------------*/
@@ -3132,6 +3249,11 @@ embed, iframe, object, video, .fb_iframe_widget, .video-player, .wp-audio-shortc
     width: 960px !important;
   }
 }
+@media (min-width: 1380px) {
+  #infinite-footer .container {
+    width: 1260px !important;
+  }
+}
 /*=============================
  #  Recipes
  -------------------------------*/
@@ -3337,6 +3459,11 @@ div#jp-relatedposts a:focus {
 @media (min-width: 1080px) {
   .hentry div#jp-relatedposts div.jp-relatedposts-items .jp-relatedposts-post {
     width: 194.6666667px;
+  }
+}
+@media (min-width: 1380px) {
+  .hentry div#jp-relatedposts div.jp-relatedposts-items .jp-relatedposts-post {
+    width: 160px;
   }
 }
 /*--------------------------------------------------------------
@@ -3545,83 +3672,6 @@ a {
   transition: color 350ms ease-in-out, background-color 350ms ease-in-out;
 }
 /*=============================
- #  Responsive
- -------------------------------*/
-/*--------------------------------------------------------------
- ## x >= $xxl (1380px)
- --------------------------------------------------------------*/
-@media (min-width: 1380px) {
-  /* Grid */
-  /* Featured Content */
-  /* Posts & Pages */
-  /* Post Formats */
-  /* Infinite Scroll */
-  /* Sharedaddy */
-  .entry-header-inner, .featured-content-inner, .footer-navigation > div, .footer-widget-inner, .header-image-inner, .search-navigation-inner, .site-branding, .site-content-inner, .site-info, .site-top-inner {
-    width: 1260px;
-  }
-  .page .comments-area, .site-main {
-    width: 930px;
-  }
-  .comments-area {
-    width: 600px;
-  }
-  div#jp-relatedposts, .single .entry-content {
-    width: 540px;
-  }
-  .author-info {
-    width: 330px;
-  }
-  .widget-area {
-    width: 331px;
-  }
-  .entry-footer, .footer-widget-inner .widget {
-    width: 270px;
-  }
-  div#jp-relatedposts, .comments-area, .single .entry-content {
-    float: right;
-  }
-  .blog .featured-content .hentry:first-of-type {
-    height: 500px;
-    width: 830px;
-  }
-  .blog .featured-content .hentry:nth-of-type(2), .blog .featured-content .hentry:nth-of-type(3) {
-    height: 375px;
-    margin-left: 30px;
-    width: 400px;
-  }
-  .blog .featured-content .hentry:nth-of-type(4), .blog .featured-content .hentry:nth-of-type(5) {
-    height: 250px;
-    margin-top: -280px;
-    width: 400px;
-  }
-  .blog .featured-content .hentry:nth-of-type(5) {
-    margin-left: 430px;
-  }
-  .content-area .format-standard a.post-thumbnail {
-    width: 270px;
-  }
-  .content-area .format-standard.has-post-thumbnail .entry-header {
-    width: 569px;
-  }
-  .author-info .author-heading {
-    max-width: 180px;
-  }
-  .post-link {
-    height: 240px;
-    width: 270px;
-  }
-  .archive .format-link .entry-header, .blog .format-link .entry-header, .search .format-link .entry-header {
-    width: 569px;
-  }
-  #infinite-footer .container {
-    width: 1260px !important;
-  }
-  .hentry div#jp-relatedposts div.jp-relatedposts-items .jp-relatedposts-post {
-    width: 160px;
-  }
-}
-/*=============================
  #  Offers
  -------------------------------*/
 .offers-section {
@@ -3695,89 +3745,4 @@ a {
 .offer__button:hover {
   color: #fff;
   background-color: #db7901;
-}
-/*=============================
- #  Typography / Title
- -------------------------------*/
-/* Fonts & base rules */
-h1, h2, h3, h4, h5, h6 {
-  clear: both;
-  font-family: "Source Serif Pro", Georgia, serif;
-  font-weight: 600;
-  margin-top: 0;
-}
-h4, h5, h6 {
-  font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-weight: 600;
-  font-style: normal;
-}
-/* Sizing */
-h1 {
-  font-size: 45px;
-  line-height: 1.225;
-  margin-bottom: 30px;
-}
-h2 {
-  font-size: 36px;
-  line-height: 1.54;
-  margin-bottom: 30px;
-}
-h3 {
-  font-size: 28px;
-  line-height: 1.452;
-  margin-bottom: 30px;
-}
-h4 {
-  font-size: 22px;
-  line-height: 1.2;
-  margin-bottom: 20px;
-}
-h5 {
-  font-size: 18px;
-  line-height: 1.5;
-  margin-bottom: 10px;
-}
-h6 {
-  font-size: 15px;
-  line-height: 1.5;
-  margin-bottom: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
-  font-weight: inherit;
-}
-p {
-  margin-bottom: 10px;
-}
-p + h1, p + h2, p + h3, p + h4, p + h5, p + h6 {
-  margin-top: 20px;
-}
-.wp-caption .wp-caption-text {
-  font-size: 12px;
-  border-bottom: 1px solid #dadcdf;
-}
-p + .wp-caption, img.alignnone {
-  margin-top: 25px;
-}
-.title--xxs {
-  font-size: 1rem;
-}
-.title--xs {
-  font-size: 1.2rem;
-}
-.title--sm {
-  font-size: 1.4rem;
-}
-.title--md {
-  font-size: 1.6rem;
-}
-.title--lg {
-  font-size: 1.8rem;
-}
-.title--xl {
-  font-size: 2rem;
-}
-.title--xxl {
-  font-size: 2.4rem;
 }

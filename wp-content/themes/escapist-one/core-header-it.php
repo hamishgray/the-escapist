@@ -11,8 +11,6 @@
 		<div class="core">
 			<div class="core__inner">
 
-				<a href="https://it.secretescapes.com/" data-track="magazine-header-click" class="core__logo"></a>
-
 				<ul class="core__nav">
 					<li class="core__nav-item">
 						<a href="https://it.secretescapes.com/offerte-in-corso" data-track="magazine-header-click" class="core__nav-link core__nav-link--orange">Offerte In Corso</a></li>

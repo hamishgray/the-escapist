@@ -5,8 +5,6 @@
 
 .core {
 	background-color: $black;
-	padding-top: 16px;
-	padding-bottom: 16px;
 	overflow-x: scroll;
 	padding-left: 15px; padding-right: 15px;
 }
@@ -17,16 +15,6 @@
 	display: flex;
 	flex-direction: row;
 	align-items: center;
-}
-.core__logo {
-	display: flex;
-	width: 200px;
-	height: 32px;
-	background-image: url('../../uploads/core-white.png');
-	background-size: contain;
-	background-position: left center;
-	background-repeat: no-repeat;
-	margin-top: 5px;
 }
 
 /* Rules for both navs */
@@ -71,15 +59,15 @@
 }
 .core__subnav-link:hover, .core__subnav-link--orange { color: $orange; }
 
-@media screen and (min-width: 960px) {
+@include bp($lg){
 	.core__inner { max-width: 840px; }
 }
 
-@media screen and (min-width: 1080px) {
+@include bp($xl){
 	.core__inner { max-width: 960px; }
 }
 
-@media screen and (min-width: 1380px) {
+@include bp($xxl){
 	.core__inner { max-width: 1260px; }
 }
 

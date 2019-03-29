@@ -274,8 +274,11 @@ a:visited {
 		padding-left: 0;
 	}
 	.main-navigation li {
+		padding: 0;
 		border-top: 0;
 		float: left;
+	}
+	.main-navigation li a {
 		padding: 0 15px;
 	}
 	.main-navigation .nav-menu > li + li {

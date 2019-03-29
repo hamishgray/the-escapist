@@ -22,6 +22,7 @@ Text Domain: escapist
 @import "typography/default";
 @import "typography/lists";
 @import "typography/tables";
+@import "typography/titles";
 
 /* Forms */
 @import "forms/forms";
@@ -40,8 +41,6 @@ Text Domain: escapist
 @import "site/header";
 @import "site/footer";
 @import "site/core-header";
-
-/* Featured content */
 @import "site/featured";
 
 /* Posts & Pages */
@@ -54,5 +53,4 @@ Text Domain: escapist
 
 @import "components/offers";
 
-@import "typography/titles";
 
