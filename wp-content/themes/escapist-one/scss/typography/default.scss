@@ -10,11 +10,19 @@ input,
 select,
 textarea {
 	color: #222;
-	font-family: "Open Sans", "Helvetica", Arial, sans-serif;
-	font-size: 16px;
+	font-family: "Source Sans Pro", "Helvetica", Arial, sans-serif;
+	font-size: 15px;
+	line-height: 1.6;
 }
+
 body {
-	line-height: 1.5;
+	line-height: 1.55;
+	// font rendering options
+	-webkit-font-smoothing: antialiased;
+	-moz-font-smoothing: antialiased;
+	font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	text-rendering: optimizeLegibility;
 }
 *,
 *:before,
@@ -27,56 +35,7 @@ select,
 textarea {
 	line-height: 1.875;
 }
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-	clear: both;
-	font-family: "Georgia", Georgia, serif;
-	font-weight: normal;
-	font-style: italic;
-	margin-top: 0;
-}
-h1 {
-	font-size: 49px;
-	line-height: 1.225;
-	margin-bottom: 30px;
-}
-h2 {
-	font-size: 39px;
-	line-height: 1.54;
-	margin-bottom: 30px;
-}
-h3 {
-	font-size: 31px;
-	line-height: 1.452;
-	margin-bottom: 30px;
-}
-h4 {
-	font-size: 25px;
-	line-height: 1.2;
-	margin-bottom: 30px;
-}
-h5 {
-	font-size: 20px;
-	line-height: 1.5;
-	margin-bottom: 30px;
-}
-h6 {
-	font-size: 16px;
-	line-height: 1.5;
-	margin-bottom: 30px;
-}
-h1 a,
-h2 a,
-h3 a,
-h4 a,
-h5 a,
-h6 a {
-	font-weight: inherit;
-}
+
 p {
 	margin-top: 0;
 	margin-bottom: 30px;
@@ -133,8 +92,8 @@ var {
 	font-family: Inconsolata, monospace;
 }
 pre {
-	background: #eee;
-	border-left: 2px solid #ff8c00;
+	background: $grey-lighter;
+	border-left: 2px solid $orange;
 	max-width: 100%;
 	overflow: auto;
 	padding: 30px;
@@ -146,8 +105,8 @@ acronym {
 }
 mark,
 ins {
-	background: #ff8c00;
-	color: #fff;
+	background: $orange;
+	color: $white;
 	padding: 0 0.2em;
 	text-decoration: none;
 }
@@ -165,4 +124,12 @@ hr {
 img {
 	height: auto;
 	max-width: 100%;
+}
+
+@include bp($sm) {
+	/* Typography */
+	body {
+		font-size: 17px;
+		line-height: 1.6;
+	}
 }

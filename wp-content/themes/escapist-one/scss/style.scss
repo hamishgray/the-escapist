@@ -11,11 +11,12 @@ Text Domain: escapist
 /* Variables */
 @import "variables/colours";
 @import "variables/fonts";
+@import "variables/breakpoints";
 
 /* Default */
 @import "base/normalize";
-@import "base/default";
-@import "components/genericons";
+@import "base/genericons";
+@import "base/accessibility";
 
 /* Typography */
 @import "typography/default";
@@ -28,9 +29,6 @@ Text Domain: escapist
 /* Navigation */
 @import "navigation/navigation";
 
-/* Accessibility */
-@import "base/accessibility";
-
 /* Layout */
 @import "layout/alignment";
 @import "layout/clearings";
@@ -41,6 +39,7 @@ Text Domain: escapist
 /* Site */
 @import "site/header";
 @import "site/footer";
+@import "site/core-header";
 
 /* Featured content */
 @import "site/featured";
@@ -53,9 +52,6 @@ Text Domain: escapist
 
 @import "lib/jetpack";
 
-@import "responsive/responsive";
-
-@import "components/core-header";
 @import "components/offers";
 
 @import "typography/titles";

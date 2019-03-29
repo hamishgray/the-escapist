@@ -19,6 +19,9 @@
   <link rel="shortcut icon" href="https://d1gkiy13jtzlp.cloudfront.net/assets/favicon-d216b336b1d64a574e4e945c4a9dbc51.ico" type="image/png"/><link rel="icon" href="https://d1gkiy13jtzlp.cloudfront.net/assets/favicon-d216b336b1d64a574e4e945c4a9dbc51.ico" type="image/png"/>
 
   <?php wp_head(); ?>
+
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,700|Source+Serif+Pro:400,600,700" rel="stylesheet">
+  
 </head>
 
 <body <?php body_class(); ?>>

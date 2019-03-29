@@ -7,9 +7,9 @@ button,
 input[type="button"],
 input[type="reset"],
 input[type="submit"] {
-	background: #ff8c00;
-	border: 2px solid #ff8c00;
-	color: #fff;
+	background: $orange;
+	border: 2px solid $orange;
+	color: $white;
 	font-family: Lato, sans-serif;
 	font-weight: bold;
 	padding: 5.5px 13px;
@@ -27,8 +27,8 @@ button:hover,
 input[type="button"]:hover,
 input[type="reset"]:hover,
 input[type="submit"]:hover {
-	background: #fff;
-	color: #ff8c00;
+	background: $white;
+	color: $orange;
 	outline: none;
 }
 input[type="text"],
@@ -38,7 +38,7 @@ input[type="password"],
 input[type="search"],
 textarea {
 	-webkit-appearance: none;
-	background: #fff;
+	background: $white;
 	border: 1px solid #ddd;
 	border-radius: 0;
 	box-sizing: border-box;
@@ -80,9 +80,9 @@ textarea:focus {
 	position: relative;
 }
 .search-form:before {
-	background: #fff;
+	background: $white;
 	border-radius: 50%;
-	color: #ff8c00;
+	color: $orange;
 	content: "\f400";
 	font-size: 16px;
 	height: 28px;
@@ -94,7 +94,7 @@ textarea:focus {
 	width: 28px;
 }
 .search-form.hover:before {
-	background: #eee;
+	background: $grey-lighter;
 }
 .search-form .search-field {
 	padding-right: 45px;

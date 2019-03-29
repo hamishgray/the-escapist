@@ -7,7 +7,7 @@
 ## Links
 --------------------------------------------------------------*/
 a {
-	color: #222222;
+	color: $grey-darkest;
 	font-weight: bold;
 	text-decoration: none;
 }
@@ -18,7 +18,7 @@ a:hover {
 	outline: none;
 }
 a:focus {
-	outline: 2px solid #ddd;
+	outline: none;
 }
 a:visited {
 	font-weight: normal;
@@ -29,10 +29,10 @@ a:visited {
 --------------------------------------------------------------*/
 /* Menu Toggle */
 .menu-toggle {
-	background: #fff;
-	border: 1px solid #ddd;
+	background: $white;
+	border: 1px solid $grey-lighter;
 	border-radius: 50%;
-	color: #222;
+	color: $grey-darkest;
 	height: 45px;
 	margin-top: -22.5px;
 	padding: 0;
@@ -45,9 +45,9 @@ a:visited {
 .menu-toggle:active,
 .menu-toggle:focus,
 .menu-toggle:hover {
-	background: #eee;
-	border-color: #ddd;
-	color: #ff8c00;
+	background: $grey-lightest;
+	border-color: $grey-lighter;
+	color: $orange;
 }
 .menu-toggle:before {
 	content: "\f419";
@@ -57,15 +57,15 @@ a:visited {
 	width: 43px;
 }
 .toggled .menu-toggle {
-	background: #222;
-	border-color: #222;
-	color: #fff;
+	background: $grey-darkest;
+	border-color: $grey-darkest;
+	color: $white;
 }
 .toggled .menu-toggle:active,
 .toggled .menu-toggle:focus,
 .toggled .menu-toggle:hover {
-	background: #444;
-	border-color: #444;
+	background: $grey-darker;
+	border-color: $grey-darker;
 }
 .toggled .menu-toggle:before {
 	content: "\f406";
@@ -73,10 +73,10 @@ a:visited {
 
 /* Dropdown Toggle */
 .dropdown-toggle {
-	background: #fff;
-	border: 1px solid #ddd;
+	background: $white;
+	border: 1px solid $grey-lighter;
 	border-radius: 50%;
-	color: #ff8c00;
+	color: $orange;
 	height: 30px;
 	margin-top: -15px;
 	padding: 0;
@@ -89,9 +89,9 @@ a:visited {
 .dropdown-toggle:active,
 .dropdown-toggle:focus,
 .dropdown-toggle:hover {
-	background: #eee;
-	border-color: #ddd;
-	color: #ff8c00;
+	background: $grey-lightest;
+	border-color: $grey-lighter;
+	color: $orange;
 }
 .dropdown-toggle:before {
 	content: "\f431";
@@ -104,19 +104,42 @@ a:visited {
 	content: "\f432";
 }
 
-/* Main Navigation */
+@include bp($xs){
+	/* Primary Menu */
+	.menu-toggle {
+		height: 60px;
+		margin-top: -30px;
+		width: 60px;
+	}
+	.menu-toggle:before {
+		font-size: 16px;
+		height: 58px;
+		line-height: 58px;
+		width: 58%;
+	}
+}
+@include bp($lg) {
+	/* Primary Menu */
+	.menu-toggle {
+		display: none;
+	}
+}
+
+/*--------------------------------------------------------------
+## Main Navigation
+--------------------------------------------------------------*/
+
 .main-navigation {
-	font-size: 16px;
-	line-height: 1.875;
 	margin: 0;
 	z-index: 2;
 }
 .main-navigation > div {
 	display: none;
+	width: 100%;
 }
 .main-navigation.toggled > div {
-	background: #222;
-	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.075);
+	background: $grey-darkest;
+	box-shadow: 0 5px 15px rgba($black,0.075);
 	display: block;
 	position: absolute;
 	top: 100%;
@@ -127,7 +150,7 @@ a:visited {
 	z-index: 9998;
 }
 .main-navigation.toggled > div:before {
-	border-bottom: 6px solid #222;
+	border-bottom: 6px solid $grey-darkest;
 	border-left: 6px solid transparent;
 	border-right: 6px solid transparent;
 	top: -6px;
@@ -137,25 +160,25 @@ a:visited {
 	position: absolute;
 }
 .main-navigation > div > ul {
-	background: #fff;
-	border: 1px solid #eee;
+	border: 1px solid rgba($white,0.2);
 	padding: 30px;
 	position: relative;
 }
 .main-navigation > div > ul > li:last-child {
-	border-bottom: 1px solid #eee;
+	border-bottom: 1px solid rgba($white,0.2);
 }
 .main-navigation ul {
-	border-bottom: 1px solid #eee;
+	border-bottom: 1px solid rgba($white,0.2);
 	list-style: none;
 	margin: 0;
 	padding-left: 0;
 }
 .main-navigation li {
-	border-top: 1px solid #eee;
+	border-top: 1px solid rgba($white,0.2);
 	padding-bottom: 7.5px;
 	padding-top: 7.5px;
 	position: relative;
+	text-align: center;
 }
 .main-navigation ul ul {
 	display: none;
@@ -168,14 +191,19 @@ a:visited {
 	padding-left: 30px;
 }
 .main-navigation a {
-	color: #222;
+	color: $grey-darkest;
 	display: block;
 	text-decoration: none;
+	width: 100%;
+	font-size: 15px;
+	line-height: 1.875;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 .main-navigation a:active,
 .main-navigation a:focus,
 .main-navigation a:hover {
-	color: #ff8c00;
+	color: $orange;
 }
 .main-navigation .page_item_has_children > a,
 .main-navigation .menu-item-has-children > a {
@@ -185,15 +213,139 @@ a:visited {
 .main-navigation .current_page_item > a,
 .main-navigation .current-menu-item > a,
 .main-navigation .current_page_ancestor > a {
-	color: #ff8c00;
+	color: $orange;
+}
+
+@include bp($xs){
+	.main-navigation.toggled > div:before {
+		right: 24px;
+	}
+}
+
+@include bp($lg) {
+
+	.main-navigation {
+		float: left;
+	}
+	.main-navigation {
+		z-index: 1;
+	}
+	.main-navigation > div {
+		display: block;
+		margin: 0 auto;
+		width: auto;
+	}
+	.main-navigation.toggled > div {
+		background: $white;
+		border: 0;
+		box-shadow: none;
+		position: relative;
+		top: auto;
+		margin-top: 0;
+		width: 100%;
+		left: auto;
+		padding: 0;
+		z-index: 9998;
+	}
+	.main-navigation > div:before {
+		background: $white;
+		content: "";
+		display: block;
+		height: 100%;
+		position: absolute;
+		width: 1px;
+		z-index: 1;
+	}
+	.main-navigation > div > ul {
+		border: 0;
+		padding: 0;
+	}
+	.main-navigation > div > ul > li:last-child {
+		border-bottom: 0;
+	}
+	.main-navigation ul {
+		border-bottom: 0;
+	}
+	.main-navigation ul.toggled {
+		border-bottom: 0;
+		display: none;
+		margin-bottom: 0;
+		margin-top: 0;
+		padding-left: 0;
+	}
+	.main-navigation li {
+		border-top: 0;
+		float: left;
+		padding: 0 15px;
+	}
+	.main-navigation .nav-menu > li + li {
+		border-left: 1px solid $grey-lighter;
+	}
+	.main-navigation .menu-item-has-children {
+		padding-right: 38.5px;
+		position: relative;
+	}
+	.main-navigation .page_item_has_children > a,
+	.main-navigation .menu-item-has-children > a {
+		padding-right: 0;
+		position: static;
+	}
+	.main-navigation .menu-item-has-children > a:after {
+		color: $orange;
+		content: "\f431";
+		font-size: 16px;
+		height: 16px;
+		line-height: 1;
+		margin-top: -8px;
+		position: absolute;
+		top: 50%;
+		right: 15px;
+		width: 16px;
+	}
+	.main-navigation ul ul .menu-item-has-children > a:after {
+		-webkit-transform: rotate(-90deg);
+		transform: rotate(-90deg);
+	}
+	.main-navigation ul ul {
+		background: $white;
+		border: 1px solid $grey-lighter;
+		box-shadow: 0 5px 15px rgba($black, 0.075);
+		float: left;
+		padding: 15px 0;
+		position: absolute;
+		top: 1.875em;
+		left: -999em;
+		z-index: 99999;
+	}
+	.main-navigation ul ul ul {
+		left: -999em;
+		top: -16px;
+	}
+	.main-navigation ul ul a {
+		width: 208px;
+	}
+	.main-navigation ul ul li {
+		background: $white;
+	}
+	.main-navigation ul li:hover > ul,
+	.main-navigation ul .focus > ul {
+		display: block;
+		left: auto;
+		margin-left: -16px;
+	}
+	.main-navigation ul ul li:hover > ul,
+	.main-navigation ul ul .focus > ul {
+		left: 100%;
+	}
+
 }
 
 /*--------------------------------------------------------------
 ## Social Menu
 --------------------------------------------------------------*/
 .social-navigation {
-	background: #222;
-	border-bottom: 1px solid #444;
+	background: $grey-darkest;
+	border-bottom: 1px solid $grey-darker;
 	display: block;
 	padding: 7.5px 0;
 	text-align: center;
@@ -230,7 +382,7 @@ a:visited {
 	position: relative;
 	width: 30px;
 	height: 30px;
-	color: #ccc;
+	color: $grey-lighter;
 }
 .social-navigation a:before {
 	height: 30px;
@@ -241,10 +393,10 @@ a:visited {
 .social-navigation a:active,
 .social-navigation a:focus,
 .social-navigation a:hover {
-	color: #fff;
+	color: $white;
 }
 .social-navigation a:focus {
-	outline-color: #555;
+	outline-color: $grey-dark;
 }
 .social-navigation a:before {
 	content: "\f415";
@@ -381,6 +533,19 @@ a:visited {
 	content: "\f213";
 }
 
+@include bp($lg) {
+	.social-navigation {
+		border-bottom: 0;
+		float: right;
+		padding-bottom: 0;
+		padding-left: 15px;
+		padding-top: 0;
+	}
+	.social-navigation a:before {
+		font-size: 16px;
+	}
+}
+
 /*--------------------------------------------------------------
 ## Secondary Menu
 --------------------------------------------------------------*/
@@ -408,27 +573,34 @@ a:visited {
 	padding-right: 0;
 }
 .secondary-navigation li + li {
-	border-left: 1px solid #444;
+	border-left: 1px solid $grey-darker;
 }
 .secondary-navigation a {
 	display: block;
 	position: relative;
-	color: #ccc;
+	color: $grey-lighter;
 }
 .secondary-navigation a:active,
 .secondary-navigation a:focus,
 .secondary-navigation a:hover {
-	color: #fff;
+	color: $white;
 }
 .secondary-navigation a:focus {
-	outline-color: #555;
+	outline-color: $grey-dark;
+}
+
+@include bp($lg) {
+	.secondary-navigation {
+		display: block;
+		float: left;
+	}
 }
 
 /*--------------------------------------------------------------
 ## Footer Menu
 --------------------------------------------------------------*/
 .footer-navigation {
-	border-top: 1px solid #ddd;
+	border-top: 1px solid $grey-lighter;
 	display: block;
 	font-size: 13px;
 	line-height: 1.845;
@@ -458,20 +630,44 @@ a:visited {
 	display: block;
 	padding: 3px 0;
 	position: relative;
-	color: #777;
+	color: $grey;
 }
 .footer-navigation a:active,
 .footer-navigation a:focus,
 .footer-navigation a:hover {
-	color: #ff8c00;
+	color: $orange;
 }
+
+@include bp($lg) {
+	.footer-navigation ul {
+		padding: 3px 0;
+	}
+	.footer-navigation li {
+		border-top: 0;
+		float: left;
+		padding: 0 10px;
+	}
+	.footer-navigation li:first-child {
+		padding-left: 0;
+	}
+	.footer-navigation li:last-child {
+		padding-right: 0;
+	}
+	.footer-navigation li + li {
+		border-left: 1px solid $grey-lighter;
+	}
+	.footer-navigation a {
+		padding: 0;
+	}
+}
+
 
 /*--------------------------------------------------------------
 ## Bottom Menu
 --------------------------------------------------------------*/
 .bottom-navigation {
-	background: #222;
-	border-bottom: 1px solid #444;
+	background: $grey-darkest;
+	border-bottom: 1px solid $grey-darker;
 	display: block;
 	font-size: 13px;
 	line-height: 1.845;
@@ -490,15 +686,21 @@ a:visited {
 	display: block;
 	padding: 3px 0;
 	position: relative;
-	color: #ccc;
+	color: $grey-lighter;
 }
 .bottom-navigation a:active,
 .bottom-navigation a:focus,
 .bottom-navigation a:hover {
-	color: #fff;
+	color: $white;
 }
 .bottom-navigation a:focus {
-	outline-color: #555;
+	outline-color: $grey-dark;
+}
+
+@include bp($lg) {
+	.bottom-navigation {
+		display: none;
+	}
 }
 
 /*--------------------------------------------------------------
@@ -513,22 +715,22 @@ a:visited {
 	overflow: hidden;
 }
 .posts-navigation {
-	border-top: 1px solid #eee;
+	border-top: 1px solid $grey-lightest;
 	padding: 30px 0 0;
 }
 .comment-navigation .meta-nav {
 	display: none;
 }
 .comment-navigation + .comment-respond {
-	border-top: 1px solid #ddd;
+	border-top: 1px solid $grey-lighter;
 	padding-top: 30px;
 	position: relative;
 }
 .comment-navigation a,
 .posts-navigation a {
-	background: #fff;
-	border: 2px solid #eee;
-	color: #ff8c00;
+	background: $white;
+	border: 2px solid $grey-lightest;
+	color: $orange;
 	display: inline-block;
 	font-size: 16px;
 	line-height: 1.875;
@@ -536,15 +738,15 @@ a:visited {
 	text-transform: uppercase;
 }
 .post-navigation a {
-	border: 1px solid #eee;
-	color: #222;
+	border: 1px solid $grey-lightest;
+	color: $grey-darkest;
 	display: block;
 	padding: 30px;
 }
 .post-navigation a:active,
 .post-navigation a:focus,
 .post-navigation a:hover {
-	background-color: #eee;
+	background-color: $grey-lightest;
 }
 .post-navigation .nav-previous + .nav-next a {
 	border-top: 0;
@@ -557,7 +759,7 @@ a:visited {
 	position: relative;
 }
 .post-navigation .meta-nav {
-	color: #777;
+	color: $grey;
 	display: block;
 	font-size: 13px;
 	line-height: 1.54;
@@ -572,7 +774,7 @@ a:visited {
 .post-navigation a:active .post-title,
 .post-navigation a:focus .post-title,
 .post-navigation a:hover .post-title {
-	color: #ff8c00;
+	color: $orange;
 }
 .comment-navigation a:active,
 .comment-navigation a:focus,
@@ -580,9 +782,9 @@ a:visited {
 .posts-navigation a:active,
 .posts-navigation a:focus,
 .posts-navigation a:hover {
-	background: #ff8c00;
-	border-color: #ff8c00;
-	color: #fff;
+	background: $orange;
+	border-color: $orange;
+	color: $white;
 }
 .comment-navigation .nav-previous,
 .posts-navigation .nav-previous {
@@ -594,4 +796,31 @@ a:visited {
 	float: right;
 	text-align: right;
 	width: 50%;
+}
+
+@include bp($xs){
+
+	/* Paging Navigation */
+	.comment-navigation,
+	.post-navigation,
+	.posts-navigation {
+		margin-bottom: 60px;
+	}
+	.comment-navigation + .comment-respond,
+	.posts-navigation  {
+		padding-top: 60px;
+	}
+	.comment-navigation .nav-next a:after,
+	.comment-navigation .nav-previous a:before,
+	.posts-navigation .nav-next a:after,
+	.posts-navigation .nav-previous a:before {
+		content: '\f429';
+		font-size: 16px;
+		line-height: 1.875;
+		width: 20px;
+	}
+	.comment-navigation .nav-previous a:before,
+	.posts-navigation .nav-previous a:before {
+		content: '\f430';
+	}
 }

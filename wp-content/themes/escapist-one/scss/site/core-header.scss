@@ -3,46 +3,8 @@
 #  Core Header
 -------------------------------*/
 
-/*============================================================
-	HEADER
---------------------------------------------------------------*/
-
-.site-header { border-bottom: 0; }
-.search-navigation {
-	width: 100%;
-	max-width: 1260px;
-	margin-left: auto;
-	margin-right: auto;
-}
-
-.main-navigation {
-	/* width: 100%; */
-	/* float: none; */
-}
-.main-navigation > div { width: 100%; }
-.main-navigation > div > ul {
-	/* display: flex; */
-  /* justify-content: space-between; */
-  /* width: 100%; */
-}
-.main-navigation li {
-	/* display: flex; */
-  /* flex: 1 0 auto; */
-	text-align: center;
-}
-.main-navigation li a {
-	width: 100%;
-	font-size: 14px;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-}
-
-
-/*== Core site nav ==*/
-
 .core {
-	background-color: #000000;
-	color: #dadada;
+	background-color: $black;
 	padding-top: 16px;
 	padding-bottom: 16px;
 	overflow-x: scroll;
@@ -68,11 +30,13 @@
 }
 
 /* Rules for both navs */
-.core__nav, .core__subnav, .core__nav-item, .core__subnav-item {
+.core__nav, .core__nav-item,
+.core__subnav, .core__subnav-item {
 	list-style: none;
 	margin: 0; padding: 0;
 }
-.core__nav-item, .core__subnav-item {
+.core__nav-item,
+.core__subnav-item {
 	display: flex;
 }
 
@@ -84,13 +48,12 @@
 }
 .core__nav-item {}
 .core__nav-link {
-	color: #dadada;
-	font-size: 13px;
+	color: $grey-lightest;
+	font-size: 15px;
 	font-weight: 600;
-	text-transform: uppercase;
 	padding: 10px 10px;
 }
-.core__nav-link:hover, .core__nav-link--orange { color: #ff8c00; }
+.core__nav-link:hover, .core__nav-link--orange { color: $orange; }
 
 /* Sub navigation */
 .core__subnav {
@@ -99,13 +62,14 @@
 }
 .core__subnav-item {}
 .core__subnav-link {
-	color: #dadada;
-	font-size: 10px;
+	color: $grey-lightest;
+	font-size: 12px;
 	font-weight: 600;
+	letter-spacing: 0.05em;
 	text-transform: uppercase;
 	padding: 10px 4px;
 }
-.core__subnav-link:hover, .core__subnav-link--orange { color: #ff8c00; }
+.core__subnav-link:hover, .core__subnav-link--orange { color: $orange; }
 
 @media screen and (min-width: 960px) {
 	.core__inner { max-width: 840px; }

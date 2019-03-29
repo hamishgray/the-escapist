@@ -1,0 +1,23 @@
+
+/*=============================
+#  Variables / Breakpoints
+# - example: @include bp($xxxl){}
+-------------------------------*/
+$xxl:  1380px;
+$xl:   1080px;
+$lg:   960px;
+$md:   840px;
+$sm:   768px;
+$xs:   600px;
+$xxs:  450px;
+$xxxs: 330px;
+
+// Horizontal media query
+@mixin bp($width){
+  @media (min-width: $width){ @content; }
+}
+
+// Vertical media query
+@mixin vbp($width){
+  @media (min-height: $width){ @content; }
+}

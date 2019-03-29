@@ -1,40 +1,70 @@
 
-/* Title
-* =========================== */
+/*=============================
+#  Typography / Title
+-------------------------------*/
 
-
-
-/*============================================================
-	TYPOGRAPHY
---------------------------------------------------------------*/
-
-body, button, input,
-select, textarea {
-	font-size: 15px;
-	line-height: 1.6;
-}
-
+/* Fonts & base rules */
 h1,
 h2,
-h3 {
-	font-family: "Georgia", Georgia, serif;
-	font-weight: normal;
-	font-style: italic;
+h3,
+h4,
+h5,
+h6 {
+	clear: both;
+	font-family: "Source Serif Pro", Georgia, serif;
+	font-weight: 600;
+	margin-top: 0;
 }
 h4,
 h5,
 h6 {
-	font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
 	font-weight: 600;
 	font-style: normal;
 }
 
-h1 { font-size: 45px; }
-h2 { font-size: 36px; }
-h3 { font-size: 28px; }
-h4 { font-size: 22px; margin-bottom: 20px; }
-h5 { font-size: 18px; margin-bottom: 10px; }
-h6 { font-size: 15px; margin-bottom: 10px; letter-spacing: 0.05em; text-transform: uppercase; }
+/* Sizing */
+h1 {
+	font-size: 45px;
+	line-height: 1.225;
+	margin-bottom: 30px;
+}
+h2 {
+	font-size: 36px;
+	line-height: 1.54;
+	margin-bottom: 30px;
+}
+h3 {
+	font-size: 28px;
+	line-height: 1.452;
+	margin-bottom: 30px;
+}
+h4 {
+	font-size: 22px;
+	line-height: 1.2;
+	margin-bottom: 20px;
+}
+h5 {
+	font-size: 18px;
+	line-height: 1.5;
+	margin-bottom: 10px;
+}
+h6 {
+	font-size: 15px;
+	line-height: 1.5;
+	margin-bottom: 10px;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+h1 a,
+h2 a,
+h3 a,
+h4 a,
+h5 a,
+h6 a {
+	font-weight: inherit;
+}
+
 
 p {
 	margin-bottom: 10px;
@@ -45,10 +75,22 @@ p + h5, p + h6 { margin-top: 20px; }
 
 .wp-caption .wp-caption-text {
 	font-size: 12px;
-	border-bottom: 1px solid #eeeeee;
+	border-bottom: 1px solid $grey-lighter;
 }
 p + .wp-caption,
 img.alignnone { margin-top: 25px; }
 
+// Element resets
 
+
+// Styles to classes instead of elements
+.title {
+	&--xxs { font-size: 1rem; }
+	&--xs  { font-size: 1.2rem; }
+	&--sm  { font-size: 1.4rem; }
+	&--md  { font-size: 1.6rem; }
+	&--lg  { font-size: 1.8rem; }
+	&--xl  { font-size: 2rem; }
+	&--xxl { font-size: 2.4rem; }
+}
 

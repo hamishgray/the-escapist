@@ -45,7 +45,7 @@
 	position: relative;
   display: inline-block;
   padding: 1.1em 2em;
-  color: #ffffff;
+  color: $white;
   font-weight: 500;
   font-size: 11px;
   text-align: center;
@@ -54,7 +54,7 @@
   line-height: 1.33;
   border-radius: 3px;
   cursor: pointer;
-  background-color: #ff8c00;
+  background-color: $orange;
 }
-.offer__button:hover { color: #ffffff; background-color: #db7901; }
+.offer__button:hover { color: $white; background-color: #db7901; }
 

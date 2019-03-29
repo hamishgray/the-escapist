@@ -22,7 +22,7 @@
 	max-width: 100%;
 }
 .site-content .contact-form label span {
-	color: #ff8c00;
+	color: $orange;
 }
 
 /*=============================
@@ -51,7 +51,7 @@
 	display: block;
 }
 #infinite-handle {
-	border-top: 1px solid #eee;
+	border-top: 1px solid $grey-lighter;
 	clear: both;
 	font-family: Lato, sans-serif;
 	font-weight: bold;
@@ -70,8 +70,8 @@
 #infinite-handle span button:active,
 #infinite-handle span button:focus,
 #infinite-handle span button:hover {
-	background: #fff;
-	border: 2px solid #eee;
+	background: $white;
+	border: 2px solid $grey-lighter;
 	display: inline-block;
 	font-size: 16px;
 	line-height: 1.875;
@@ -79,17 +79,17 @@
 	text-transform: uppercase;
 }
 #infinite-handle span button {
-	color: #ff8c00;
+	color: $orange;
 }
 #infinite-handle span button:active,
 #infinite-handle span button:focus,
 #infinite-handle span button:hover {
-	background: #ff8c00;
-	border-color: #ff8c00;
-	color: #fff;
+	background: $orange;
+	border-color: $orange;
+	color: $white;
 }
 .infinite-loader {
-	border-top: 1px solid #eee;
+	border-top: 1px solid $grey-lighter;
 	clear: both;
 	margin: 0 0 30px;
 	overflow: hidden;
@@ -105,7 +105,7 @@
 .archive .infinite-wrap .hentry:first-of-type,
 .blog .infinite-wrap .hentry:first-of-type,
 .search .infinite-wrap .hentry:first-of-type {
-	border-top: 1px solid #eee;
+	border-top: 1px solid $grey-lighter;
 	padding-top: 30px;
 }
 #infinite-footer {
@@ -141,7 +141,7 @@
 #infinite-footer .blog-info a:active,
 #infinite-footer .blog-info a:focus,
 #infinite-footer .blog-info a:hover {
-	color: #fff;
+	color: $white;
 	text-decoration: none;
 }
 #infinite-footer .blog-credits a:focus,
@@ -154,6 +154,55 @@
 	font-size: inherit;
 	line-height: inherit;
 }
+
+
+@include bp($xs){
+	#infinite-handle {
+		margin-bottom: 60px;
+		padding-top: 60px;
+	}
+	.infinite-loader {
+		margin-bottom: 60px;
+		padding-top: 105px;
+	}
+	.archive .infinite-wrap .hentry:first-of-type,
+	.blog .infinite-wrap .hentry:first-of-type,
+	.search .infinite-wrap .hentry:first-of-type {
+		padding-top: 60px;
+	}
+}
+
+@include bp($sm) {
+	#infinite-footer .container {
+		width: 648px !important;
+	}
+}
+
+@include bp($md) {
+	#infinite-footer .container {
+		width: 720px !important;
+	}
+}
+
+@include bp($lg) {
+	#infinite-footer .container {
+		width: 840px !important;
+	}
+}
+
+@include bp($xl) {
+	#infinite-footer .container {
+		width: 960px !important;
+	}
+}
+
+@include bp($xxl) {
+	#infinite-footer .container {
+		width: 1260px !important;
+	}
+}
+
+
 
 /*=============================
 #  Recipes
@@ -225,7 +274,7 @@
 .sd-like.jetpack-likes-widget-wrapper,
 .sd-rating,
 .sd-sharing-enabled:not(#jp-post-flair) {
-	border-bottom: 1px solid #eee;
+	border-bottom: 1px solid $grey-lighter;
 	margin: 0;
 	padding: 7.5px 0;
 }
@@ -344,6 +393,52 @@ div#jp-relatedposts a:focus {
 	display: none;
 }
 
+@include bp($xs){
+	div#jp-relatedposts {
+		margin-top: 30px;
+		padding-top: 61px;
+	}
+	.hentry div#jp-relatedposts div.jp-relatedposts-items .jp-relatedposts-post:last-of-type {
+		margin-bottom: 30px;
+	}
+}
+
+@include bp($lg) {
+	div#jp-relatedposts:before {
+		background: $grey-lighter;
+		content: "";
+		display: block;
+		height: 1px;
+		position: absolute;
+		right: -60px;
+		top: -1px;
+		width: 100%;
+	}
+	.hentry div#jp-relatedposts div.jp-relatedposts-items .jp-relatedposts-post {
+		margin: 0 15px;
+		width: 164.6666667px;
+	}
+	.hentry div#jp-relatedposts div.jp-relatedposts-items .jp-relatedposts-post:first-of-type {
+		margin-left: 0;
+	}
+	.hentry div#jp-relatedposts div.jp-relatedposts-items .jp-relatedposts-post:last-of-type {
+		margin-right: 0;
+	}
+}
+
+@include bp($xl) {
+	.hentry div#jp-relatedposts div.jp-relatedposts-items .jp-relatedposts-post {
+		width: 194.6666667px;
+	}
+}
+
+@include bp($xxl) {
+	.hentry div#jp-relatedposts div.jp-relatedposts-items .jp-relatedposts-post {
+		width: 160px;
+	}
+}
+
+
 
 /*--------------------------------------------------------------
 ## Site Logo
@@ -378,6 +473,13 @@ div#jp-relatedposts a:focus {
 	max-width: 100%;
 }
 
+@include bp($xs){
+	/* Logo */
+	.site-logo-link {
+		max-width: 580px;
+		padding: 0 90px;
+	}
+}
 
 
 
@@ -428,7 +530,7 @@ div#jp-relatedposts a:focus {
 	margin: 0 auto 30px;
 }
 .widget_goodreads div[class^="gr_custom_title"] a {
-	color: #ff8c00;
+	color: $orange;
 }
 .widget_goodreads div[class^="gr_custom_title"] a:active,
 .widget_goodreads div[class^="gr_custom_title"] a:focus,
@@ -445,11 +547,11 @@ div#jp-relatedposts a:focus {
 .widget_goodreads div[class^="gr_custom_each_container"] {
 	padding: 15px 0;
 	margin: 0;
-	border-top: 1px solid #eee;
+	border-top: 1px solid $grey-lighter;
 	border-bottom: 0;
 }
 .widget_goodreads div[class^="gr_custom_each_container"]:last-of-type {
-	border-bottom: 1px solid #eee;
+	border-bottom: 1px solid $grey-lighter;
 }
 .widget_goodreads div[class^="gr_custom_title"] {
 	font-weight: bold;
@@ -513,12 +615,12 @@ div#jp-relatedposts a:focus {
 
 /* RSS Links */
 .widget_rss_links ul {
-	border-bottom: 1px solid #eee;
+	border-bottom: 1px solid $grey-lighter;
 	list-style: none;
 	margin-left: 0;
 }
 .widget_rss_links li {
-	border-top: 1px solid #eee;
+	border-top: 1px solid $grey-lighter;
 	padding-bottom: 15px;
 	padding-top: 15px;
 }
@@ -526,12 +628,12 @@ div#jp-relatedposts a:focus {
 	border-bottom: 0;
 }
 .widget_rss_links p {
-	border-top: 1px solid #eee;
+	border-top: 1px solid $grey-lighter;
 	margin-bottom: 15px;
 	padding-top: 15px;
 }
 .widget_rss_links p:last-of-type {
-	border-bottom: 1px solid #eee;
+	border-bottom: 1px solid $grey-lighter;
 	margin-bottom: 30px;
 	padding-bottom: 15px;
 }
