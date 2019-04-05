@@ -6,7 +6,12 @@
 
 function offers_display($atts,$content=null) {
 
-	// Get data from settings page
+	/* ======================================
+	 #	 Setup variables
+	 # -------------------------------------- */
+
+ /* -------------------
+  * Get data from settings page */
 	$getoffers_country = esc_attr( get_option('getoffers_country') );
 	$getoffers_default_title = esc_attr( get_option('getoffers_default_title') );
 	$getoffers_default_limit = esc_attr( get_option('getoffers_default_limit') );
@@ -26,7 +31,8 @@ function offers_display($atts,$content=null) {
 		$territory = $getoffers_country;
 	}
 
-	// Handles shortcode attributes. If none set uses defaults below.
+	/* -------------------
+	* Shortcode attributes */
 	$atts = shortcode_atts(
 	  array(
 		  'title' => $titleDefault,
@@ -36,6 +42,7 @@ function offers_display($atts,$content=null) {
 	  ), $atts, 'offers'
 	);
 	$title = $atts['title'];
+	$limit = $atts['limit'] - 1;
 	// shortcode keyword check
 	if($atts['keywords']){
 		$keywords = $atts['keywords'];
@@ -48,8 +55,19 @@ function offers_display($atts,$content=null) {
 	}else{
 		$tags = null;
 	}
-	$limit = $atts['limit'] - 1;
 
+	/* -------------------
+	 * Language */
+	if( $territory == 'it' ){
+		$salesCardText['percentagePre'] = 'Fino al ';
+		$salesCardText['callToAction'] = 'Prenota ora';
+	}else if( $territory == 'se' ){
+		$salesCardText['percentagePre'] = 'Upp till ';
+		$salesCardText['callToAction'] = 'Se Erbjudande';
+	}else{
+		$salesCardText['percentagePre'] = 'Up to ';
+		$salesCardText['callToAction'] = 'View offer';
+	}
 
 	/* ======================================
 	 #	 Create JSON offer data array
@@ -58,7 +76,17 @@ function offers_display($atts,$content=null) {
   $seapitoken = "90370f0a-cc20-46a7-9934-a1cc4df00502";
   $saleDataURL = "https://api.secretescapes.com/v3/sales?se-api-token=".$seapitoken."&territory=".$territory;
   $json = file_get_contents($saleDataURL);
-  $sales = json_decode($json, true);
+	$rawsales = json_decode($json, true);
+  // check sale is live
+  $sales = [];
+  foreach($rawsales as $sale){
+    $saleStartDate = new DateTime($sale['start']);
+    $currentDate = new DateTime();
+    if($saleStartDate <= $currentDate){
+      // live
+      array_push($sales,$sale);
+    }
+  }
 
 
 
@@ -172,8 +200,8 @@ function offers_display($atts,$content=null) {
 					   <a class='offer__title' href='".$item['link']."'>".$item['title']."</a></span><br>
 						 <span class='offer__location'>".$item['location']."</span><br>
 						 <span class='offer__description'>".$item['description']."</span><br>
-				 	   Up to <span class='offer__price'>-".$item['discount']."%</span><br>
-						 <a class='offer__button' href='https://www.secretescapes.com/".$item['urlSlug']."/sale'>View offer</a>
+				 	   ".$salesCardText['percentagePre']." <span class='offer__price'>-".$item['discount']."%</span><br>
+						 <a class='offer__button' href='https://www.secretescapes.com/".$item['urlSlug']."/sale'>".$salesCardText['callToAction']."</a>
 					</div>
 				</div>
 			</div>

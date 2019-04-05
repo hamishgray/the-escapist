@@ -1,7 +1,7 @@
 <?php
 /**
-* Plugin Name: SE Get UK Offers - DEV
-* Description: Google Sheets data embedder for getting and displaying offer data
+* Plugin Name: SE Get Offers - DEV
+* Description: A tool to display relevant sales on articles through a shortcode.
 * Version: 1.0
 * Author: Hamish Gray
 * Text Domain: se-getoffers
@@ -25,11 +25,11 @@ include(plugin_dir_path(__FILE__).'options.php');
 
 
 /* =============================================
- #	 Function displays folder on shortcode base: [offers]
+ #	 Functions for shortcode
  # --------------------------------------------- */
 
 // Include shortcode generation functionality
-include(plugin_dir_path(__FILE__).'display.php');
+include(plugin_dir_path(__FILE__).'functions.php');
 // Register shortcode for content editors
 add_shortcode('offers', 'offers_display');
 
