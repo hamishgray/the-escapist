@@ -1,6 +1,6 @@
 <?php
 /**
-* Plugin Name: SE Get Offers - DEV
+* Plugin Name: SE Get Offers
 * Description: A tool to display relevant sales on articles through a shortcode.
 * Version: 1.0
 * Author: Hamish Gray

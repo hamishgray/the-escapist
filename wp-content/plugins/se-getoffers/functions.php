@@ -58,13 +58,17 @@ function offers_display($atts,$content=null) {
 
 	/* -------------------
 	 * Language */
+  $salesCardText = [];
 	if( $territory == 'it' ){
+		$salesCardText['siteUrl'] = 'https://it.secretescapes.com/';
 		$salesCardText['percentagePre'] = 'Fino al ';
 		$salesCardText['callToAction'] = 'Prenota ora';
 	}else if( $territory == 'se' ){
+		$salesCardText['siteUrl'] = 'https://www.secretescapes.se/';
 		$salesCardText['percentagePre'] = 'Upp till ';
 		$salesCardText['callToAction'] = 'Se Erbjudande';
 	}else{
+		$salesCardText['siteUrl'] = 'https://www.secretescapes.com/';
 		$salesCardText['percentagePre'] = 'Up to ';
 		$salesCardText['callToAction'] = 'View offer';
 	}
@@ -193,7 +197,7 @@ function offers_display($atts,$content=null) {
 		$saleCards.=
 			"<div class='offers-col'>
 				<div class='offer'>
-					 <a class='offer__image-link' href='https://www.secretescapes.com/".$item['urlSlug']."/sale'>
+					 <a class='offer__image-link' href='".$salesCardText['siteUrl'].$item['urlSlug']."/sale'>
 					 	 <img src=\"".$item['image']."\">
 					 </a>
 			     <div class='offer__content'>
@@ -201,7 +205,7 @@ function offers_display($atts,$content=null) {
 						 <span class='offer__location'>".$item['location']."</span><br>
 						 <span class='offer__description'>".$item['description']."</span><br>
 				 	   ".$salesCardText['percentagePre']." <span class='offer__price'>-".$item['discount']."%</span><br>
-						 <a class='offer__button' href='https://www.secretescapes.com/".$item['urlSlug']."/sale'>".$salesCardText['callToAction']."</a>
+						 <a class='offer__button' href='".$salesCardText['siteUrl'].$item['urlSlug']."/sale'>".$salesCardText['callToAction']."</a>
 					</div>
 				</div>
 			</div>
