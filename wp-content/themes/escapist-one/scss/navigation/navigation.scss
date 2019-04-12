@@ -191,7 +191,7 @@ a:visited {
 	padding-left: 30px;
 }
 .main-navigation a {
-	color: $grey-darkest;
+	color: $white;
 	display: block;
 	text-decoration: none;
 	width: 100%;
@@ -279,6 +279,7 @@ a:visited {
 		float: left;
 	}
 	.main-navigation li a {
+		color: $grey-darker;
 		padding: 0 15px;
 	}
 	.main-navigation .nav-menu > li + li {
