@@ -1319,6 +1319,20 @@ a:visited {
 .author-info:after, .clear:after, .comment-content:after, .comment-meta:after, .entry-content:after, .entry-meta:after, .featured-content-inner:after, .footer-navigation > div:after, .footer-widget:after, .hentry:after, .main-navigation ul:after, .sd-block:after, .sharedaddy:after, .site-header:after, .site-content:after, .site-content-inner:after, .site-footer:after, .site-top-inner:after, .social-navigation > div:after, .secondary-navigation > div:after {
   clear: both;
 }
+/* Grid
+ * =========================== */
+.display-posts-listing {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+.display-posts-listing .listing-item {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  flex-basis: 33%;
+  width: 33%;
+}
 /* Widgets */
 /*=============================
  #  Widgets
@@ -2338,9 +2352,6 @@ body:not(.group-blog) .entry-summary + .entry-meta > span:nth-of-type(2):before,
 }
 .single .hentry.format-aside .entry-header {
   margin-bottom: 0;
-}
-.page .hentry.has-post-thumbnail .entry-header, .single .hentry.has-post-thumbnail .entry-header {
-  display: none;
 }
 /* .entry-link-overlay { display: none; }
  @media screen and (min-width: 1080px) {
