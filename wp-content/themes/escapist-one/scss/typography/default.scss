@@ -1,0 +1,135 @@
+
+/*=============================
+#  Typography / Default
+#  - base resets & starter styles
+-------------------------------*/
+
+body,
+button,
+input,
+select,
+textarea {
+	color: #222;
+	font-family: "Source Sans Pro", "Helvetica", Arial, sans-serif;
+	font-size: 15px;
+	line-height: 1.6;
+}
+
+body {
+	line-height: 1.55;
+	// font rendering options
+	-webkit-font-smoothing: antialiased;
+	-moz-font-smoothing: antialiased;
+	font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	text-rendering: optimizeLegibility;
+}
+*,
+*:before,
+*:after {
+	box-sizing: inherit;
+}
+button,
+input,
+select,
+textarea {
+	line-height: 1.875;
+}
+
+p {
+	margin-top: 0;
+	margin-bottom: 30px;
+}
+dfn,
+cite,
+em,
+i {
+	font-style: italic;
+}
+cite {
+	font-weight: bold;
+}
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+	content: "";
+}
+blockquote,
+q {
+	quotes: "" "";
+}
+blockquote {
+	color: #555;
+	font-style: italic;
+	margin: 0 0 30px;
+	padding: 0;
+	position: relative;
+}
+blockquote:before {
+	color: #ddd;
+	content: "\f106";
+	float: left;
+}
+blockquote * {
+	margin-bottom: 0;
+}
+blockquote blockquote {
+	margin-left: 30px;
+	margin-top: 30px;
+}
+blockquote cite {
+	font-style: normal;
+}
+address {
+	margin: 0 0 30px;
+}
+code,
+kbd,
+pre,
+tt,
+var {
+	font-family: Inconsolata, monospace;
+}
+pre {
+	background: $grey-lighter;
+	border-left: 2px solid $orange;
+	max-width: 100%;
+	overflow: auto;
+	padding: 30px;
+}
+abbr,
+acronym {
+	border-bottom: 1px dotted #222;
+	cursor: help;
+}
+mark,
+ins {
+	background: $orange;
+	color: $white;
+	padding: 0 0.2em;
+	text-decoration: none;
+}
+big {
+	font-size: 125%;
+}
+
+hr {
+	background-color: #ddd;
+	border: 0;
+	height: 1px;
+	margin-bottom: 30px;
+}
+
+img {
+	height: auto;
+	max-width: 100%;
+}
+
+@include bp($sm) {
+	/* Typography */
+	body {
+		font-size: 17px;
+		line-height: 1.6;
+	}
+}

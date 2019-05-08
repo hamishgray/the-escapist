@@ -1,0 +1,28 @@
+
+/*=============================
+#  Typography / Tables
+-------------------------------*/
+
+table {
+	border-top: 1px solid #ddd;
+	margin: 0 0 30px;
+	text-align: left;
+	width: 100%;
+}
+caption,
+th {
+	font-family: Lato, sans-serif;
+	font-weight: bold;
+	text-transform: uppercase;
+}
+caption {
+	color: #777;
+}
+th,
+td {
+	border-bottom: 1px solid #ddd;
+	padding: 5px;
+}
+thead {
+	background: $grey-lighter;
+}

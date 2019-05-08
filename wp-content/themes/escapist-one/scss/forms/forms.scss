@@ -1,0 +1,128 @@
+
+/*=============================
+#  Forms
+-------------------------------*/
+
+button,
+input[type="button"],
+input[type="reset"],
+input[type="submit"] {
+	background: $orange;
+	border: 2px solid $orange;
+	color: $white;
+	font-family: Lato, sans-serif;
+	font-weight: bold;
+	padding: 5.5px 13px;
+	text-transform: uppercase;
+}
+button:active,
+input[type="button"]:active,
+input[type="reset"]:active,
+input[type="submit"]:active,
+button:focus,
+input[type="button"]:focus,
+input[type="reset"]:focus,
+input[type="submit"]:focus,
+button:hover,
+input[type="button"]:hover,
+input[type="reset"]:hover,
+input[type="submit"]:hover {
+	background: $white;
+	color: $orange;
+	outline: none;
+}
+input[type="text"],
+input[type="email"],
+input[type="url"],
+input[type="password"],
+input[type="search"],
+textarea {
+	-webkit-appearance: none;
+	background: $white;
+	border: 1px solid #ddd;
+	border-radius: 0;
+	box-sizing: border-box;
+	padding: 6.5px;
+	width: 100%;
+}
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="url"]:focus,
+input[type="password"]:focus,
+input[type="search"]:focus,
+textarea:focus {
+	box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.075);
+	outline: none;
+}
+
+/* Placeholder */
+::input-placeholder {
+	color: #777;
+}
+::-webkit-input-placeholder {
+	color: #777;
+}
+:-moz-placeholder {
+	color: #777;
+	opacity: 1;
+}
+::-moz-placeholder {
+	color: #777;
+	opacity: 1;
+}
+:-ms-input-placeholder {
+	color: #777;
+}
+
+/* Search Form */
+.search-form {
+	margin-bottom: 30px;
+	position: relative;
+}
+.search-form:before {
+	background: $white;
+	border-radius: 50%;
+	color: $orange;
+	content: "\f400";
+	font-size: 16px;
+	height: 28px;
+	line-height: 28px;
+	position: absolute;
+	right: 8.5px;
+	top: 8.5px;
+	text-align: center;
+	width: 28px;
+}
+.search-form.hover:before {
+	background: $grey-lighter;
+}
+.search-form .search-field {
+	padding-right: 45px;
+}
+.search-form .search-submit {
+	background: transparent;
+	border: 1px solid #ddd;
+	border-radius: 50%;
+	color: transparent;
+	display: block;
+	height: 30px;
+	overflow: hidden;
+	padding: 0;
+	position: absolute;
+	right: 7.5px;
+	top: 7.5px;
+	width: 30px;
+	z-index: 2;
+}
+.search-form .search-submit:active,
+.search-form .search-submit:focus,
+.search-form .search-submit:hover {
+	background: transparent;
+	border-color: #ddd;
+	color: transparent;
+}
+
+/* Password Protected */
+.post-password-form input[type="submit"] {
+	margin-top: 30px;
+}

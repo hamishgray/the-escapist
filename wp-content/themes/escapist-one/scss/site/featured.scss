@@ -1,0 +1,170 @@
+
+/*=============================
+#  Featured Content
+-------------------------------*/
+
+.featured-content {
+	border-bottom: 1px solid #ddd;
+	padding: 30px 0 0;
+}
+.featured-content .hentry {
+	background-color: #1f1f1f;
+	background-position: 50% 50%;
+	background-size: cover;
+	color: $white;
+	float: left;
+	overflow: hidden;
+	position: relative;
+}
+.blog .featured-content .hentry {
+	border-bottom: 0;
+	border-top: 0;
+	margin: 0 0 30px;
+	height: 300px;
+	width: 100%;
+}
+.blog .featured-content .hentry:first-child {
+	margin-top: 0;
+}
+.featured-content .has-post-thumbnail {
+	text-shadow: 0 0 0.125em rgba(0, 0, 0, 0.7);
+}
+.featured-content a {
+	color: $white;
+}
+.featured-content a:focus {
+	outline-color: rgba(255, 255, 255, 0.7);
+}
+.featured-content .post-thumbnail {
+	background-size: cover;
+	margin: 0;
+	opacity: 0.7;
+	position: absolute;
+	top: 0;
+}
+.featured-content .hentry:not(.has-post-thumbnail) .post-thumbnail {
+	opacity: 0;
+}
+.featured-content .post-thumbnail img {
+	opacity: 0;
+	visibility: hidden;
+}
+.featured-content .hentry:hover .post-thumbnail,
+.featured-content .hentry .post-thumbnail:focus {
+	background-color: #000;
+	opacity: 0.3;
+}
+.featured-content .hentry:not(.has-post-thumbnail):hover .post-thumbnail,
+.featured-content .hentry:not(.has-post-thumbnail) .post-thumbnail:focus {
+	background: $orange;
+	opacity: 1;
+}
+.featured-content .entry-header {
+	bottom: 0;
+	position: absolute;
+}
+.featured-content .entry-title {
+	font-size: 25px;
+	line-height: 1.2;
+	padding: 0 30px 30px;
+}
+.featured-content .entry-meta {
+	padding-left: 30px;
+	padding-right: 30px;
+	width: 100%;
+}
+
+
+
+@include bp($sm) {
+	.blog .featured-content .hentry {
+		height: 350px;
+		width: 309px;
+	}
+	.blog .featured-content .hentry:first-of-type {
+		height: 300px;
+		width: 100%;
+	}
+	.blog .featured-content .hentry:nth-of-type(2),
+	.blog .featured-content .hentry:nth-of-type(4) {
+		margin-right: 30px;
+	}
+}
+
+@include bp($md) {
+	.blog .featured-content .hentry {
+		height: 300px;
+		width: 345px;
+	}
+}
+
+@include bp($lg) {
+	.blog .featured-content .hentry {
+		height: 350px;
+		width: 345px;
+	}
+	.blog .featured-content .hentry:first-of-type {
+		margin-right: 30px;
+		height: 350px;
+		width: 550px;
+	}
+	.blog .featured-content .hentry:nth-of-type(2) {
+		margin-right: 0;
+		width: 260px;
+	}
+	.blog .featured-content .hentry:nth-of-type(3),
+	.blog .featured-content .hentry:nth-of-type(4),
+	.blog .featured-content .hentry:nth-of-type(5) {
+		width: 260px;
+	}
+	.blog .featured-content .hentry:nth-of-type(3) {
+		margin-right: 30px;
+	}
+}
+
+@include bp($xl) {
+	.blog .featured-content .hentry:first-of-type {
+		height: 430px;
+		margin-right: 0;
+		width: 630px;
+	}
+	.blog .featured-content .hentry:nth-of-type(2),
+	.blog .featured-content .hentry:nth-of-type(3) {
+		height: 370px;
+		margin-left: 30px;
+		margin-right: 0;
+		width: 300px;
+	}
+	.blog .featured-content .hentry:nth-of-type(4),
+	.blog .featured-content .hentry:nth-of-type(5) {
+		height: 310px;
+		margin-right: 0;
+		margin-top: -340px;
+		width: 300px;
+	}
+	.blog .featured-content .hentry:nth-of-type(5) {
+		margin-left: 330px;
+	}
+}
+
+@include bp($xxl) {
+	.blog .featured-content .hentry:first-of-type {
+		height: 500px;
+		width: 830px;
+	}
+	.blog .featured-content .hentry:nth-of-type(2),
+	.blog .featured-content .hentry:nth-of-type(3) {
+		height: 375px;
+		margin-left: 30px;
+		width: 400px;
+	}
+	.blog .featured-content .hentry:nth-of-type(4),
+	.blog .featured-content .hentry:nth-of-type(5) {
+		height: 250px;
+		margin-top: -280px;
+		width: 400px;
+	}
+	.blog .featured-content .hentry:nth-of-type(5) {
+		margin-left: 430px;
+	}
+}
