@@ -5,15 +5,17 @@
 
 /* Site Header */
 .site-header {
-	padding: 30px 0;
+	padding: 0;
+	padding-bottom: 47px;
 	position: relative;
 	width: 100%;
+	background-color: $black;
 }
 
 /* Site Top */
 .site-top {
-	background: #222;
-	color: #ccc;
+	background: $black;
+	color: $grey-darker;
 	display: none;
 	margin-bottom: 30px;
 	margin-top: -30px;
@@ -23,24 +25,34 @@
 /* Search Navigation */
 .search-navigation {
 	position: absolute;
-	top: 30px;
+	bottom: 0;
 	left: 0;
+	z-index: 1;
 	width: 100%;
+	border-top: 1px solid rgba($grey-lightest,0.2);
+	background-color: $black;
+	&.search-navigation--fixed {
+		position: fixed;
+		bottom: auto;
+		top: 0;
+		box-shadow: 0 0 20px 5px rgba($black,0.2);
+	}
+}
+.search-navigation-inner {
+	position: relative;
 	max-width: 1260px;
 	margin-left: auto;
 	margin-right: auto;
 }
-.search-navigation-inner {
-	position: relative;
-}
 .search-header {
+	display: none;
 	min-width: 30px;
 }
 .search-toggle {
 	background: transparent;
-	border: 1px solid #ddd;
+	border: 1px solid rgba($white,0.2);
 	border-radius: 50%;
-	color: #222;
+	color: $white;
 	height: 45px;
 	padding: 0;
 	position: relative;
@@ -50,9 +62,9 @@
 .search-toggle:active,
 .search-toggle:focus,
 .search-toggle:hover {
-	background: $grey-lighter;
-	border-color: #ddd;
-	color: $orange;
+	background: $grey-darker;
+	border: rgba($white,0.4);
+	color: $white;
 }
 .search-toggle:before {
 	content: "\f400";
@@ -243,34 +255,28 @@
 	}
 	.site-branding {
 		min-height: 0;
+		padding: 30px 0;
 	}
 	.site-description,
 	.site-title {
 		padding-left: 0;
 		padding-right: 0;
 	}
-	.search-navigation {
-		border-top: 1px solid $grey-lighter;
-		margin-bottom: -15px;
-		margin-top: 30px;
-		padding-top: 15px;
-		position: relative;
-		top: auto;
-	}
+
 	.no-site-branding .site-branding + .search-navigation {
 		margin-top: 0;
 	}
 	.search-navigation-inner {
-		align-items: center;
-		-webkit-align-items: center;
-		display: block;
-		display: -webkit-box;
-		display: -moz-box;
-		display: -ms-flexbox;
-		display: -webkit-flex;
-		display: flex;
-		-webkit-justify-content: center;
-		justify-content: center;
+		// align-items: center;
+		// -webkit-align-items: center;
+		// display: block;
+		// display: -webkit-box;
+		// display: -moz-box;
+		// display: -ms-flexbox;
+		// display: -webkit-flex;
+		// display: flex;
+		// -webkit-justify-content: center;
+		// justify-content: center;
 	}
 	.search-toggle {
 		height: 30px;
@@ -287,7 +293,7 @@
 		font-size: 12px;
 	}
 	.header-image {
-		border-top: 1px solid $grey-lightest;
+		border-top: 1px solid rgba($grey-lightest,0.2);
 		margin: 30px 0 -15px;
 		padding: 30px 0 15px;
 	}

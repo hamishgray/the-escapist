@@ -63,6 +63,7 @@ function escapist_setup() {
 	add_image_size( 'escapist-post-thumbnail', 870, 773, true );
 	add_image_size( 'escapist-featured-content-thumbnail', 915, 500, true );
 	add_image_size( 'escapist-single-thumbnail', 1920, 768, true );
+	add_image_size( 'escapist-post-group-thumbnail', 915, 500, true );
 
 	// This theme uses wp_nav_menu() in four locations.
 	register_nav_menus( array(

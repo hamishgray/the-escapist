@@ -13,6 +13,7 @@ h6 {
 	clear: both;
 	font-family: "Source Serif Pro", Georgia, serif;
 	font-weight: 600;
+	margin-bottom: 10px;
 	margin-top: 0;
 }
 h4,
@@ -21,38 +22,33 @@ h6 {
 	font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
 	font-weight: 600;
 	font-style: normal;
+	margin-bottom: 10px;
 }
 
 /* Sizing */
 h1 {
-	font-size: 45px;
-	line-height: 1.225;
-	margin-bottom: 30px;
+	font-size: 3.6rem;
+	line-height: 1.2;
 }
 h2 {
-	font-size: 36px;
-	line-height: 1.54;
-	margin-bottom: 30px;
+	font-size: 2.8rem;
+	line-height: 1.2;
 }
 h3 {
-	font-size: 28px;
+	font-size: 2.2rem;
 	line-height: 1.452;
-	margin-bottom: 30px;
 }
 h4 {
-	font-size: 22px;
+	font-size: 1.7rem;
 	line-height: 1.2;
-	margin-bottom: 20px;
 }
 h5 {
-	font-size: 18px;
+	font-size: 1.35rem;
 	line-height: 1.5;
-	margin-bottom: 10px;
 }
 h6 {
-	font-size: 15px;
+	font-size: 1.15rem;
 	line-height: 1.5;
-	margin-bottom: 10px;
 	text-transform: uppercase;
 	letter-spacing: 0.05em;
 }
@@ -64,14 +60,13 @@ h5 a,
 h6 a {
 	font-weight: inherit;
 }
-
+p + h1, p + h2,
+p + h3, p + h4,
+p + h5, p + h6 { margin-top: 30px; }
 
 p {
 	margin-bottom: 10px;
 }
-p + h1, p + h2,
-p + h3, p + h4,
-p + h5, p + h6 { margin-top: 20px; }
 
 .wp-caption .wp-caption-text {
 	font-size: 12px;
