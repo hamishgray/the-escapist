@@ -8,7 +8,10 @@
 
 
 	<div class="home-content">
+
+		<!-- Content from WP editor -->
 		<?php the_content(); ?>
+
 	</div><!-- .entry-content -->
 
 	<footer class="entry-footer">

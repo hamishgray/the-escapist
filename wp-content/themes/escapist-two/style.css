@@ -259,9 +259,10 @@ blockquote, q {
 blockquote {
   color: #555;
   font-style: italic;
-  margin: 0 0 30px;
+  margin: 20px 0;
   padding: 0;
   position: relative;
+  font-size: 1.4rem;
 }
 blockquote:before {
   color: #ddd;
@@ -1307,45 +1308,6 @@ a:visited {
 }
 /* Grid
  * =========================== */
-.display-posts-listing {
-  margin-top: 20px;
-  margin-bottom: 40px;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-}
-.display-posts-listing .listing-item {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  flex-basis: 50%;
-  width: 50%;
-  padding-bottom: 10px;
-}
-.display-posts-listing .listing-item:nth-child(2n+1) {
-  padding-right: 15px;
-}
-.display-posts-listing .listing-item:nth-child(2n+2) {
-  padding-left: 15px;
-}
-.listing-item {
-  height: 320px;
-}
-.listing-item .title {
-  font-weight: 600;
-  line-height: 1.2;
-  font-size: 1.25rem;
-  margin-bottom: 5px;
-}
-.listing-item .date, .listing-item .author {
-  text-transform: uppercase;
-  letter-spacing: 0.02rem;
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-.home-content {
-  margin: 0;
-}
 /* Widgets */
 /*=============================
  #  Widgets
@@ -1906,9 +1868,6 @@ a:visited {
 .header-image a, .header-image img {
   display: block;
   margin: 0 auto;
-}
-.header-image a:active, .header-image a:focus, .header-image a:hover {
-  opacity: 0.7;
 }
 @media (min-width: 600px) {
   /* Header */
@@ -2854,6 +2813,58 @@ body:not(.single) .content-area .format-gallery .post-thumbnail:before, body:not
     width: 270px;
   }
 }
+/*==============================
+ * FEATURED POSTS - LONG FORM
+ -===============================*/
+.post-template-post-feature .entry-title {
+  font-size: 3.6rem;
+  text-align: center;
+  max-width: 100%;
+  line-height: 1.1;
+}
+.post-template-post-feature .entry-details {
+  position: relative;
+  width: 450px;
+  margin: auto;
+  margin-top: -90px;
+  margin-bottom: 40px;
+  z-index: 1;
+  background-color: #1a1a1a;
+  box-shadow: 0 0 30px 0 rgba(26, 26, 26, 0.4);
+  display: block;
+  padding: 15px 45px;
+  text-align: center;
+}
+.post-template-post-feature .entry-details a {
+  color: #f2f5f7;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+}
+.post-template-post-feature .entry-details > span {
+  display: inline-block;
+  margin-right: 15px;
+}
+.post-template-post-feature .entry-details > span:last-child {
+  margin-right: 0;
+}
+.post-template-post-feature .wp-block-image {
+  max-width: auto;
+  margin-left: -60px;
+  margin-right: -60px;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+.site-main--no-sidebar {
+  border-right: 0;
+  width: 100%;
+  padding-right: 0;
+}
+.site-main--no-sidebar .entry-content {
+  width: 768px;
+  float: none;
+  margin: auto;
+}
 /*=============================
  #  Comments
  -------------------------------*/
@@ -3106,6 +3117,57 @@ embed, iframe, object, video, .fb_iframe_widget, .video-player, .wp-audio-shortc
 }
 .googlemaps iframe {
   margin-bottom: 0;
+}
+/*=============================
+ #  Post summary styles
+ -------------------------------*/
+.display-posts-listing {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+.display-posts-listing .listing-item:first-of-type {
+  margin-top: 0 !important;
+}
+.display-posts-listing .listing-item--default a.post-thumbnail {
+  height: auto;
+}
+.display-posts-listing .listing-item--large {
+  position: relative;
+}
+.display-posts-listing .listing-item--large .entry-title {
+  font-size: 32px;
+}
+.display-posts-listing .listing-item--large .entry-link-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+}
+.display-posts-listing .listing-item--large .entry-content {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 70%;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 30px;
+}
+.display-posts-listing .listing-item--small {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  flex-basis: 50%;
+  width: 50%;
+  padding-bottom: 10px;
+  border-top: 0;
+}
+.display-posts-listing .listing-item--small:nth-child(2n+1) {
+  padding-right: 15px;
+}
+.display-posts-listing .listing-item--small:nth-child(2n+2) {
+  padding-left: 15px;
 }
 /*=============================
  #  JETPACK
@@ -3502,9 +3564,6 @@ div#jp-relatedposts a:focus {
   max-height: 90px;
   max-width: 100%;
   padding: 0 60px;
-}
-.site-logo-link:active, .site-logo-link:focus, .site-logo-link:hover {
-  opacity: 0.7;
 }
 .site-logo-link:focus {
   outline: none;

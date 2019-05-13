@@ -197,9 +197,7 @@
 }
 .header-image a:active,
 .header-image a:focus,
-.header-image a:hover {
-	opacity: 0.7;
-}
+.header-image a:hover {}
 
 @include bp($xs){
 

@@ -62,14 +62,17 @@ q {
 blockquote {
 	color: #555;
 	font-style: italic;
-	margin: 0 0 30px;
+	margin: 20px 0;
 	padding: 0;
 	position: relative;
+	font-size: 1.4rem;
 }
 blockquote:before {
 	color: #ddd;
 	content: "\f106";
 	float: left;
+	transform: rotate(180deg);
+  text-align: right;
 }
 blockquote * {
 	margin-bottom: 0;

@@ -80,6 +80,21 @@ function escapist_entry_categories() {
 }
 endif;
 
+if ( ! function_exists( 'escapist_post_categories' ) ) :
+/**
+ * Prints HTML with meta information for the categories.
+ */
+function escapist_post_categories() {
+	if ( 'post' == get_post_type() ) {
+		/* translators: used between list items, there is a space after the comma */
+		$categories_list = get_the_category_list( __( ', ', 'escapist' ) );
+		if ( $categories_list && escapist_categorized_blog() ) {
+			printf( '<span class="cat">%1$s</span>', $categories_list );
+		}
+	}
+}
+endif;
+
 if ( ! function_exists( 'escapist_entry_meta' ) ) :
 /**
  * Prints HTML with meta information for the author, post-date/time and comments.
