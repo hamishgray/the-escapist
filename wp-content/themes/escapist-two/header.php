@@ -21,7 +21,7 @@
   <?php wp_head(); ?>
 
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,700|Source+Serif+Pro:400,600,700" rel="stylesheet">
-  
+
 </head>
 
 <body <?php body_class(); ?>>
@@ -75,20 +75,24 @@
 			</div><!-- .header-image -->
 		<?php endif; // End header image check. ?>
 
+
 		<div id="search-navigation" class="search-navigation">
-			<div class="search-navigation-inner">
-				<?php if ( has_nav_menu( 'primary' ) ) : ?>
-					<nav id="site-navigation" class="main-navigation" role="navigation">
-						<button class="menu-toggle" aria-controls="primary-menu" aria-expanded="false"><span class="screen-reader-text"><?php _e( 'Primary Menu', 'escapist' ); ?></span></button>
-						<?php wp_nav_menu( array( 'theme_location'  => 'primary', 'menu_id' => 'primary-menu' ) ); ?>
-					</nav><!-- #site-navigation -->
-				<?php endif; ?>
-				<div id="search-header" class="search-header">
-					<button class="search-toggle" aria-controls="search-form" aria-expanded="false"><span class="screen-reader-text"><?php _e( 'Search', 'escapist' ); ?></span></button>
-					<?php get_search_form(); ?>
-				</div><!-- #search-header -->
-			</div><!-- .search-navigation-inner -->
+      <div id="sitenav">
+  			<div id="search-navigation-inner" class="search-navigation-inner">
+  				<?php if ( has_nav_menu( 'primary' ) ) : ?>
+  					<nav id="site-navigation" class="main-navigation" role="navigation">
+  						<button class="menu-toggle" aria-controls="primary-menu" aria-expanded="false"><span class="screen-reader-text"><?php _e( 'Primary Menu', 'escapist' ); ?></span></button>
+  						<?php wp_nav_menu( array( 'theme_location'  => 'primary', 'menu_id' => 'primary-menu' ) ); ?>
+  					</nav><!-- #site-navigation -->
+  				<?php endif; ?>
+  				<div id="search-header" class="search-header">
+  					<button class="search-toggle" aria-controls="search-form" aria-expanded="false"><span class="screen-reader-text"><?php _e( 'Search', 'escapist' ); ?></span></button>
+  					<?php get_search_form(); ?>
+  				</div><!-- #search-header -->
+  			</div><!-- .search-navigation-inner -->
+      </div>
 		</div><!-- #search-navigation -->
+
 	</header><!-- #masthead -->
 
 	<div id="content" class="site-content">

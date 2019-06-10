@@ -11,8 +11,9 @@ html {
 }
 body {
 	margin: 0;
-	background: $white;
+	background: $grey-lightest;
 }
+.single-post .site-content { background-color: $white; }
 article,
 aside,
 details,

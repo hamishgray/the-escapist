@@ -1,0 +1,12 @@
+
+/* Custom Home Page
+* =========================== */
+
+.home-content {
+  padding-top: 60px;
+  & > :not(.display-posts-listing) {
+    text-align: center;
+    max-width: $md;
+    margin: auto;
+  }
+}

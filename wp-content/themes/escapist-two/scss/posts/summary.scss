@@ -8,17 +8,58 @@
 	display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+	padding-top: 30px;
+	margin-bottom: 30px;
 
 	& .listing-item {
-		&:first-of-type { margin-top: 0 !important; } // overwrite default style
 
-		// DEFAULT POST SUMMARY
+		&__box {
+			position: relative;
+			box-shadow: 0 2px 4px 0 rgba($grey-darkest, 0.1);
+			transition: all 0.5s;
+			&:hover { box-shadow: 0 3px 8px 0 rgba($grey-darkest, 0.2); }
+		}
+
+		& img { display: block; }
+		&:first-of-type { margin-top: 0 !important; padding-top: 0 !important; } // overwrite default style
+
+		&__link {
+			position: absolute;
+			top: 0; left: 0; right: 0; bottom: 0;
+			z-index: 10;
+		}
+
+
+		// white content box on two & three column layouts
+		&__content {
+			position: relative;
+			background-color: $white;
+			padding: 0 20px 10px;
+			height: 120px;
+			&-footer {
+				position: absolute;
+				bottom: 10px;
+				left: 20px;
+			}
+			& .entry-title {
+				font-size: 20px;
+			}
+		}
+
+
+		/* DEFAULT POST SUMMARY
+		=========================================*/
 		&--default {
+			margin-bottom: 45px !important;
+			padding-top: 45px !important;
 			& a.post-thumbnail { height: auto; }
 		}
 
-		// LARGE POST SUMMARY
+		/* LARGE POST SUMMARY
+		=========================================*/
 		&--large {
+			margin-bottom: 0px !important;
+			padding-top: 0px !important;
 			position: relative;
 			& .entry-title {
 				font-size: 32px;
@@ -30,26 +71,77 @@
 				z-index: 10;
 			}
 			& .entry-content {
-				position: absolute;
-		    bottom: 0;
-		    right: 0;
-		    width: 70%;
-		    background-color: rgba($white,0.9);
-		    padding: 30px;
+				padding-top: 30px;
+				@include bp($xxl) {
+					position: absolute;
+			    bottom: 0;
+			    right: 0;
+			    width: 50%;
+					min-width: 480px;
+			    background-color: rgba($white,0.9);
+			    padding: 30px;
+				}
 			}
 		}
 
-		// SMALL POST SUMMARY
-		&--small {
+		/* MEDIUM POST SUMMARY / Two column
+		=========================================*/
+		&--medium {
+			margin-bottom: 30px;
+			padding-top: 0 !important;
+			border-top: 0;
 	    display: flex;
 	    flex-direction: column;
 	    flex: 1;
-	    flex-basis: 50%;
-	    width: 50%;
-			padding-bottom: 10px;
+	    flex-basis: 100%;
+	    width: 100%;
+			& .cat-links {
+				display: inline-block;
+		    background: $white;
+		    padding: 6px 12px;
+				position: absolute;
+				bottom: 100%;
+				left: 0;
+			}
+			@include bp($sm) {
+		    flex-basis: 50%;
+		    width: 50%;
+		    &:nth-child(2n+1) { padding-right: 15px; }
+		    &:nth-child(2n+2) { padding-left: 15px; }
+			}
+		}
+
+		/* SMALL POST SUMMARY / Three column
+		=========================================*/
+		&--small {
+			margin-bottom: 30px;
+			padding-top: 0 !important;
 			border-top: 0;
-	    &:nth-child(2n+1) { padding-right: 15px; }
-	    &:nth-child(2n+2) { padding-left: 15px; }
+	    display: flex;
+	    flex-direction: column;
+	    flex-basis: 100%;
+	    width: 100%;
+			& .cat-links {
+				display: inline-block;
+		    background: $white;
+		    padding: 6px 12px;
+				position: absolute;
+				bottom: 100%;
+				left: 0;
+			}
+			@include bp($sm) {
+		    flex-basis: 50%;
+		    width: 50%;
+		    &:nth-child(2n+1) { padding-right: 15px; }
+		    &:nth-child(2n+2) { padding-left: 15px; }
+			}
+			@include bp($xxl) {
+		    flex-basis: 33%;
+		    width: 33%;
+		    &:nth-child(3n+1) { padding-right: 20px; padding-left: 0; }
+		    &:nth-child(3n+2) { padding-right: 10px; padding-left: 10px; }
+		    &:nth-child(3n+3) { padding-right: 0; padding-left: 20px; }
+			}
 		}
 
 	}
@@ -57,46 +149,3 @@
 }
 
 
-// .display-posts-listing {
-//   margin-top: 20px;
-//   margin-bottom: 40px;
-//   display: flex;
-//   flex-direction: row;
-//   flex-wrap: wrap;
-//   & .listing-item {
-//     display: flex;
-//     flex-direction: column;
-//     flex: 1;
-//     flex-basis: 50%;
-//     width: 50%;
-//     padding-bottom: 10px;
-//     &:nth-child(2n+1) { padding-right: 15px; }
-//     &:nth-child(2n+2) { padding-left: 15px; }
-//   }
-// }
-
-
-// .listing-item {
-//   height: 320px;
-//   &:before {}
-//
-//   & .title {
-//     font-weight: 600;
-//     line-height: 1.2;
-//     font-size: 1.25rem;
-//     margin-bottom: 5px;
-//   }
-//   & .date,
-//   & .author {
-//     text-transform: uppercase;
-//     letter-spacing: 0.02rem;
-//     font-size: 0.9rem;
-//     font-weight: 500;
-//   }
-//   & .image {}
-// }
-//
-// .home-content {
-//   margin: 0;
-//   // text-align: center;
-// }

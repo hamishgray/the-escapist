@@ -9,7 +9,7 @@
 
 echo '<article class="listing-item listing-item--large hentry format-standard has-post-thumbnail">';
 echo '<a class="entry-link-overlay" href="' . get_permalink() . '"></a>';
-echo get_the_post_thumbnail( get_the_ID(),"escapist-featured-content-thumbnail");
+echo get_the_post_thumbnail( get_the_ID(),"escapist-single-thumbnail");
 echo '<div class="entry-content">';
   echo '<header>';
     echo escapist_entry_categories();

@@ -1,5 +1,10 @@
 
 
+
+/* GET COOKIES
+ * Function to get cookies to assign logged in user to analytics
+==================================*/
+
 function getCookie(cname) {
   var name = cname + '=';
   var decodedCookie = decodeURIComponent(document.cookie);
@@ -15,6 +20,4 @@ function getCookie(cname) {
   }
   return '';
 }
-
 // console.log( getCookie('seuid') );
-

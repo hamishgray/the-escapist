@@ -13,7 +13,7 @@ get_header(); ?>
 
 	<div class="site-content-inner">
 		<div id="primary" class="content-area">
-			<main id="main" class="site-main" role="main">
+			<main id="main" class="" role="main">
 
 				<?php while ( have_posts() ) : the_post(); ?>
 
@@ -24,7 +24,6 @@ get_header(); ?>
 			</main><!-- #main -->
 		</div><!-- #primary -->
 
-		<?php get_sidebar(); ?>
 	</div><!-- .site-content-inner -->
 
 <?php get_footer(); ?>
