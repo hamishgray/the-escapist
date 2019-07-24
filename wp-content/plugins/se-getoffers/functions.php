@@ -26,7 +26,7 @@ function offers_display($atts,$content=null) {
 		$titleDefault = $getoffers_default_title;
 	}
 	// default sales territory, if unset in admin settings
-	$territory = 'uk';
+	$territory = 'es';
 	if(!$getoffers_country == ''){
 		$territory = $getoffers_country;
 	}
@@ -60,17 +60,17 @@ function offers_display($atts,$content=null) {
 	 * Language */
   $salesCardText = [];
 	if( $territory == 'it' ){
-		$salesCardText['siteUrl'] = 'https://it.secretescapes.com/';
+		$salesCardText['siteUrl'] = 'https://it.secretescapes.com';
 		$salesCardText['percentagePre'] = 'Fino al ';
 		$salesCardText['callToAction'] = 'Prenota ora';
-	}else if( $territory == 'se' ){
-		$salesCardText['siteUrl'] = 'https://www.secretescapes.se/';
+	}else if( $territory == 'sv' ){
+		$salesCardText['siteUrl'] = 'https://www.secretescapes.se';
 		$salesCardText['percentagePre'] = 'Upp till ';
 		$salesCardText['callToAction'] = 'Se Erbjudande';
 	}else{
-		$salesCardText['siteUrl'] = 'https://www.secretescapes.com/';
+		$salesCardText['siteUrl'] = 'https://www.secretescapes.com';
 		$salesCardText['percentagePre'] = 'Up to ';
-		$salesCardText['callToAction'] = 'View offer';
+		$salesCardText['callToAction'] = 'View deal';
 	}
 
 	/* ======================================
@@ -78,7 +78,7 @@ function offers_display($atts,$content=null) {
 	 # -------------------------------------- */
 
   $seapitoken = "90370f0a-cc20-46a7-9934-a1cc4df00502";
-  $saleDataURL = "https://api.secretescapes.com/v3/sales?se-api-token=".$seapitoken."&territory=".$territory;
+  $saleDataURL = "https://api.secretescapes.com/v4/sales?se-api-token=".$seapitoken."&affiliate=".$territory;
   $json = file_get_contents($saleDataURL);
 	$rawsales = json_decode($json, true);
   // check sale is live
@@ -109,15 +109,15 @@ function offers_display($atts,$content=null) {
     $mergedArray = [];
     foreach($keywordFilterArray as $filter){
       $filteredArray = array_filter($sales, function($sales) use($filter){
-        if( stripos( $sales["location"]["displayName"], $filter ) ){
+        if( stripos( $sales["editorial"]["destinationName"], $filter ) ){
           return true;
         }else if( stripos(" ".$sales["location"]["city"]["name"], $filter ) ){
           return true;
         }else if( stripos(" ".$sales["location"]["country"]["name"], $filter ) ){
           return true;
-        }else if( stripos(" ".$sales["reasonToLove"], $filter ) ){
+        }else if( stripos(" ".$sales["editorial"]["reasonToLove"], $filter ) ){
           return true;
-        }else if( stripos(" ".$sales["title"], $filter ) ){
+        }else if( stripos(" ".$sales["editorial"]["title"], $filter ) ){
           return true;
         }
       });
@@ -145,7 +145,7 @@ function offers_display($atts,$content=null) {
 
         for($i = 0; $i <= count($filterByTags["tags"])-1; $i++){
           $tag = $filterByTags["tags"][$i];
-          if( stripos( " ".$tag["key"], $filter ) ){
+          if( stripos( " ".$tag, $filter ) ){
             return true;
           }
         }
@@ -173,12 +173,12 @@ function offers_display($atts,$content=null) {
     $sale = $filteredSales[$i];
 		$currIndex = sizeof($salesData);
 		$salesData[$currIndex++] = array(
-			"urlSlug" => $sale["urlSlug"],
-			"title" => $sale["title"],
-			"description" => $sale["reasonToLove"],
-			"location" => $sale["location"]["displayName"],
-			"image" => $sale["photos"][0]["url"],
-			"discount" => $sale["price"]["discount"]["discountPercent"]
+			"link" => $sale["links"]["sale"],
+			"title" => $sale["editorial"]["title"],
+			"description" => $sale["editorial"]["reasonToLove"],
+			"location" => $sale["editorial"]["destinationName"],
+			"image" => str_replace("_nws.jpg",".jpg",$sale["photos"][0]["url"]),
+			"discount" => $sale["prices"]["discount"]
 		);
   }
 	// print_r($salesData);
@@ -197,15 +197,15 @@ function offers_display($atts,$content=null) {
 		$saleCards.=
 			"<div class='offers-col'>
 				<div class='offer'>
-					 <a class='offer__image-link' href='".$salesCardText['siteUrl'].$item['urlSlug']."/sale'>
+					 <a class='offer__image-link' href='".$salesCardText['siteUrl'].$item['link']."'>
 					 	 <img src=\"".$item['image']."\">
 					 </a>
 			     <div class='offer__content'>
-					   <a class='offer__title' href='".$salesCardText['siteUrl'].$item['urlSlug']."/sale'>".$item['title']."</a></span><br>
 						 <span class='offer__location'>".$item['location']."</span><br>
+					   <a class='offer__title' href='".$salesCardText['siteUrl'].$item['link']."'>".$item['title']."</a></span><br>
 						 <span class='offer__description'>".$item['description']."</span><br>
-				 	   ".$salesCardText['percentagePre']." <span class='offer__price'>-".$item['discount']."%</span><br>
-						 <a class='offer__button' href='".$salesCardText['siteUrl'].$item['urlSlug']."/sale'>".$salesCardText['callToAction']."</a>
+				 	   <span>".$salesCardText['percentagePre']." <span class='offer__discount'>-".$item['discount']."%</span></span><br>
+						 <a class='offer__button' href='".$salesCardText['siteUrl'].$item['link']."'>".$salesCardText['callToAction']."</a>
 					</div>
 				</div>
 			</div>

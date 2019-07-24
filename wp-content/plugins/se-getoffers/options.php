@@ -44,10 +44,10 @@ function se_getoffers_display_settings() {
 
 
 			<h2>Settings:</h2>
-			<p>Here you can change the default settings for the Secret Escapes sale widget on article pages. Define your territory with 2-digit lowercase country code to get local sales.</p>
+			<p>Here you can change the default settings for the Secret Escapes sale widget on article pages. Enter the affiliate ID for your territory below.</p>
 			<table id=\"gsheets-settings\" class=\"form-table\" aria-live=\"assertive\">
 				<tr>
-					<td style='padding:5px 10px 5px 0px;'><strong>Country code:</strong></td>
+					<td style='padding:5px 10px 5px 0px;'><strong>Territory (affiliate ID):</strong></td>
 					<td style='padding:5px 10px 5px 0px;'>
 						<input type=\"text\" name=\"getoffers_country\" value=\"".esc_attr( get_option('getoffers_country') )."\" />
 					</td>
