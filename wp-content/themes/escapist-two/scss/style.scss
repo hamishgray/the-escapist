@@ -12,6 +12,7 @@ Text Domain: escapist
 @import "variables/colours";
 @import "variables/fonts";
 @import "variables/breakpoints";
+@import "variables/scale";
 
 /* Default */
 @import "base/normalize";
@@ -23,20 +24,28 @@ Text Domain: escapist
 @import "typography/lists";
 @import "typography/tables";
 @import "typography/titles";
+@import "typography/text";
+@import "typography/links";
 
 /* Forms */
 @import "forms/forms";
 
 /* Navigation */
-@import "navigation/navigation";
+@import "navigation/header";
+@import "navigation/secondary";
+@import "navigation/posts";
+@import "navigation/categories";
 
 /* Layout */
 @import "layout/alignment";
 @import "layout/clearings";
 @import "layout/home";
+@import "layout/grid";
 
 /* Widgets */
 @import "components/widgets";
+@import "components/buttons";
+@import "components/offers";
 
 /* Site */
 @import "site/header";
@@ -46,13 +55,10 @@ Text Domain: escapist
 
 /* Posts & Pages */
 @import "posts/posts";
-@import "posts/comments";
-@import "posts/media";
 @import "posts/gallery";
 @import "posts/summary";
 
 @import "lib/jetpack";
 
-@import "components/offers";
 
 

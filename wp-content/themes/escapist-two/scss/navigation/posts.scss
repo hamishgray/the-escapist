@@ -1,0 +1,104 @@
+
+/*--------------------------------------------------------------
+## Post Navigation
+--------------------------------------------------------------*/
+
+.post-navigation,
+.posts-navigation {
+	clear: both;
+	font-family: Lato, sans-serif;
+	margin: 0 0 30px;
+	overflow: hidden;
+}
+.posts-navigation {
+	border-top: 1px solid $grey-lightest;
+	padding: 30px 0 0;
+}
+.posts-navigation a {
+	background: $turquoise;
+	color: $white;
+	display: inline-block;
+	font-size: 16px;
+	line-height: 1.875;
+	padding: 5.5px 13px;
+	text-transform: uppercase;
+	width: 100%;
+	border-radius: 100px;
+	text-align: center;
+}
+.post-navigation a {
+	border: 1px solid $grey-lightest;
+	color: $grey-darkest;
+	display: block;
+	padding: 30px;
+}
+.post-navigation a:active,
+.post-navigation a:focus,
+.post-navigation a:hover {
+	background-color: $grey-lightest;
+}
+.post-navigation .nav-previous + .nav-next a {
+	border-top: 0;
+}
+.post-navigation .nav-next,
+.post-navigation .nav-previous {
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	background-size: cover;
+	position: relative;
+}
+.post-navigation .meta-nav {
+	color: $grey;
+	display: block;
+	font-size: 13px;
+	line-height: 1.54;
+	text-transform: uppercase;
+}
+.post-navigation .post-title {
+	font-family: "Playfair Display", serif;
+	font-size: 25px;
+	font-weight: bold;
+	line-height: 1.2;
+}
+.post-navigation a:active .post-title,
+.post-navigation a:focus .post-title,
+.post-navigation a:hover .post-title {
+	color: $orange;
+}
+.posts-navigation a:active,
+.posts-navigation a:focus,
+.posts-navigation a:hover {
+	background: $orange;
+	border-color: $orange;
+	color: $white;
+}
+.posts-navigation .nav-previous {
+	float: left;
+	width: 50%;
+}
+.posts-navigation .nav-next {
+	float: right;
+	text-align: right;
+	width: 50%;
+}
+
+@include bp($xs){
+
+	.post-navigation,
+	.posts-navigation {
+		margin-bottom: 60px;
+	}
+	.posts-navigation  {
+		padding-top: 60px;
+	}
+	.posts-navigation .nav-next a:after,
+	.posts-navigation .nav-previous a:before {
+		content: '\f429';
+		font-size: 16px;
+		line-height: 1.875;
+		width: 20px;
+	}
+	.posts-navigation .nav-previous a:before {
+		content: '\f430';
+	}
+}

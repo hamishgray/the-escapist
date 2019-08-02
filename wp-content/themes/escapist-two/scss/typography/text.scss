@@ -1,0 +1,20 @@
+
+/*=============================
+#  Typography / Text
+-------------------------------*/
+
+p {}
+
+.text {
+	&--center { text-align: center; }
+	&--left   { text-align: left; }
+	&--right  { text-align: right; }
+	&--white 	{ color: $white; }
+	&--grey 	{ color: $grey-lighter; }
+}
+
+.taxonomy-description {
+	font-style: italic;
+	font-size: 18px;
+	line-height: 1.5;
+}

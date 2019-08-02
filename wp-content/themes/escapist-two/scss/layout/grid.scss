@@ -1,0 +1,27 @@
+
+/*=============================
+#  Spacing
+-------------------------------*/
+
+.space {
+  &--xxxxl { padding-top: $s11; }
+  &--xxxl  { padding-top: $s9; }
+  &--xxl   { padding-top: $s7; }
+  &--xl    { padding-top: $s5; }
+  &--lg    { padding-top: $s3; }
+  &--md    { padding-top: $s1; }
+  &--sm    { padding-top: $s-1; }
+  &--xs    { padding-top: $s-3; }
+  &--xxs   { padding-top: $s-5; }
+  @include bp($lg) {
+    &--xxxxl { padding-top: $s12; }
+    &--xxxl  { padding-top: $s10; }
+    &--xxl   { padding-top: $s8; }
+    &--xl    { padding-top: $s6; }
+    &--lg    { padding-top: $s4; }
+    &--md    { padding-top: $s2; }
+    &--sm    { padding-top: $s0; }
+    &--xs    { padding-top: $s-2; }
+    &--xxs   { padding-top: $s-4; }
+  }
+}

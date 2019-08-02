@@ -201,8 +201,8 @@ function offers_display($atts,$content=null) {
 					 	 <img src=\"".$item['image']."\">
 					 </a>
 			     <div class='offer__content'>
-						 <span class='offer__location'>".$item['location']."</span><br>
 					   <a class='offer__title' href='".$salesCardText['siteUrl'].$item['link']."'>".$item['title']."</a></span><br>
+						 <span class='offer__location'>".$item['location']."</span><br>
 						 <span class='offer__description'>".$item['description']."</span><br>
 				 	   <span>".$salesCardText['percentagePre']." <span class='offer__discount'>-".$item['discount']."%</span></span><br>
 						 <a class='offer__button' href='".$salesCardText['siteUrl'].$item['link']."'>".$salesCardText['callToAction']."</a>

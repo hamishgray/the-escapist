@@ -1,0 +1,57 @@
+
+/*=============================
+#  Buttons
+-------------------------------*/
+
+.btn {
+  position: relative;
+  display: inline-block;
+  padding: 1rem 2rem;
+  color: $white;
+  font-weight: 700;
+  font-size: 13px;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: .15em;
+  line-height: 1.33;
+  border-radius: 3px;
+  cursor: pointer;
+	background-color: $orange;
+	transition: all 500ms ease-in-out;
+  &:hover { background-color: darken($orange,10); color: $white; }
+
+  // Sizes
+  &--md { padding: 1rem 2rem; font-size: 13px; }
+  &--lg { padding: 1.35rem 3rem; font-size: 13px; }
+
+  // Solid
+  &--solid {
+  	background-color: $orange;
+    color: $white;
+    &:hover { background-color: darken($orange,10); color: $white; }
+  }
+
+	// Outline
+  &--outline {
+    color: inherit;
+		background-color: transparent;
+    &:hover {
+			background-color: $orange;
+			color: $white;
+		}
+    &:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-width: 1px;
+      border-style: solid;
+      border-radius: inherit;
+			border-color: $orange;
+    }
+  }
+
+}
+

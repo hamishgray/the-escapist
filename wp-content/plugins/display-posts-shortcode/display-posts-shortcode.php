@@ -107,7 +107,7 @@ function be_display_posts_shortcode( $atts ) {
 			'taxonomy'              => false,
 			'time'                  => '',
 			'title'                 => '',
-			'wrapper'               => 'ul',
+			'wrapper'               => 'div',
 			'wrapper_class'         => 'display-posts-listing',
 			'wrapper_id'            => false,
 		),

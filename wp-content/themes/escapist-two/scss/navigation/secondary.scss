@@ -1,0 +1,52 @@
+
+
+/*--------------------------------------------------------------
+## Secondary Menu
+--------------------------------------------------------------*/
+.secondary-navigation {
+	font-size: 13px;
+	line-height: 1.845;
+	padding: 0 15px 0 0;
+	text-align: center;
+}
+.secondary-navigation ul {
+	display: block;
+	margin: 0;
+	padding: 3px 0;
+}
+.secondary-navigation li {
+	display: block;
+	float: left;
+	margin: 0;
+	padding: 0 10px;
+}
+.secondary-navigation li:first-child {
+	padding-left: 0;
+}
+.secondary-navigation li:last-child {
+	padding-right: 0;
+}
+.secondary-navigation li + li {
+	border-left: 1px solid $grey-darker;
+}
+.secondary-navigation a {
+	display: block;
+	position: relative;
+	color: $grey-lighter;
+}
+.secondary-navigation a:active,
+.secondary-navigation a:focus,
+.secondary-navigation a:hover {
+	color: $white;
+}
+.secondary-navigation a:focus {
+	outline-color: $grey-dark;
+}
+
+@include bp($lg) {
+	.secondary-navigation {
+		display: block;
+		float: left;
+	}
+}
+

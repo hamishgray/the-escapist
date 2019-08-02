@@ -4,35 +4,86 @@
 -------------------------------*/
 
 .site-footer {
-	background: #222;
-	padding: 7.5px 0;
+	background-color: $black;
+	padding: 45px 0;
 	position: relative;
+	text-align: center;
+	&__logo {
+		width: 80%;
+		max-width: 260px;
+		margin: auto;
+		& .site-logo-link {
+			display: block;
+			margin: auto;
+			padding: 0;
+			margin-bottom: 20px;
+		}
+	}
 }
-.site-info {
-	color: #ccc;
-	font-size: 13px;
+
+/*--------------------------------------------------------------
+## Footer Navigation
+--------------------------------------------------------------*/
+.footer-navigation {
+	display: block;
+	font-size: 15px;
 	line-height: 1.845;
-	padding: 3px 0;
+	padding: 15px 0;
 	text-align: center;
 }
-.site-info a {
-	color: #ccc;
+.footer-navigation > div {
+	display: block;
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: flex;
+	-webkit-justify-content: center;
+	justify-content: center;
 }
-.site-info a:active,
-.site-info a:focus,
-.site-info a:hover {
+.footer-navigation ul {
+	display: block;
+	margin: 0;
+	padding: 0;
+}
+.footer-navigation li {
+	display: block;
+	margin: 0;
+}
+.footer-navigation a {
+	display: block;
+	padding: 3px 10px;
+	position: relative;
+	color: $grey-lighter;
+	font-weight: 600;
+	font-family: 'Source Sans Pro', sans-serif;
+}
+.footer-navigation a:active,
+.footer-navigation a:focus,
+.footer-navigation a:hover {
 	color: $white;
 }
-.site-info a:focus {
-	outline-color: #555;
+
+@include bp($lg) {
+	.footer-navigation ul {
+		padding: 3px 0;
+	}
+	.footer-navigation li {
+		border-top: 0;
+		float: left;
+		padding: 0;
+	}
+	.footer-navigation li:first-child {
+		padding-left: 0;
+	}
+	.footer-navigation li:last-child {
+		padding-right: 0;
+	}
+	.footer-navigation li + li {
+		border-left: 1px solid rgba($white,0.2);
+	}
+	.footer-navigation a {
+		padding: 0 30px;
+	}
 }
-.site-info .sep {
-	color: #444;
-	font-size: 16px;
-	line-height: 1.5;
-	vertical-align: bottom;
-}
-.site-info .sep:hover {
-	-webkit-transform: rotate(360deg);
-	transform: rotate(360deg);
-}
+

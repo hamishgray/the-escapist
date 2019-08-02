@@ -1,0 +1,37 @@
+
+/*=============================
+#  Navigation - Taxonomy
+-------------------------------*/
+
+/*--------------------------------------------------------------
+## Sub categories on archive pages
+--------------------------------------------------------------*/
+
+.sub-cats {
+	margin-top: 30px;
+	& ul {
+		margin: 0;
+		& li {
+			list-style: none;
+			display: inline-block;
+			padding: 4px 16px;
+			margin-right: 8px;
+			margin-bottom: 8px;
+			background: $white;
+			box-shadow: 0 0 3px rgba($grey-darkest,0.1);
+			border-radius: 100px;
+			font-size: 15px;
+			transition: all 350ms ease-in-out;
+			& a { font-weight: 700; }
+			&:hover {
+				background-color: $turquoise;
+				color: $white;
+				box-shadow: 0 2px 8px rgba($grey-darkest,0.3);
+				& a { color: $white; }
+			}
+		}
+	}
+}
+
+
+

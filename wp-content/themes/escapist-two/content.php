@@ -34,7 +34,7 @@
 	<header class="entry-header">
 		<?php
 			escapist_entry_categories();
-			the_title( sprintf( '<h1 class="entry-title"><a href="%s" rel="bookmark">', esc_url( get_permalink() ) ), '</a></h1>' ); ?>
+			the_title( sprintf( '<h4 class="entry-title"><a href="%s" rel="bookmark">', esc_url( get_permalink() ) ), '</a></h4>' ); ?>
 	</header><!-- .entry-header -->
 
 	<div class="entry-summary">

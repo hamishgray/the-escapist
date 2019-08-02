@@ -3,7 +3,7 @@
 Plugin Name: Slimstat Analytics
 Plugin URI: https://wordpress.org/plugins/wp-slimstat/
 Description: The leading web analytics plugin for WordPress
-Version: 4.8.1
+Version: 4.8.4.1
 Author: Jason Crouse
 Author URI: https://www.wp-slimstat.com/
 Text Domain: wp-slimstat
@@ -15,7 +15,7 @@ if ( !empty( wp_slimstat::$settings ) ) {
 }
 
 class wp_slimstat {
-	public static $version = '4.8.1';
+	public static $version = '4.8.4.1';
 	public static $settings = array();
 
 	public static $wpdb = '';
@@ -72,25 +72,25 @@ class wp_slimstat {
 
 		self::$maxmind_path = self::$upload_dir . '/maxmind.mmdb';
 
-		// Enable the tracker (both server- and client-side)
-		if ( !is_admin() || self::$settings[ 'track_admin_pages' ] == 'on' ) {
+		// Allow add-ons to turn off the tracker based on other conditions
+		$is_tracking_filter = apply_filters( 'slimstat_filter_pre_tracking', strpos( self::get_request_uri(), 'wp-admin/admin-ajax.php' ) === false );
+		$is_tracking_filter_js = apply_filters( 'slimstat_filter_pre_tracking_js', true );
 
-			// Allow add-ons to turn off the tracker based on other conditions
-			$is_tracking_filter = apply_filters( 'slimstat_filter_pre_tracking', strpos( self::get_request_uri(), 'wp-admin/admin-ajax.php' ) === false );
-			$is_tracking_filter_js = apply_filters( 'slimstat_filter_pre_tracking_js', true );
+		// Enable the tracker (both server- and client-side)
+		if ( ( !is_admin() || self::$settings[ 'track_admin_pages' ] == 'on' ) && self::$settings[ 'is_tracking' ] == 'on' && $is_tracking_filter ) {
 
 			// Is server-side tracking active?
-			if ( self::$settings[ 'javascript_mode' ] != 'on' && self::$settings[ 'is_tracking' ] == 'on' && $is_tracking_filter ) {
+			if ( self::$settings[ 'javascript_mode' ] != 'on' ) {
 				add_action( is_admin() ? 'admin_init' : 'wp', array( __CLASS__, 'slimtrack' ), 5 );
 
-				if ( self::$settings[ 'track_users' ] == 'on' ) {
+				if ( self::$settings[ 'ignore_wp_users' ] != 'on' ) {
 					add_action( 'login_init', array( __CLASS__, 'slimtrack' ), 10 );
 				}
 			}
 
 			// Slimstat tracks screen resolutions, outbound links and other client-side information using a client-side tracker
 			add_action( is_admin() ? 'admin_enqueue_scripts' : 'wp_enqueue_scripts' , array( __CLASS__, 'wp_slimstat_enqueue_tracking_script' ), 15 );
-			if ( self::$settings[ 'track_users' ] == 'on' ) {
+			if ( self::$settings[ 'ignore_wp_users' ] != 'on' ) {
 				add_action( 'login_enqueue_scripts', array( __CLASS__, 'wp_slimstat_enqueue_tracking_script' ), 10 );
 			}
 		}
@@ -109,7 +109,7 @@ class wp_slimstat {
 		add_shortcode( 'slimstat', array( __CLASS__, 'slimstat_shortcode' ), 15 );
 
 		// Include our browser detector library
-		include_once( plugin_dir_path( __FILE__ ) . 'browscap/browser.php' );
+		include_once( plugin_dir_path( __FILE__ ) . 'vendor/browscap.php' );
 		add_action( 'init', array( 'slim_browser', 'init' ) );
 
 		// If add-ons are installed, check for updates
@@ -123,7 +123,7 @@ class wp_slimstat {
 
 		// Load the admin library
 		if ( is_user_logged_in() ) {
-			include_once ( plugin_dir_path( __FILE__ ) . 'admin/wp-slimstat-admin.php' );
+			include_once ( plugin_dir_path( __FILE__ ) . 'admin/index.php' );
 			add_action( 'init', array( 'wp_slimstat_admin', 'init' ), 60 );
 		}
 	}
@@ -136,7 +136,7 @@ class wp_slimstat {
 		// If the website is using a caching plugin, the tracking code might still be there, even if the user turned off tracking
 		if ( self::$settings[ 'is_tracking' ] != 'on' ) {
 			self::$stat[ 'id' ] = -204;
-			self::_set_error_array( __( 'Tracker is turned off, but client-side tracking code is still running.', 'wp-slimstat' ), true );
+			self::_set_error_array( __( 'Tracking is turned off, but it looks like the client-side code is still attached to your pages. Do you have a caching tool enabled?', 'wp-slimstat' ) );
 			self::slimstat_save_options();
 			exit( self::_get_id_with_checksum( self::$stat[ 'id' ] ) );
 		}
@@ -147,7 +147,7 @@ class wp_slimstat {
 		// Is this a request to record a new pageview?
 		if ( self::$data_js[ 'op' ] == 'add' || self::$data_js[ 'op' ] == 'update' ) {
 
-			// Track client-side information (screen resolution, plugins, etc)
+			// Track client-side information (screen resolution, server latency, etc)
 			if ( !empty( self::$data_js[ 'bw' ] ) ) {
 				self::$stat[ 'resolution' ] = strip_tags( trim( self::$data_js[ 'bw' ] . 'x' . self::$data_js[ 'bh' ] ) );
 			}
@@ -156,9 +156,6 @@ class wp_slimstat {
 			}
 			if ( !empty( self::$data_js[ 'sh' ] ) ) {
 				self::$stat[ 'screen_height' ] = intval( self::$data_js[ 'sh' ] );
-			}
-			if ( !empty( self::$data_js[ 'pl' ] ) ) {
-				self::$stat[ 'plugins' ] = strip_tags( trim( self::$data_js[ 'pl' ] ) );
 			}
 			if ( !empty( self::$data_js[ 'sl' ] ) && self::$data_js[ 'sl' ] > 0 && self::$data_js[ 'sl' ] < 60000 ) {
 				self::$stat[ 'server_latency' ] = intval( self::$data_js[ 'sl' ] );
@@ -172,7 +169,7 @@ class wp_slimstat {
 			self::slimtrack();
 		}
 		else if ( self::$data_js[ 'op' ] == 'update' ) {
-			// Update an existing pageview with client-based information (resolution, plugins installed, etc)
+			// Update an existing pageview with client-based information (resolution, server latency, etc)
 			self::_set_visit_id( true );
 
 			// ID of the pageview to update
@@ -252,7 +249,7 @@ class wp_slimstat {
 		// If the website is using a caching plugin, the tracking code might still be there, even if the user turned off tracking
 		if ( self::$settings[ 'is_tracking' ] != 'on' ) {
 			self::$stat[ 'id' ] = -204;
-			self::_set_error_array( __( 'Tracker is turned off, but client-side tracking code is still running.', 'wp-slimstat' ), true );
+			self::_set_error_array( __( 'Tracking is turned off, but it looks like the client-side code is still attached to your pages. Do you have a caching tool enabled?', 'wp-slimstat' ) );
 			return $_argument;
 		}
 
@@ -267,14 +264,6 @@ class wp_slimstat {
 		// Third-party tools can decide that this pageview should not be tracked, by setting its datestamp to zero
 		if ( empty( self::$stat ) || empty( self::$stat[ 'dt' ] ) ) {
 			self::$stat[ 'id' ] = -300;
-			self::_set_error_array( __( 'Pageview filtered by third-party code', 'wp-slimstat' ), true );
-			return $_argument;
-		}
-
-		// Honor the Do Not Track HTTP header - https://en.wikipedia.org/wiki/Do_Not_Track
-		if ( self::$settings[ 'honor_dnt_header' ] == 'on' && !empty( $_SERVER[ 'HTTP_DNT' ] ) ) {
-			self::$stat[ 'id' ] = -314;
-			self::_set_error_array( __( 'Browser sent DNT header request', 'wp-slimstat' ), true );
 			return $_argument;
 		}
 
@@ -297,7 +286,6 @@ class wp_slimstat {
 		foreach ( $cookie_names as $a_name => $a_value ) {
 			if ( isset( $_COOKIE[ $a_name ] ) && $_COOKIE[ $a_name ] == $a_value ) {
 				self::$stat[ 'id' ] = -315;
-				self::_set_error_array( __( 'Visitor has opted out of tracking', 'wp-slimstat' ), true );
 				return $_argument;
 			}
 		}
@@ -324,7 +312,6 @@ class wp_slimstat {
 
 			if ( !$cookie_found ) {
 				self::$stat[ 'id' ] = -316;
-				self::_set_error_array( __( 'Visitor has not opted in to be tracked', 'wp-slimstat' ), true );
 				return $_argument;
 			}
 		}
@@ -334,7 +321,7 @@ class wp_slimstat {
 
 		if ( empty( self::$stat[ 'ip' ] ) || self::$stat[ 'ip' ] == '0.0.0.0' ) {
 			self::$stat[ 'id' ] = -202;
-			self::_set_error_array( __( 'Empty or not supported IP address format', 'wp-slimstat' ), false );
+			self::_set_error_array( __( 'Pageview not tracked because the IP address format was invalid.', 'wp-slimstat' ) );
 			return $_argument;
 		}
 
@@ -351,13 +338,13 @@ class wp_slimstat {
 			// Is this a 'seriously malformed' URL?
 			$referer = parse_url( self::$stat[ 'referer' ] );
 			if ( !$referer ) {
-				self::_set_error_array( sprintf( __( 'Malformed referrer URL: %s (IP: %s)', 'wp-slimstat' ), self::$stat[ 'referer' ], self::$stat[ 'ip' ] ), false, 201 );
+				self::_set_error_array( sprintf( __( 'Malformed referrer URL: %s (IP: %s)', 'wp-slimstat' ), self::$stat[ 'referer' ], self::$stat[ 'ip' ] ), 201 );
 				self::$stat[ 'notes' ][] = sprintf( __( 'Malformed referrer URL: %s', 'wp-slimstat' ), self::$stat[ 'referer' ] );
 				unset( self::$stat[ 'referer' ] );
 			}
 
 			if ( !empty( $referer[ 'scheme' ] ) && !in_array( strtolower( $referer[ 'scheme' ] ), array( 'http', 'https', 'android-app' ) ) ) {
-				self::_set_error_array( sprintf( __( 'Attempted XSS Injection: %s (IP: %s)', 'wp-slimstat' ), self::$stat[ 'referer' ], self::$stat[ 'ip' ] ), false, 203 );
+				self::_set_error_array( sprintf( __( 'Attempted XSS Injection: %s (IP: %s)', 'wp-slimstat' ), self::$stat[ 'referer' ], self::$stat[ 'ip' ] ), 203 );
 				self::$stat[ 'notes' ][] = sprintf( __( 'Attempted XSS Injection: %s', 'wp-slimstat' ), self::$stat[ 'referer' ] );
 				unset( self::$stat[ 'referer' ] );
 			}
@@ -379,15 +366,9 @@ class wp_slimstat {
 					}
 
 					// Is this referer blacklisted?
-					if ( !empty( self::$settings[ 'ignore_referers' ] ) ) {
-						$return_error_code = array(
-							-301,
-							sprintf( __( 'Referrer %s is blacklisted', 'wp-slimstat' ), self::$stat[ 'referer' ] ),
-							true
-						);
-						if ( self::_is_blacklisted( self::$stat[ 'referer' ], self::$settings[ 'ignore_referers' ], $return_error_code ) ) {
-							return $_argument;
-						}
+					if ( !empty( self::$settings[ 'ignore_referers' ] ) && self::_is_blacklisted( self::$stat[ 'referer' ], self::$settings[ 'ignore_referers' ] ) ) {
+						self::$stat[ 'id' ] = -301;
+						return $_argument;
 					}
 				}
 			}
@@ -396,15 +377,9 @@ class wp_slimstat {
 		$content_info = self::_get_content_info();
 
 		// Is this content type blacklisted?
-		if ( !empty( self::$settings[ 'ignore_content_types' ] ) ) {
-			$return_error_code = array(
-				-313,
-				sprintf( __( 'Content Type %s is blacklisted', 'wp-slimstat' ), $content_info[ 'content_type' ] ),
-				true
-			);
-			if ( self::_is_blacklisted( $content_info[ 'content_type' ], self::$settings[ 'ignore_content_types' ], $return_error_code ) ) {
-				return $_argument;
-			}
+		if ( !empty( self::$settings[ 'ignore_content_types' ] ) && self::_is_blacklisted( $content_info[ 'content_type' ], self::$settings[ 'ignore_content_types' ] ) ) {
+			self::$stat[ 'id' ] = -313;
+			return $_argument;
 		}
 
 		// Did we receive data from an Ajax request?
@@ -467,11 +442,6 @@ class wp_slimstat {
 			}
 		}
 
-		// Don't store empty values in the database
-		if ( empty( self::$stat[ 'searchterms' ] ) ) {
-			unset( self::$stat[ 'searchterms' ] );
-		}
-
 		// Do not track report pages in the admin
 		if ( ( !empty( self::$stat[ 'resource' ] ) && strpos( self::$stat[ 'resource' ], 'wp-admin/admin-ajax.php' ) !== false ) || ( !empty( $_GET[ 'page' ] ) && strpos( $_GET[ 'page' ], 'slimview' ) !== false ) ) {
 			self::$stat = array();
@@ -479,55 +449,42 @@ class wp_slimstat {
 		}
 
 		// Is this resource blacklisted?
-		if ( !empty( self::$settings[ 'ignore_resources' ] ) ) {
-			$return_error_code = array(
-				-302,
-				sprintf( __( 'Permalink %s is blacklisted', 'wp-slimstat' ), self::$stat[ 'resource' ] ),
-				true
-			);
-			if ( self::_is_blacklisted( self::$stat[ 'resource' ], self::$settings[ 'ignore_resources' ], $return_error_code ) ) {
-				return $_argument;
-			}
+		if ( !empty( self::$settings[ 'ignore_resources' ] ) && self::_is_blacklisted( self::$stat[ 'resource' ], self::$settings[ 'ignore_resources' ] ) ) {
+			self::$stat[ 'id' ] = -302;
+			return $_argument;
 		}
 
 		// Should we ignore this user?
 		if ( !empty( $GLOBALS[ 'current_user' ]->ID ) ) {
 			// Don't track logged-in users, if the corresponding option is enabled
-			if ( self::$settings[ 'track_users' ] == 'no' ) {
+			if ( self::$settings[ 'ignore_wp_users' ] == 'on' ) {
 				self::$stat[ 'id' ] = -303;
-				self::_set_error_array( sprintf( __( 'Logged in user %s not tracked', 'wp-slimstat' ), $GLOBALS[ 'current_user' ]->data->user_login ), true );
 				return $_argument;
 			}
 
 			// Don't track users with given capabilities
 			foreach ( self::string_to_array( self::$settings[ 'ignore_capabilities' ] ) as $a_capability ) {
-				if ( array_key_exists( strtolower( $a_capability ), $GLOBALS[ 'current_user' ]->allcaps ) ) {
+				if ( self::_is_blacklisted( $a_capability, self::$settings[ 'ignore_capabilities' ] ) ) {
 					self::$stat[ 'id' ] = -304;
-					self::_set_error_array( sprintf( __( 'User with capability %s not tracked', 'wp-slimstat' ), $a_capability ), true );
 					return $_argument;
 				}
 			}
 
 			// Is this user blacklisted?
-			if ( !empty( self::$settings[ 'ignore_users' ] ) ) {
-				$return_error_code = array(
-					-305,
-					sprintf( __( 'User %s is blacklisted', 'wp-slimstat' ), $GLOBALS[ 'current_user' ]->data->user_login ),
-					true
-				);
-				if ( self::_is_blacklisted( $GLOBALS[ 'current_user' ]->data->user_login, self::$settings[ 'ignore_users' ], $return_error_code ) ) {
-					return $_argument;
-				}
+			if ( !empty( self::$settings[ 'ignore_users' ] ) && self::_is_blacklisted( $GLOBALS[ 'current_user' ]->data->user_login, self::$settings[ 'ignore_users' ] ) ) {
+				self::$stat[ 'id' ] = -305;
+				return $_argument;
 			}
 
 			self::$stat[ 'username' ] = $GLOBALS[ 'current_user' ]->data->user_login;
+			self::$stat[ 'email' ] = $GLOBALS[ 'current_user' ]->data->user_email;
 			self::$stat[ 'notes' ][] = 'user:' . $GLOBALS[ 'current_user' ]->data->ID;
 			$not_spam = true;
 		}
 		elseif ( isset( $_COOKIE[ 'comment_author_' . COOKIEHASH ] ) ) {
 			// Is this a spammer?
 			$spam_comment = self::$wpdb->get_row( self::$wpdb->prepare( "
-				SELECT comment_author, COUNT(*) comment_count
+				SELECT comment_author, comment_author_email, COUNT(*) comment_count
 				FROM `" . DB_NAME . "`.{$GLOBALS['wpdb']->comments}
 				WHERE comment_author_IP = %s AND comment_approved = 'spam'
 				GROUP BY comment_author
@@ -536,16 +493,22 @@ class wp_slimstat {
 			if ( !empty( $spam_comment[ 'comment_count' ] ) ) {
 				if ( self::$settings[ 'ignore_spammers' ] == 'on' ){
 					self::$stat[ 'id' ] = -306;
-					self::_set_error_array( sprintf( __( 'Spammer %s not tracked', 'wp-slimstat' ), $spam_comment[ 'comment_author' ] ), true );
 					return $_argument;
 				}
-				else{
+				else {
 					self::$stat[ 'notes' ][] = 'spam:yes';
 					self::$stat[ 'username' ] = $spam_comment[ 'comment_author' ];
+					self::$stat[ 'email' ] = $spam_comment[ 'comment_author_email' ];
 				}
 			}
-			else
-				self::$stat[ 'username' ] = $_COOKIE[ 'comment_author_' . COOKIEHASH ];
+			else {
+				if ( !empty( $_COOKIE[ 'comment_author_' . COOKIEHASH ] ) ) {
+					self::$stat[ 'username' ] = sanitize_user( $_COOKIE[ 'comment_author_' . COOKIEHASH ] );
+				}
+				if ( !empty( $_COOKIE[ 'comment_author_email_' . COOKIEHASH ] ) ) {
+					self::$stat[ 'email' ] = sanitize_email( $_COOKIE[ 'comment_author_email_' . COOKIEHASH ] );
+				}
+			}
 		}
 
 		// Should we ignore this IP address?
@@ -565,7 +528,6 @@ class wp_slimstat {
 
 			if ( $long_masked_user_ip === $long_masked_ip_to_ignore || $long_masked_user_other_ip === $long_masked_ip_to_ignore ) {
 				self::$stat[ 'id' ] = -307;
-				self::_set_error_array( sprintf( __( 'IP address %s is blacklisted', 'wp-slimstat' ), self::$stat[ 'ip' ] . ( !empty( self::$stat[ 'other_ip' ] ) ? ' (' . self::$stat[ 'other_ip' ] . ')' : '' ) ), true );
 				return $_argument;
 			}
 		}
@@ -574,7 +536,7 @@ class wp_slimstat {
 		self::$stat[ 'language' ] = self::_get_language();
 
 		// Geolocation 
-		include_once ( plugin_dir_path( __FILE__ ) . 'maxmind.php' );
+		include_once ( plugin_dir_path( __FILE__ ) . 'vendor/maxmind.php' );
 		$geolocation_data = maxmind_geolite2_connector::get_geolocation_info( self::$stat[ 'ip' ] );
 
 		if ( !empty( $geolocation_data[ 'country' ][ 'iso_code' ] ) ) {
@@ -619,7 +581,6 @@ class wp_slimstat {
 		// Is this country blacklisted?
 		if ( !empty( self::$stat[ 'country' ] ) && !empty( self::$settings[ 'ignore_countries' ] ) && stripos( self::$settings[ 'ignore_countries' ], self::$stat[ 'country' ] ) !== false ) {
 			self::$stat['id'] = -308;
-			self::_set_error_array( sprintf( __('Country %s is blacklisted', 'wp-slimstat'), self::$stat[ 'country' ] ), true );
 			return $_argument;
 		}
 
@@ -628,7 +589,6 @@ class wp_slimstat {
 			( isset( $_SERVER[ 'HTTP_X_PURPOSE' ] ) && ( strtolower( $_SERVER[ 'HTTP_X_PURPOSE' ] ) == 'preview' ) ) ) {
 			if ( self::$settings[ 'ignore_prefetch' ] == 'on' ) {
 				self::$stat[ 'id' ] = -309;
-				self::_set_error_array( __( 'Prefetch requests are ignored', 'wp-slimstat' ), true );
 				return $_argument;
 			}
 			else{
@@ -642,34 +602,21 @@ class wp_slimstat {
 		}
 
 		// Are we ignoring bots?
-		if ( ( self::$settings[ 'javascript_mode' ] == 'on' || self::$settings[ 'ignore_bots' ] == 'on' ) && self::$browser[ 'browser_type' ] == 1 ) {
+		if ( self::$settings[ 'ignore_bots' ] == 'on' && self::$browser[ 'browser_type' ] == 1 ) {
 			self::$stat[ 'id' ] = -310;
-			self::_set_error_array( __( 'Bot not tracked', 'wp-slimstat' ), true );
 			return $_argument;
 		}
 
 		// Is this browser blacklisted?
-		if ( !empty( self::$settings[ 'ignore_browsers' ] ) ) {
-			$return_error_code = array(
-				-311,
-				sprintf( __( 'Browser %s is blacklisted', 'wp-slimstat' ), self::$browser[ 'browser' ] ),
-				true
-			);
-			if ( self::_is_blacklisted( array( self::$browser[ 'browser' ], self::$browser[ 'user_agent' ] ), self::$settings[ 'ignore_browsers' ], $return_error_code ) ) {
-				return $_argument;
-			}
+		if ( !empty( self::$settings[ 'ignore_browsers' ] ) && self::_is_blacklisted( array( self::$browser[ 'browser' ], self::$browser[ 'user_agent' ] ), self::$settings[ 'ignore_browsers' ] ) ) {
+			self::$stat[ 'id' ] = -311;
+			return $_argument;
 		}
 
 		// Is this operating system blacklisted?
-		if ( !empty( self::$settings[ 'ignore_platforms' ] ) ) {
-			$return_error_code = array(
-				-312,
-				sprintf( __( 'Operating System %s is blacklisted', 'wp-slimstat' ), self::$browser[ 'platform' ] ),
-				true
-			);
-			if ( self::_is_blacklisted( self::$browser[ 'platform' ], self::$settings[ 'ignore_platforms' ], $return_error_code ) ) {
-				return $_argument;
-			}
+		if ( !empty( self::$settings[ 'ignore_platforms' ] ) && self::_is_blacklisted( self::$browser[ 'platform' ], self::$settings[ 'ignore_platforms' ] ) ) {
+			self::$stat[ 'id' ] = -312;
+			return $_argument;
 		}
 
 		self::$stat = self::$stat + self::$browser;
@@ -690,7 +637,6 @@ class wp_slimstat {
 		// Third-party tools can decide that this pageview should not be tracked, by setting its datestamp to zero
 		if (empty(self::$stat) || empty(self::$stat['dt'])){
 			self::$stat['id'] = -300;
-			self::_set_error_array( __( 'Pageview filtered by third-party code', 'wp-slimstat' ), true );
 			return $_argument;
 		}
 
@@ -698,9 +644,9 @@ class wp_slimstat {
 		if ( !empty( self::$stat[ 'notes' ] ) ) {
 			self::$stat[ 'notes' ] = implode( ';', self::$stat[ 'notes' ] );
 		}
-		else {
-			unset( self::$stat[ 'notes' ] );
-		}
+		
+		// Remove empty values
+		self::$stat = array_filter( self::$stat );
 
 		// Now let's save this information in the database
 		self::$stat[ 'id' ] = self::insert_row( self::$stat, $GLOBALS[ 'wpdb' ]->prefix . 'slim_stats' );
@@ -709,7 +655,7 @@ class wp_slimstat {
 		if ( empty( self::$stat[ 'id' ] ) ) {
 
 			// Attempt to init the environment (plugin just activated on a blog in a MU network?)
-			include_once ( plugin_dir_path( __FILE__ ) . 'admin/wp-slimstat-admin.php' );
+			include_once ( plugin_dir_path( __FILE__ ) . 'admin/index.php' );
 			wp_slimstat_admin::init_environment( true );
 
 			// Now let's try again
@@ -717,7 +663,7 @@ class wp_slimstat {
 
 			if ( empty( self::$stat[ 'id' ] ) ) {
 				self::$stat[ 'id' ] = -200;
-				self::_set_error_array( self::$wpdb->last_error, false );
+				self::_set_error_array( self::$wpdb->last_error );
 				return $_argument;
 			}
 		}
@@ -845,15 +791,15 @@ class wp_slimstat {
 	 * Extracts the accepted language from browser headers
 	 */
 	protected static function _get_language(){
-		if(isset($_SERVER["HTTP_ACCEPT_LANGUAGE"])){
+		if ( isset( $_SERVER[ 'HTTP_ACCEPT_LANGUAGE' ] ) ) {
 
 			// Capture up to the first delimiter (, found in Safari)
-			preg_match("/([^,;]*)/", $_SERVER["HTTP_ACCEPT_LANGUAGE"], $array_languages);
+			preg_match( "/([^,;]*)/", $_SERVER[ 'HTTP_ACCEPT_LANGUAGE' ], $array_languages );
 
 			// Fix some codes, the correct syntax is with minus (-) not underscore (_)
-			return str_replace( "_", "-", strtolower( $array_languages[0] ) );
+			return str_replace( '_', '-', strtolower( $array_languages[ 0 ] ) );
 		}
-		return 'xx';  // Indeterminable language
+		return '';  // Indeterminable language
 	}
 	// end _get_language
 
@@ -935,7 +881,7 @@ class wp_slimstat {
 	 * Returns details about the resource being accessed
 	 */
 	protected static function _get_content_info(){
-		$content_info = array( 'content_type' => 'unknown' );
+		$content_info = array( 'content_type' => '' );
 
 		// Mark 404 pages
 		if ( is_404() ) {
@@ -1106,7 +1052,7 @@ class wp_slimstat {
 		if ( empty( self::$data_js[ 'id' ] ) || empty( self::$data_js[ 'op' ] ) ) {
 			do_action( 'slimstat_track_exit_102' );
 			self::$stat[ 'id' ] = -100;
-			self::_set_error_array( __( 'Invalid payload string. Try clearing your WordPress cache.', 'wp-slimstat' ), false );
+			self::_set_error_array( __( 'Invalid payload string. Try clearing your WordPress cache.', 'wp-slimstat' ) );
 			self::slimstat_save_options();
 			exit( self::_get_id_with_checksum( self::$stat[ 'id' ] ) );
 		}
@@ -1117,7 +1063,7 @@ class wp_slimstat {
 		if ( self::$data_js['id'] === false ) {
 			do_action( 'slimstat_track_exit_103' );
 			self::$stat[ 'id' ] = -101;
-			self::_set_error_array( __( 'Invalid data signature. Try clearing your WordPress cache.', 'wp-slimstat' ), false );
+			self::_set_error_array( __( 'Invalid data signature. Try clearing your WordPress cache.', 'wp-slimstat' ) );
 			self::slimstat_save_options();
 			exit( self::_get_id_with_checksum( self::$stat[ 'id' ] ) );
 		}
@@ -1132,15 +1078,11 @@ class wp_slimstat {
 	}
 	// end _check_data_integrity
 
-	protected static function _set_error_array( $_error_message = '', $_is_notice = false, $_error_code = 0 ) {
+	protected static function _set_error_array( $_error_message = '', $_error_code = 0 ) {
 		$error_code = empty( $_error_code ) ? abs( self::$stat[ 'id' ] ) : $_error_code;
+
 		self::toggle_date_i18n_filters( false );
-		if ( $_is_notice ) {
-			self::$settings[ 'last_tracker_notice' ] = array( $error_code, $_error_message, date_i18n( 'U' ) );
-		}
-		else {
-			self::$settings[ 'last_tracker_error' ] = array( $error_code, $_error_message, date_i18n( 'U' ) );
-		}
+		self::$settings[ 'last_tracker_error' ] = array( $error_code, $_error_message, date_i18n( 'U' ) );
 		self::toggle_date_i18n_filters( true );
 	}
 
@@ -1158,7 +1100,7 @@ class wp_slimstat {
 		return false;
 	}
 
-	protected static function _is_blacklisted( $_needles = array(), $_haystack_string = '', $_return_error_code = array( 0, '', false ) ) {
+	protected static function _is_blacklisted( $_needles = array(), $_haystack_string = '' ) {
 		foreach ( self::string_to_array( $_haystack_string ) as $a_item ) {
 			$pattern = str_replace( array( '\*', '\!' ) , array( '(.*)', '.' ), preg_quote( $a_item, '@' ) );
 
@@ -1168,9 +1110,6 @@ class wp_slimstat {
 
 			foreach ( $_needles as $a_needle ) {
 				if ( preg_match( "@^$pattern$@i", $a_needle ) ) {
-
-					self::$stat[ 'id' ] = $_return_error_code[ 0 ];
-					self::_set_error_array( $_return_error_code[ 1 ], $_return_error_code[ 2 ] );
 					return true;
 				}
 			}
@@ -1270,21 +1209,21 @@ class wp_slimstat {
 		if ( !function_exists( 'gzopen' ) ) {
 			if ( function_exists( 'gzopen64' ) ) {
 				if ( false === ( $zh = gzopen64( $maxmind_tmp, 'rb' ) ) ) {
-					return __( 'There was an error opening the zipped MaxMind Geolite DB.', 'wp-slimstat' );
+					return __( "There was an error opening the zipped MaxMind Geolite DB. Please check your server's file permissions and try again.", 'wp-slimstat' );
 				}
 			}
 			else {
-				return __( 'Function gzopen not defined. Aborting.', 'wp-slimstat' );
+				return __( 'Function <code>gzopen</code> is not defined in your environment. Please ask your server administrator to install the corresponding library.', 'wp-slimstat' );
 			}
 		}
 		else{
 			if ( false === ( $zh = gzopen( $maxmind_tmp, 'rb' ) ) ) {
-				return __( 'There was an error opening the zipped MaxMind Geolite DB.', 'wp-slimstat' );
+				return __( "There was an error opening the zipped MaxMind Geolite DB. Please check your server's file permissions and try again.", 'wp-slimstat' );
 			}
 		}
 
 		if ( false === ( $fh = fopen( self::$maxmind_path, 'wb' ) ) ) {
-			return __( 'There was an error opening the MaxMind Geolite DB.', 'wp-slimstat' );
+			return __( "There was an error opening the MaxMind Geolite DB. Please check your server's file permissions and try again.", 'wp-slimstat' );
 		}
 
 		while ( ( $data = gzread( $zh, 4096 ) ) != false ) {
@@ -1312,26 +1251,26 @@ class wp_slimstat {
 		}
 
 		if ( !$url ) {
-			return new WP_Error('http_no_url', __('Invalid URL Provided.'));
+			return new WP_Error( 'http_no_url', __( 'The provided URL is invalid.', 'wp-slimstat' ) );
 		}
 
 		$url_filename = basename( parse_url( $url, PHP_URL_PATH ) );
 
 		$tmpfname = wp_tempnam( $url_filename );
 		if ( ! $tmpfname ) {
-			return new WP_Error('http_no_file', __('Could not create Temporary file.'));
+			return new WP_Error( 'http_no_file', __( "A temporary file could not be created. Please check your server's file permissions and try again.", 'wp-slimstat' ) );
 		}
 
 		$response = wp_safe_remote_get( $url, array( 'timeout' => 300, 'stream' => true, 'filename' => $tmpfname, 'user-agent'  => 'Slimstat Analytics/' . self::$version . '; ' . home_url() ) );
 
 		if ( is_wp_error( $response ) ) {
-		        unlink( $tmpfname );
-		        return $response;
+			unlink( $tmpfname );
+			return $response;
 		}
 
 		if ( 200 != wp_remote_retrieve_response_code( $response ) ){
-		        unlink( $tmpfname );
-		        return new WP_Error( 'http_404', trim( wp_remote_retrieve_response_message( $response ) ) );
+			unlink( $tmpfname );
+			return new WP_Error( 'http_404', trim( wp_remote_retrieve_response_message( $response ) ) );
 		}
 
 		return $tmpfname;
@@ -1349,7 +1288,7 @@ class wp_slimstat {
 		$s = "<span class='slimstat-item-separator'>$s</span>";
 
 		// Load the localization files (for languages, operating systems, etc)
-		load_plugin_textdomain( 'wp-slimstat', WP_PLUGIN_DIR .'/wp-slimstat/languages', '/wp-slimstat/languages' );
+		load_plugin_textdomain( 'wp-slimstat', false, '/wp-slimstat/languages' );
 
 		// Look for required fields
 		if ( empty( $f ) || empty( $w ) ) {
@@ -1357,13 +1296,12 @@ class wp_slimstat {
 		}
 
 		// Include the Reports Library, but don't initialize the database, since we will do that separately later
-		include_once( dirname(__FILE__) . '/admin/view/wp-slimstat-reports.php' );
+		include_once( plugin_dir_path( __FILE__ ) . 'admin/view/wp-slimstat-reports.php' );
 		wp_slimstat_reports::init();
 
 		// Init the database library with the appropriate filters
 		if ( strpos ( $_content, 'WHERE:' ) !== false ) {
 			$where = html_entity_decode( str_replace( 'WHERE:', '', $_content ), ENT_QUOTES, 'UTF-8' );
-			// wp_slimstat_db::init();
 		}
 		else{
 			wp_slimstat_db::init( html_entity_decode( $_content, ENT_QUOTES, 'UTF-8' ) );
@@ -1377,11 +1315,13 @@ class wp_slimstat {
 
 			case 'widget':
 				if ( empty( wp_slimstat_reports::$reports_info[ $w ] ) ) {
-					return __( 'Undefined report ID', 'wp-slimstat' );
+					return __( 'Invalid Report ID', 'wp-slimstat' );
 				}
 
-				wp_register_style( 'wp-slimstat-frontend', plugins_url( '/admin/css/slimstat.frontend.css', __FILE__ ) );
+				wp_register_style( 'wp-slimstat-frontend', plugins_url( '/admin/assets/css/slimstat.css', __FILE__ ) );
 				wp_enqueue_style( 'wp-slimstat-frontend' );
+
+				wp_slimstat_reports::$reports_info[ $w ][ 'callback_args' ][ 'is_widget' ] = true;
 
 				ob_start();
 				echo wp_slimstat_reports::report_header( $w );
@@ -1435,6 +1375,7 @@ class wp_slimstat {
 
 				// Format results
 				$output = array();
+
 				foreach( $results as $result_idx => $a_result ) {
 					foreach( $w as $a_column ) {
 						$output[ $result_idx ][ $a_column ] = "<span class='col-$a_column'>";
@@ -1445,7 +1386,7 @@ class wp_slimstat {
 								break;
 
 							case 'country':
-								$output[ $result_idx ][ $a_column ] .= __( 'c-' . $a_result[ $a_column ], 'wp-slimstat' );
+								$output[ $result_idx ][ $a_column ] .= slim_i18n::get_string( 'c-' . $a_result[ $a_column ] );
 								break;
 
 							case 'display_name':
@@ -1460,7 +1401,7 @@ class wp_slimstat {
 								break;
 
 							case 'dt':
-								$output[ $result_idx ][ $a_column ] .= date_i18n( self::$settings[ 'date_format' ] . ' ' . self::$settings[ 'time_format' ], $a_result[ 'dt' ] );
+								$output[ $result_idx ][ $a_column ] .= date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $a_result[ 'dt' ] );
 								break;
 
 							case 'hostname':
@@ -1468,11 +1409,11 @@ class wp_slimstat {
 								break;
 
 							case 'language':
-								$output[ $result_idx ][ $a_column ] .= __( 'l-' . $a_result[ $a_column ], 'wp-slimstat' );
+								$output[ $result_idx ][ $a_column ] .= slim_i18n::get_string( 'l-' . $a_result[ $a_column ] );
 								break;
 
 							case 'platform':
-								$output[ $result_idx ][ $a_column ] .= __( $a_result[ $a_column ], 'wp-slimstat' );
+								$output[ $result_idx ][ $a_column ] .= slim_i18n::get_string( $a_result[ $a_column ] );
 								break;
 
 							case 'post_link':
@@ -1513,14 +1454,14 @@ class wp_slimstat {
 		}
 
 		if ( empty( $_request[ 'dimension' ] ) ) {
-			return new WP_Error( 'rest_invalid', esc_html__( 'The dimension parameter is required. Please review your request and try again.', 'wp-slimstat' ), array( 'status' => 400 ) );
+			return new WP_Error( 'rest_invalid', esc_html__( '[REST API] The <code>dimension</code> parameter is required. Please review your request and try again.', 'wp-slimstat' ), array( 'status' => 400 ) );
 		}
 
 		if ( empty( $_request[ 'function' ] ) ) {
-			return new WP_Error( 'rest_invalid', esc_html__( 'The function parameter is required. Please review your request and try again.', 'wp-slimstat' ), array( 'status' => 400 ) );
+			return new WP_Error( 'rest_invalid', esc_html__( '[REST API] The <code>function</code> parameter is required. Please review your request and try again.', 'wp-slimstat' ), array( 'status' => 400 ) );
 		}
 
-		include_once( dirname(__FILE__) . '/admin/view/wp-slimstat-db.php' );
+		include_once( plugin_dir_path( __FILE__ ) . 'admin/view/wp-slimstat-db.php' );
 		wp_slimstat_db::init( $filters );
 
 		$response = array(
@@ -1548,7 +1489,7 @@ class wp_slimstat {
 
 			default:
 				// This should never happen, because of the 'enum' condition for this parameter. But never say never...
-				$response[ 'data' ] = new WP_Error( 'rest_invalid', esc_html__( 'Valid function values are count, count-all, recent, recent-all, top and top-all. Please review your request and try again.', 'wp-slimstat' ), array( 'status' => 400 ) );
+				$response[ 'data' ] = new WP_Error( 'rest_invalid', esc_html__( '[REST API] You sent an invalid request. Accepted function values include: <code>count, count-all, recent, recent-all, top and top-all</code>. Please review your request and try again.', 'wp-slimstat' ), array( 'status' => 400 ) );
 				break;
 		}
 
@@ -1557,7 +1498,7 @@ class wp_slimstat {
 
 	public static function rest_api_authorization( $_request = array() ) {
 		if ( empty( $_request[ 'token' ] ) ) {
-			return new WP_Error( 'rest_invalid', esc_html__( 'Please specify a valid token in order to access this REST API.', 'wp-slimstat' ), array( 'status' => 400 ) );
+			return new WP_Error( 'rest_invalid', esc_html__( '[REST API] Please use a valid token in order to access the REST API endpoint at this URL.', 'wp-slimstat' ), array( 'status' => 400 ) );
 		}
 
 		if ( !in_array( $_request[ 'token' ], self::string_to_array( self::$settings['rest_api_tokens'] ) ) ) {
@@ -1578,14 +1519,14 @@ class wp_slimstat {
 					'type' => 'string'
 				),
 				'function' => array(
-					'description' => __( 'This parameter specifies the type of QUERY for the dimension. Valid values are: count, count-all, recent, recent-all, top and top-all.', 'wp-slimstat' ),
+					'description' => __( 'This parameter specifies the type of QUERY you would like to perform. Accepted funciton values include: count, count-all, recent, recent-all, top and top-all.', 'wp-slimstat' ),
 					'type' => 'string',
 					'enum' => array( 'count', 'count-all', 'recent', 'recent-all', 'top', 'top-all' )
 				),
 				'dimension' => array(
 					'description' => __( 'This parameter indicates what dimension to return: * (all data), ip, resource, browser, operating system, etc. You can only specify one dimension at a time.', 'wp-slimstat' ),
 					'type' => 'string',
-					'enum' => array( '*', 'id', 'ip', 'username', 'country', 'referer', 'resource', 'searchterms', 'browser', 'platform', 'language', 'resolution', 'content_type', 'content_id', 'outbound_resource' )
+					'enum' => array( '*', 'id', 'ip', 'username', 'email', 'country', 'referer', 'resource', 'searchterms', 'browser', 'platform', 'language', 'resolution', 'content_type', 'content_id', 'tz_offset', 'outbound_resource' )
 				),
 				'filters' => array(
 					'description' => __( 'This parameter is used to filter a given dimension (resources, browsers, operating systems, etc) so that it satisfies certain conditions (i.e.: browser contains Chrome). Please make sure to urlencode this value, and to use the usual filter format: browser contains Chrome&&&referer contains slim (encoded: browser%20contains%20Chrome%26%26%26referer%20contains%20slim)', 'wp-slimstat' ),
@@ -1633,52 +1574,89 @@ class wp_slimstat {
 		return array(
 			'version' => self::$version,
 			'secret' => wp_hash( uniqid( time(), true ) ),
-			'show_admin_notice' => 0,
 			'browscap_last_modified' => 0,
 
 			// General
-			'is_tracking' => 'on',
-			'javascript_mode' => 'on',
-			'enable_javascript' => 'on',
-			'track_admin_pages' => 'no',
+			// -----------------------------------------------------------------------
 
+			// General - Tracker
+			'is_tracking' => 'on',
+			'track_admin_pages' => 'no',
+			'javascript_mode' => 'on',
+
+			// General - WordPress Integration
 			'add_dashboard_widgets' => 'on',
-			'use_separate_menu' => 'on',
-			'posts_column_day_interval' => 30,
+			'use_separate_menu' => 'no',
 			'add_posts_column' => 'no',
 			'posts_column_pageviews' => 'on',
 			'hide_addons' => 'no',
 
+			// General - Database
 			'auto_purge' => 0,
 			'auto_purge_delete' => 'on',
 
 			// Tracker
+			// -----------------------------------------------------------------------
+
+			// Tracker - Data Protection
 			'anonymize_ip' => 'no',
-			'honor_dnt_header' => 'on',
 			'set_tracker_cookie' => 'on',
 			'display_opt_out' => 'no',
-			'opt_out_message' => '<p style="display:block;position:fixed;left:0;bottom:0;margin:0;padding:1em 2em;background-color:#eee;width:100%;z-index:99999;">This website stores cookies on your computer. These cookies are used to provide a more personalized experience and to track your whereabouts around our website in compliance with the European General Data Protection Regulation. If you decide to to opt-out of any future tracking, a cookie will be setup in your browser to remember this choice for one year.<br><br><a href="#" onclick="javascript:SlimStat.optout(event, false);">Accept</a> or <a href="#" onclick="javascript:SlimStat.optout(event, true);">Deny</a></p>',
 			'opt_out_cookie_names' => '',
 			'opt_in_cookie_names' => '',
+			'opt_out_message' => '<p style="display:block;position:fixed;left:0;bottom:0;margin:0;padding:1em 2em;background-color:#eee;width:100%;z-index:99999;">This website stores cookies on your computer. These cookies are used to provide a more personalized experience and to track your whereabouts around our website in compliance with the European General Data Protection Regulation. If you decide to to opt-out of any future tracking, a cookie will be setup in your browser to remember this choice for one year.<br><br><a href="#" onclick="javascript:SlimStat.optout(event, false);">Accept</a> or <a href="#" onclick="javascript:SlimStat.optout(event, true);">Deny</a></p>',
 
+			// Tracker - Link Tracking
+			'track_same_domain_referers' => 'no',
 			'do_not_track_outbound_classes_rel_href' => 'noslimstat,ab-item',
 			'extensions_to_track' => 'pdf,doc,xls,zip',
-			'track_same_domain_referers' => 'on',
 
+			// Tracker - Advanced Options
 			'geolocation_country' => 'on',
 			'session_duration' => 1800,
 			'extend_session' => 'no',
 			'enable_cdn' => 'on',
 			'ajax_relative_path' => 'no',
 
+			// Tracker - External Pages
 			'external_domains' => '',
 
-			// Filters
-			'track_users' => 'on',
+			// Reports
+			// -----------------------------------------------------------------------
+
+			// Reports - Functionality
+			'posts_column_day_interval' => 28,
+			'use_current_month_timespan' => 'no',
+			'async_load' => 'no',
+			'rows_to_show' => '20',
+			'limit_results' => '1000',
+			'ip_lookup_service' => 'https://www.infosniper.net/?ip_address=',
+			'comparison_chart' => 'on',
+			'show_display_name' => 'no',
+			'convert_resource_urls_to_titles' => 'on',
+			'convert_ip_addresses' => 'no',
+
+			// Reports - Access Log and World Map
+			'refresh_interval' => '60',
+			'number_results_raw_data' => '50',
+			'max_dots_on_map' => '50',
+
+			// Reports - Miscellaneous
+			'custom_css' => '',
+			'chart_colors' => '',
+			'mozcom_access_id' => '',
+			'mozcom_secret_key' => '',
+			'show_complete_user_agent_tooltip' => 'no',
+			'enable_sov' => 'no',
+
+			// Exclusions
+			// -----------------------------------------------------------------------
+
+			// Exclusions - User Properties
+			'ignore_wp_users' => 'no',
 			'ignore_spammers' => 'on',
 			'ignore_bots' => 'no',
 			'ignore_prefetch' => 'on',
-
 			'ignore_users' => '',
 			'ignore_ip' => '',
 			'ignore_countries' => '',
@@ -1686,55 +1664,45 @@ class wp_slimstat {
 			'ignore_platforms' => '',
 			'ignore_capabilities' => '',
 
+			// Exclusions - Page Properties
 			'ignore_resources' => '',
 			'ignore_referers' => '',
 			'ignore_content_types' => '',
 
-			// Reports
-			'use_european_separators' => 'on',
-			'date_format' => 'm-d-y',
-			'time_format' => 'h:i a',
-			'show_display_name' => 'no',
-			'convert_resource_urls_to_titles' => 'on',
-			'convert_ip_addresses' => 'no',
-
-			'async_load' => 'no',
-			'use_current_month_timespan' => 'no',
-			'expand_details' => 'no',
-			'rows_to_show' => '20',
-			'limit_results' => '1000',
-			'ip_lookup_service' => 'https://www.infosniper.net/?ip_address=',
-			'mozcom_access_id' => '',
-			'mozcom_secret_key' => '',
-
-			'refresh_interval' => '60',
-			'number_results_raw_data' => '50',
-			'max_dots_on_map' => '50',
-
-			'custom_css' => '',
-			'chart_colors' => '',
-			'comparison_chart' => 'on',
-			'show_complete_user_agent_tooltip' => 'no',
-			'enable_sov' => 'no',
-
 			// Access Control
+			// -----------------------------------------------------------------------
+
+			// Access Control - Reports
 			'restrict_authors_view' => 'on',
-			'capability_can_view' => 'activate_plugins',
+			'capability_can_view' => 'manage_options',
 			'can_view' => '',
 
-			'capability_can_customize' => 'activate_plugins',
+			// Access Control - Customizer
+			'capability_can_customize' => 'manage_options',
 			'can_customize' => '',
 
-			'capability_can_admin' => 'activate_plugins',
+			// Access Control - Settings
+			'capability_can_admin' => 'manage_options',
 			'can_admin' => '',
 
+			// Access Control - REST API
 			'rest_api_tokens' => wp_hash( uniqid( time() - 3600, true ) ),
 
 			// Maintenance
+			// -----------------------------------------------------------------------
 			'last_tracker_error' => array( 0, '', 0 ),
 			'show_sql_debug' => 'no',
-			'no_maxmind_warning' => 'no',
-			'no_browscap_warning' => 'no',
+			'db_indexes' => 'on',
+			'enable_maxmind' => 'no',
+			'enable_browscap' => 'no',
+
+			// Notices
+			// -----------------------------------------------------------------------
+			'notice_latest_news' => 'on',
+			'notice_browscap' => 'on',
+			'notice_geolite' => 'on',
+			'notice_caching' => 'on',
+			'notice_translate' => 'on',
 
 			// Network-wide Settings
 			'locked_options' => ''
@@ -1767,12 +1735,6 @@ class wp_slimstat {
 	 * Enqueue a javascript to track users' screen resolution and other browser-based information
 	 */
 	public static function wp_slimstat_enqueue_tracking_script() {
-		// Do not enqueue the script if the corresponding options are turned off
-		$is_tracking_filter_js = apply_filters( 'slimstat_filter_pre_tracking_js', true );
-		if ( ( self::$settings[ 'enable_javascript' ] != 'on' && self::$settings[ 'javascript_mode' ] != 'on' ) || self::$settings[ 'is_tracking' ] != 'on' || !$is_tracking_filter_js ) {
-			return 0;
-		}
-
 		// Pass some information to the tracker
 		$params = array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) );
 
@@ -1865,8 +1827,8 @@ class wp_slimstat {
 		// Copy entries to the archive table, if needed
 		if ( self::$settings[ 'auto_purge_delete' ] != 'no' ) {
 			$is_copy_done = self::$wpdb->query("
-				INSERT INTO {$GLOBALS['wpdb']->prefix}slim_stats_archive (id, ip, other_ip, username, country, location, city, referer, resource, searchterms, plugins, notes, visit_id, server_latency, page_performance, browser, browser_version, browser_type, platform, language, user_agent, resolution, screen_width, screen_height, content_type, category, author, content_id, outbound_resource, dt_out, dt)
-				SELECT id, ip, other_ip, username, country, location, city, referer, resource, searchterms, plugins, notes, visit_id, server_latency, page_performance, browser, browser_version, browser_type, platform, language, user_agent, resolution, screen_width, screen_height, content_type, category, author, content_id, outbound_resource, dt_out, dt
+				INSERT INTO {$GLOBALS['wpdb']->prefix}slim_stats_archive (id, ip, other_ip, username, email, country, location, city, referer, resource, searchterms, notes, visit_id, server_latency, page_performance, browser, browser_version, browser_type, platform, language, fingerprint, user_agent, resolution, screen_width, screen_height, content_type, category, author, content_id, tz_offset, outbound_resource, dt_out, dt)
+				SELECT id, ip, other_ip, username, email, country, location, city, referer, resource, searchterms, notes, visit_id, server_latency, page_performance, browser, browser_version, browser_type, platform, language, fingerprint, user_agent, resolution, screen_width, screen_height, content_type, category, author, content_id, tz_offset, outbound_resource, dt_out, dt
 				FROM {$GLOBALS[ 'wpdb' ]->prefix}slim_stats
 				WHERE dt < $days_ago");
 
@@ -1916,7 +1878,7 @@ class wp_slimstat {
 		$update_checker_objects = array();
 		
 		// This is only included if add-ons are installed
-		include_once( plugin_dir_path( __FILE__ ) . 'admin/update-checker/plugin-update-checker.php' );
+		include_once( plugin_dir_path( __FILE__ ) . 'vendor/update-checker/plugin-update-checker.php' );
 
 		foreach ( self::$update_checker as $a_slug ) {
 			$a_clean_slug = str_replace( array( 'wp_slimstat_', '_' ), array( '', '-' ), $a_slug );
@@ -1964,9 +1926,9 @@ class slimstat_widget extends WP_Widget {
 	 * Sets up the widgets name etc
 	 */
 	public function __construct() {
-		parent::__construct( 'slimstat_widget', 'SlimStat', array( 
+		parent::__construct( 'slimstat_widget', 'Slimstat', array( 
 			'classname' => 'slimstat_widget',
-			'description' => 'Add a SlimStat report to your sidebar',
+			'description' => 'Add a Slimstat report to your sidebar',
 		) );
 	}
 
@@ -1996,7 +1958,7 @@ class slimstat_widget extends WP_Widget {
 	 */
 	public function form( $instance ) {
 		// Let's build the dropdown
-		include_once( dirname(__FILE__) . '/admin/view/wp-slimstat-reports.php' );
+		include_once( plugin_dir_path( __FILE__ ) . 'admin/view/wp-slimstat-reports.php' );
 		wp_slimstat_reports::init();
 		$select_options = '';
 		$slimstat_widget_id = !empty( $instance[ 'slimstat_widget_id' ] ) ? $instance[ 'slimstat_widget_id' ] : '';
@@ -2038,6 +2000,604 @@ class slimstat_widget extends WP_Widget {
 	}
 }
 
+class slim_i18n {
+	public static $dynamic_strings = array();
+
+	public static function init_dynamic_strings() {
+		if ( false === ( self::$dynamic_strings = get_transient( 'slimstat_dynamic_strings' ) ) ) {
+			self::$dynamic_strings = array(
+				'xx' => __( 'Unknown', 'wp-slimstat' ),
+
+				// Countries
+				'c-' => __( 'Unknown', 'wp-slimstat' ),
+				'c-xx' => __( 'Unknown', 'wp-slimstat' ),
+				'c-xy' => __( 'Local IP Address', 'wp-slimstat' ),
+
+				'c-af' => __( 'Afghanistan', 'wp-slimstat' ),
+				'c-ax' => __( 'Aland Islands', 'wp-slimstat' ),
+				'c-al' => __( 'Albania', 'wp-slimstat' ),
+				'c-dz' => __( 'Algeria', 'wp-slimstat' ),
+				'c-ad' => __( 'Andorra', 'wp-slimstat' ),
+				'c-ao' => __( 'Angola', 'wp-slimstat' ),
+				'c-ai' => __( 'Anguilla', 'wp-slimstat' ),
+				'c-ag' => __( 'Antigua and Barbuda', 'wp-slimstat' ),
+				'c-ar' => __( 'Argentina', 'wp-slimstat' ),
+				'c-am' => __( 'Armenia', 'wp-slimstat' ),
+				'c-aw' => __( 'Aruba', 'wp-slimstat' ),
+				'c-au' => __( 'Australia', 'wp-slimstat' ),
+				'c-at' => __( 'Austria', 'wp-slimstat' ),
+				'c-az' => __( 'Azerbaijan', 'wp-slimstat' ),
+				'c-bs' => __( 'Bahamas', 'wp-slimstat' ),
+				'c-bh' => __( 'Bahrain', 'wp-slimstat' ),
+				'c-bd' => __( 'Bangladesh', 'wp-slimstat' ),
+				'c-bb' => __( 'Barbados', 'wp-slimstat' ),
+				'c-by' => __( 'Belarus', 'wp-slimstat' ),
+				'c-be' => __( 'Belgium', 'wp-slimstat' ),
+				'c-bz' => __( 'Belize', 'wp-slimstat' ),
+				'c-bj' => __( 'Benin', 'wp-slimstat' ),
+				'c-bm' => __( 'Bermuda', 'wp-slimstat' ),
+				'c-bt' => __( 'Bhutan', 'wp-slimstat' ),
+				'c-bo' => __( 'Bolivia', 'wp-slimstat' ),
+				'c-ba' => __( 'Bosnia and Herzegovina', 'wp-slimstat' ),
+				'c-bw' => __( 'Botswana', 'wp-slimstat' ),
+				'c-br' => __( 'Brazil', 'wp-slimstat' ),
+				'c-bn' => __( 'Brunei Darussalam', 'wp-slimstat' ),
+				'c-bg' => __( 'Bulgaria', 'wp-slimstat' ),
+				'c-bf' => __( 'Burkina Faso', 'wp-slimstat' ),
+				'c-bi' => __( 'Burundi', 'wp-slimstat' ),
+				'c-kh' => __( 'Cambodia', 'wp-slimstat' ),
+				'c-cm' => __( 'Cameroon', 'wp-slimstat' ),
+				'c-ca' => __( 'Canada', 'wp-slimstat' ),
+				'c-cv' => __( 'Cape Verde', 'wp-slimstat' ),
+				'c-ky' => __( 'Cayman Islands', 'wp-slimstat' ),
+				'c-cf' => __( 'Central African Republic', 'wp-slimstat' ),
+				'c-td' => __( 'Chad', 'wp-slimstat' ),
+				'c-cl' => __( 'Chile', 'wp-slimstat' ),
+				'c-cn' => __( 'China', 'wp-slimstat' ),
+				'c-co' => __( 'Colombia', 'wp-slimstat' ),
+				'c-km' => __( 'Comoros', 'wp-slimstat' ),
+				'c-cg' => __( 'Congo', 'wp-slimstat' ),
+				'c-cd' => __( 'The Democratic Republic of the Congo', 'wp-slimstat' ),
+				'c-cr' => __( 'Costa Rica', 'wp-slimstat' ),
+				'c-ci' => __( 'Côte d\'Ivoire', 'wp-slimstat' ),
+				'c-hr' => __( 'Croatia', 'wp-slimstat' ),
+				'c-cu' => __( 'Cuba', 'wp-slimstat' ),
+				'c-cy' => __( 'Cyprus', 'wp-slimstat' ),
+				'c-cz' => __( 'Czech Republic', 'wp-slimstat' ),
+				'c-dk' => __( 'Denmark', 'wp-slimstat' ),
+				'c-dj' => __( 'Djibouti', 'wp-slimstat' ),
+				'c-dm' => __( 'Dominica', 'wp-slimstat' ),
+				'c-do' => __( 'Dominican Republic', 'wp-slimstat' ),
+				'c-ec' => __( 'Ecuador', 'wp-slimstat' ),
+				'c-eg' => __( 'Egypt', 'wp-slimstat' ),
+				'c-sv' => __( 'El Salvador', 'wp-slimstat' ),
+				'c-gq' => __( 'Equatorial Guinea', 'wp-slimstat' ),
+				'c-er' => __( 'Eritrea', 'wp-slimstat' ),
+				'c-ee' => __( 'Estonia', 'wp-slimstat' ),
+				'c-et' => __( 'Ethiopia', 'wp-slimstat' ),
+				'c-fo' => __( 'Faroe Islands', 'wp-slimstat' ),
+				'c-fk' => __( 'Falkland Islands (Malvinas)', 'wp-slimstat' ),
+				'c-fj' => __( 'Fiji', 'wp-slimstat' ),
+				'c-fi' => __( 'Finland', 'wp-slimstat' ),
+				'c-fr' => __( 'France', 'wp-slimstat' ),
+				'c-gf' => __( 'French Guiana', 'wp-slimstat' ),
+				'c-ga' => __( 'Gabon', 'wp-slimstat' ),
+				'c-gm' => __( 'Gambia', 'wp-slimstat' ),
+				'c-ge' => __( 'Georgia', 'wp-slimstat' ),
+				'c-de' => __( 'Germany', 'wp-slimstat' ),
+				'c-gh' => __( 'Ghana', 'wp-slimstat' ),
+				'c-gr' => __( 'Greece', 'wp-slimstat' ),
+				'c-gl' => __( 'Greenland', 'wp-slimstat' ),
+				'c-gd' => __( 'Grenada', 'wp-slimstat' ),
+				'c-gp' => __( 'Guadeloupe', 'wp-slimstat' ),
+				'c-gt' => __( 'Guatemala', 'wp-slimstat' ),
+				'c-gn' => __( 'Guinea', 'wp-slimstat' ),
+				'c-gw' => __( 'Guinea-Bissau', 'wp-slimstat' ),
+				'c-gy' => __( 'Guyana', 'wp-slimstat' ),
+				'c-ht' => __( 'Haiti', 'wp-slimstat' ),
+				'c-hn' => __( 'Honduras', 'wp-slimstat' ),
+				'c-hk' => __( 'Hong Kong', 'wp-slimstat' ),
+				'c-hu' => __( 'Hungary', 'wp-slimstat' ),
+				'c-is' => __( 'Iceland', 'wp-slimstat' ),
+				'c-in' => __( 'India', 'wp-slimstat' ),
+				'c-id' => __( 'Indonesia', 'wp-slimstat' ),
+				'c-ir' => __( 'Islamic Republic of Iran', 'wp-slimstat' ),
+				'c-iq' => __( 'Iraq', 'wp-slimstat' ),
+				'c-ie' => __( 'Ireland', 'wp-slimstat' ),
+				'c-il' => __( 'Israel', 'wp-slimstat' ),
+				'c-it' => __( 'Italy', 'wp-slimstat' ),
+				'c-jm' => __( 'Jamaica', 'wp-slimstat' ),
+				'c-jp' => __( 'Japan', 'wp-slimstat' ),
+				'c-jo' => __( 'Jordan', 'wp-slimstat' ),
+				'c-kz' => __( 'Kazakhstan', 'wp-slimstat' ),
+				'c-ke' => __( 'Kenya', 'wp-slimstat' ),
+				'c-nr' => __( 'Nauru', 'wp-slimstat' ),
+				'c-kp' => __( 'Democratic People\'s Republic of Korea', 'wp-slimstat' ),
+				'c-kr' => __( 'Republic of Korea', 'wp-slimstat' ),
+				'c-kv' => __( 'Kosovo', 'wp-slimstat' ),
+				'c-kw' => __( 'Kuwait', 'wp-slimstat' ),
+				'c-kg' => __( 'Kyrgyzstan', 'wp-slimstat' ),
+				'c-la' => __( 'Lao People\'s Democratic Republic', 'wp-slimstat' ),
+				'c-lv' => __( 'Latvia', 'wp-slimstat' ),
+				'c-lb' => __( 'Lebanon', 'wp-slimstat' ),
+				'c-ls' => __( 'Lesotho', 'wp-slimstat' ),
+				'c-lr' => __( 'Liberia', 'wp-slimstat' ),
+				'c-ly' => __( 'Libyan Arab Jamahiriya', 'wp-slimstat' ),
+				'c-li' => __( 'Liechtenstein', 'wp-slimstat' ),
+				'c-lt' => __( 'Lithuania', 'wp-slimstat' ),
+				'c-lu' => __( 'Luxembourg', 'wp-slimstat' ),
+				'c-mk' => __( 'The Former Yugoslav Republic of Macedonia', 'wp-slimstat' ),
+				'c-mg' => __( 'Madagascar', 'wp-slimstat' ),
+				'c-mw' => __( 'Malawi', 'wp-slimstat' ),
+				'c-my' => __( 'Malaysia', 'wp-slimstat' ),
+				'c-ml' => __( 'Mali', 'wp-slimstat' ),
+				'c-mt' => __( 'Malta', 'wp-slimstat' ),
+				'c-mq' => __( 'Martinique', 'wp-slimstat' ),
+				'c-mr' => __( 'Mauritania', 'wp-slimstat' ),
+				'c-mu' => __( 'Mauritius', 'wp-slimstat' ),
+				'c-mx' => __( 'Mexico', 'wp-slimstat' ),
+				'c-md' => __( 'Moldova', 'wp-slimstat' ),
+				'c-mn' => __( 'Mongolia', 'wp-slimstat' ),
+				'c-me' => __( 'Montenegro', 'wp-slimstat' ),
+				'c-ms' => __( 'Montserrat', 'wp-slimstat' ),
+				'c-ma' => __( 'Morocco', 'wp-slimstat' ),
+				'c-mz' => __( 'Mozambique', 'wp-slimstat' ),
+				'c-mm' => __( 'Myanmar', 'wp-slimstat' ),
+				'c-na' => __( 'Namibia', 'wp-slimstat' ),
+				'c-np' => __( 'Nepal', 'wp-slimstat' ),
+				'c-nl' => __( 'Netherlands', 'wp-slimstat' ),
+				'c-nc' => __( 'New Caledonia', 'wp-slimstat' ),
+				'c-nz' => __( 'New Zealand', 'wp-slimstat' ),
+				'c-ni' => __( 'Nicaragua', 'wp-slimstat' ),
+				'c-ne' => __( 'Niger', 'wp-slimstat' ),
+				'c-ng' => __( 'Nigeria', 'wp-slimstat' ),
+				'c-no' => __( 'Norway', 'wp-slimstat' ),
+				'c-om' => __( 'Oman', 'wp-slimstat' ),
+				'c-pk' => __( 'Pakistan', 'wp-slimstat' ),
+				'c-pw' => __( 'Palau', 'wp-slimstat' ),
+				'c-ps' => __( 'Occupied Palestinian Territory', 'wp-slimstat' ),
+				'c-pa' => __( 'Panama', 'wp-slimstat' ),
+				'c-pg' => __( 'Papua New Guinea', 'wp-slimstat' ),
+				'c-py' => __( 'Paraguay', 'wp-slimstat' ),
+				'c-pe' => __( 'Peru', 'wp-slimstat' ),
+				'c-ph' => __( 'Philippines', 'wp-slimstat' ),
+				'c-pl' => __( 'Poland', 'wp-slimstat' ),
+				'c-pt' => __( 'Portugal', 'wp-slimstat' ),
+				'c-pr' => __( 'Puerto Rico', 'wp-slimstat' ),
+				'c-qa' => __( 'Qatar', 'wp-slimstat' ),
+				'c-re' => __( 'Réunion', 'wp-slimstat' ),
+				'c-ro' => __( 'Romania', 'wp-slimstat' ),
+				'c-ru' => __( 'Russian Federation', 'wp-slimstat' ),
+				'c-rw' => __( 'Rwanda', 'wp-slimstat' ),
+				'c-kn' => __( 'Saint Kitts and Nevis', 'wp-slimstat' ),
+				'c-lc' => __( 'Saint Lucia', 'wp-slimstat' ),
+				'c-mf' => __( 'Saint Martin', 'wp-slimstat' ),
+				'c-vc' => __( 'Saint Vincent and the Grenadines', 'wp-slimstat' ),
+				'c-ws' => __( 'Samoa', 'wp-slimstat' ),
+				'c-st' => __( 'Sao Tome and Principe', 'wp-slimstat' ),
+				'c-sa' => __( 'Saudi Arabia', 'wp-slimstat' ),
+				'c-sn' => __( 'Senegal', 'wp-slimstat' ),
+				'c-rs' => __( 'Serbia', 'wp-slimstat' ),
+				'c-sl' => __( 'Sierra Leone', 'wp-slimstat' ),
+				'c-sg' => __( 'Singapore', 'wp-slimstat' ),
+				'c-sk' => __( 'Slovakia', 'wp-slimstat' ),
+				'c-si' => __( 'Slovenia', 'wp-slimstat' ),
+				'c-sb' => __( 'Solomon Islands', 'wp-slimstat' ),
+				'c-so' => __( 'Somalia', 'wp-slimstat' ),
+				'c-za' => __( 'South Africa', 'wp-slimstat' ),
+				'c-gs' => __( 'South Georgia and the South Sandwich Islands', 'wp-slimstat' ),
+				'c-es' => __( 'Spain', 'wp-slimstat' ),
+				'c-lk' => __( 'Sri Lanka', 'wp-slimstat' ),
+				'c-sc' => __( 'Seychelles', 'wp-slimstat' ),
+				'c-sd' => __( 'Sudan', 'wp-slimstat' ),
+				'c-ss' => __( 'South Sudan', 'wp-slimstat' ),
+				'c-sr' => __( 'Suriname', 'wp-slimstat' ),
+				'c-sj' => __( 'Svalbard and Jan Mayen', 'wp-slimstat' ),
+				'c-sz' => __( 'Swaziland', 'wp-slimstat' ),
+				'c-se' => __( 'Sweden', 'wp-slimstat' ),
+				'c-ch' => __( 'Switzerland', 'wp-slimstat' ),
+				'c-sy' => __( 'Syrian Arab Republic', 'wp-slimstat' ),
+				'c-tw' => __( 'Taiwan', 'wp-slimstat' ),
+				'c-tj' => __( 'Tajikistan', 'wp-slimstat' ),
+				'c-tz' => __( 'United Republic of Tanzania', 'wp-slimstat' ),
+				'c-th' => __( 'Thailand', 'wp-slimstat' ),
+				'c-tl' => __( 'Timor-Leste', 'wp-slimstat' ),
+				'c-tg' => __( 'Togo', 'wp-slimstat' ),
+				'c-to' => __( 'Tonga', 'wp-slimstat' ),
+				'c-tt' => __( 'Trinidad and Tobago', 'wp-slimstat' ),
+				'c-tn' => __( 'Tunisia', 'wp-slimstat' ),
+				'c-tr' => __( 'Turkey', 'wp-slimstat' ),
+				'c-tm' => __( 'Turkmenistan', 'wp-slimstat' ),
+				'c-tc' => __( 'Turks and Caicos Islands', 'wp-slimstat' ),
+				'c-ug' => __( 'Uganda', 'wp-slimstat' ),
+				'c-ua' => __( 'Ukraine', 'wp-slimstat' ),
+				'c-ae' => __( 'United Arab Emirates', 'wp-slimstat' ),
+				'c-gb' => __( 'United Kingdom', 'wp-slimstat' ),
+				'c-us' => __( 'United States', 'wp-slimstat' ),
+				'c-uy' => __( 'Uruguay', 'wp-slimstat' ),
+				'c-uz' => __( 'Uzbekistan', 'wp-slimstat' ),
+				'c-vu' => __( 'Vanuatu', 'wp-slimstat' ),
+				'c-ve' => __( 'Venezuela', 'wp-slimstat' ),
+				'c-vn' => __( 'Viet Nam', 'wp-slimstat' ),
+				'c-vg' => __( 'British Virgin Islands', 'wp-slimstat' ),
+				'c-vi' => __( 'U.S. Virgin Islands', 'wp-slimstat' ),
+				'c-eh' => __( 'Western Sahara', 'wp-slimstat' ),
+				'c-ye' => __( 'Yemen', 'wp-slimstat' ),
+				'c-zm' => __( 'Zambia', 'wp-slimstat' ),
+				'c-zw' => __( 'Zimbabwe', 'wp-slimstat' ),
+				'c-gg' => __( 'Guernsey', 'wp-slimstat' ),
+				'c-je' => __( 'Jersey', 'wp-slimstat' ),
+				'c-im' => __( 'Isle of Man', 'wp-slimstat' ),
+				'c-mv' => __( 'Maldives', 'wp-slimstat' ),
+				'c-eu' => __( 'Europe', 'wp-slimstat' ),
+
+				// Languages
+				'l-' => __( 'Unknown', 'wp-slimstat' ),
+				'l-empty' => __( 'Unknown', 'wp-slimstat' ),
+				'l-xx' => __( 'Unknown', 'wp-slimstat' ),
+
+				'l-af' => __( 'Afrikaans', 'wp-slimstat' ),
+				'l-af-za' => __( 'Afrikaans (South Africa)', 'wp-slimstat' ),
+				'l-ar' => __( 'Arabic', 'wp-slimstat' ),
+				'l-ar-ae' => __( 'Arabic (U.A.E.)', 'wp-slimstat' ),
+				'l-ar-bh' => __( 'Arabic (Bahrain)', 'wp-slimstat' ),
+				'l-ar-dz' => __( 'Arabic (Algeria)', 'wp-slimstat' ),
+				'l-ar-eg' => __( 'Arabic (Egypt)', 'wp-slimstat' ),
+				'l-ar-iq' => __( 'Arabic (Iraq)', 'wp-slimstat' ),
+				'l-ar-jo' => __( 'Arabic (Jordan)', 'wp-slimstat' ),
+				'l-ar-kw' => __( 'Arabic (Kuwait)', 'wp-slimstat' ),
+				'l-ar-lb' => __( 'Arabic (Lebanon)', 'wp-slimstat' ),
+				'l-ar-ly' => __( 'Arabic (Libya)', 'wp-slimstat' ),
+				'l-ar-ma' => __( 'Arabic (Morocco)', 'wp-slimstat' ),
+				'l-ar-om' => __( 'Arabic (Oman)', 'wp-slimstat' ),
+				'l-ar-qa' => __( 'Arabic (Qatar)', 'wp-slimstat' ),
+				'l-ar-sa' => __( 'Arabic (Saudi Arabia)', 'wp-slimstat' ),
+				'l-ar-sy' => __( 'Arabic (Syria)', 'wp-slimstat' ),
+				'l-ar-tn' => __( 'Arabic (Tunisia)', 'wp-slimstat' ),
+				'l-ar-ye' => __( 'Arabic (Yemen)', 'wp-slimstat' ),
+				'l-az' => __( 'Azeri (Latin)', 'wp-slimstat' ),
+				'l-az-az' => __( 'Azeri (Latin) (Azerbaijan)', 'wp-slimstat' ),
+				'l-be' => __( 'Belarusian', 'wp-slimstat' ),
+				'l-be-by' => __( 'Belarusian (Belarus)', 'wp-slimstat' ),
+				'l-bg' => __( 'Bulgarian', 'wp-slimstat' ),
+				'l-bg-bg' => __( 'Bulgarian (Bulgaria)', 'wp-slimstat' ),
+				'l-bs-ba' => __( 'Bosnian (Bosnia and Herzegovina)', 'wp-slimstat' ),
+				'l-ca' => __( 'Catalan', 'wp-slimstat' ),
+				'l-ca-es' => __( 'Catalan (Spain)', 'wp-slimstat' ),
+				'l-cs' => __( 'Czech', 'wp-slimstat' ),
+				'l-cs-cz' => __( 'Czech (Czech Republic)', 'wp-slimstat' ),
+				'l-cy' => __( 'Welsh', 'wp-slimstat' ),
+				'l-cy-gb' => __( 'Welsh (United Kingdom)', 'wp-slimstat' ),
+				'l-da' => __( 'Danish', 'wp-slimstat' ),
+				'l-da-dk' => __( 'Danish (Denmark)', 'wp-slimstat' ),
+				'l-de' => __( 'German', 'wp-slimstat' ),
+				'l-de-at' => __( 'German (Austria)', 'wp-slimstat' ),
+				'l-de-ch' => __( 'German (Switzerland)', 'wp-slimstat' ),
+				'l-de-de' => __( 'German (Germany)', 'wp-slimstat' ),
+				'l-de-li' => __( 'German (Liechtenstein)', 'wp-slimstat' ),
+				'l-de-lu' => __( 'German (Luxembourg)', 'wp-slimstat' ),
+				'l-dv' => __( 'Divehi', 'wp-slimstat' ),
+				'l-dv-mv' => __( 'Divehi (Maldives)', 'wp-slimstat' ),
+				'l-el' => __( 'Greek', 'wp-slimstat' ),
+				'l-el-gr' => __( 'Greek (Greece)', 'wp-slimstat' ),
+				'l-en' => __( 'English', 'wp-slimstat' ),
+				'l-en-au' => __( 'English (Australia)', 'wp-slimstat' ),
+				'l-en-bz' => __( 'English (Belize)', 'wp-slimstat' ),
+				'l-en-ca' => __( 'English (Canada)', 'wp-slimstat' ),
+				'l-en-cb' => __( 'English (Caribbean)', 'wp-slimstat' ),
+				'l-en-gb' => __( 'English (United Kingdom)', 'wp-slimstat' ),
+				'l-en-ie' => __( 'English (Ireland)', 'wp-slimstat' ),
+				'l-en-jm' => __( 'English (Jamaica)', 'wp-slimstat' ),
+				'l-en-nz' => __( 'English (New Zealand)', 'wp-slimstat' ),
+				'l-en-ph' => __( 'English (Republic of the Philippines)', 'wp-slimstat' ),
+				'l-en-tt' => __( 'English (Trinidad and Tobago)', 'wp-slimstat' ),
+				'l-en-us' => __( 'English (United States)', 'wp-slimstat' ),
+				'l-en-za' => __( 'English (South Africa)', 'wp-slimstat' ),
+				'l-en-zw' => __( 'English (Zimbabwe)', 'wp-slimstat' ),
+				'l-eo' => __( 'Esperanto', 'wp-slimstat' ),
+				'l-es' => __( 'Spanish', 'wp-slimstat' ),
+				'l-es-ar' => __( 'Spanish (Argentina)', 'wp-slimstat' ),
+				'l-es-bo' => __( 'Spanish (Bolivia)', 'wp-slimstat' ),
+				'l-es-cl' => __( 'Spanish (Chile)', 'wp-slimstat' ),
+				'l-es-co' => __( 'Spanish (Colombia)', 'wp-slimstat' ),
+				'l-es-cr' => __( 'Spanish (Costa Rica)', 'wp-slimstat' ),
+				'l-es-do' => __( 'Spanish (Dominican Republic)', 'wp-slimstat' ),
+				'l-es-ec' => __( 'Spanish (Ecuador)', 'wp-slimstat' ),
+				'l-es-es' => __( 'Spanish (Spain)', 'wp-slimstat' ),
+				'l-es-gt' => __( 'Spanish (Guatemala)', 'wp-slimstat' ),
+				'l-es-hn' => __( 'Spanish (Honduras)', 'wp-slimstat' ),
+				'l-es-mx' => __( 'Spanish (Mexico)', 'wp-slimstat' ),
+				'l-es-ni' => __( 'Spanish (Nicaragua)', 'wp-slimstat' ),
+				'l-es-pa' => __( 'Spanish (Panama)', 'wp-slimstat' ),
+				'l-es-pe' => __( 'Spanish (Peru)', 'wp-slimstat' ),
+				'l-es-pr' => __( 'Spanish (Puerto Rico)', 'wp-slimstat' ),
+				'l-es-py' => __( 'Spanish (Paraguay)', 'wp-slimstat' ),
+				'l-es-sv' => __( 'Spanish (El Salvador)', 'wp-slimstat' ),
+				'l-es-uy' => __( 'Spanish (Uruguay)', 'wp-slimstat' ),
+				'l-es-ve' => __( 'Spanish (Venezuela)', 'wp-slimstat' ),
+				'l-et' => __( 'Estonian', 'wp-slimstat' ),
+				'l-et-ee' => __( 'Estonian (Estonia)', 'wp-slimstat' ),
+				'l-eu' => __( 'Basque', 'wp-slimstat' ),
+				'l-eu-es' => __( 'Basque (Spain)', 'wp-slimstat' ),
+				'l-fa' => __( 'Farsi', 'wp-slimstat' ),
+				'l-fa-ir' => __( 'Farsi (Iran)', 'wp-slimstat' ),
+				'l-fi' => __( 'Finnish', 'wp-slimstat' ),
+				'l-fi-fi' => __( 'Finnish (Finland)', 'wp-slimstat' ),
+				'l-fo' => __( 'Faroese', 'wp-slimstat' ),
+				'l-fo-fo' => __( 'Faroese (Faroe Islands)', 'wp-slimstat' ),
+				'l-fr' => __( 'French', 'wp-slimstat' ),
+				'l-fr-be' => __( 'French (Belgium)', 'wp-slimstat' ),
+				'l-fr-ca' => __( 'French (Canada)', 'wp-slimstat' ),
+				'l-fr-ch' => __( 'French (Switzerland)', 'wp-slimstat' ),
+				'l-fr-fr' => __( 'French (France)', 'wp-slimstat' ),
+				'l-fr-lu' => __( 'French (Luxembourg)', 'wp-slimstat' ),
+				'l-fr-mc' => __( 'French (Principality of Monaco)', 'wp-slimstat' ),
+				'l-gl' => __( 'Galician', 'wp-slimstat' ),
+				'l-gl-es' => __( 'Galician (Spain)', 'wp-slimstat' ),
+				'l-gu' => __( 'Gujarati', 'wp-slimstat' ),
+				'l-gu-in' => __( 'Gujarati (India)', 'wp-slimstat' ),
+				'l-he' => __( 'Hebrew', 'wp-slimstat' ),
+				'l-he-il' => __( 'Hebrew (Israel)', 'wp-slimstat' ),
+				'l-hi' => __( 'Hindi', 'wp-slimstat' ),
+				'l-hi-in' => __( 'Hindi (India)', 'wp-slimstat' ),
+				'l-hr' => __( 'Croatian', 'wp-slimstat' ),
+				'l-hr-ba' => __( 'Croatian (Bosnia and Herzegovina)', 'wp-slimstat' ),
+				'l-hr-hr' => __( 'Croatian (Croatia)', 'wp-slimstat' ),
+				'l-hu' => __( 'Hungarian', 'wp-slimstat' ),
+				'l-hu-hu' => __( 'Hungarian (Hungary)', 'wp-slimstat' ),
+				'l-hy' => __( 'Armenian', 'wp-slimstat' ),
+				'l-hy-am' => __( 'Armenian (Armenia)', 'wp-slimstat' ),
+				'l-id' => __( 'Indonesian', 'wp-slimstat' ),
+				'l-id-id' => __( 'Indonesian (Indonesia)', 'wp-slimstat' ),
+				'l-is' => __( 'Icelandic', 'wp-slimstat' ),
+				'l-is-is' => __( 'Icelandic (Iceland)', 'wp-slimstat' ),
+				'l-it' => __( 'Italian', 'wp-slimstat' ),
+				'l-it-ch' => __( 'Italian (Switzerland)', 'wp-slimstat' ),
+				'l-it-it' => __( 'Italian (Italy)', 'wp-slimstat' ),
+				'l-ja' => __( 'Japanese', 'wp-slimstat' ),
+				'l-ja-jp' => __( 'Japanese (Japan)', 'wp-slimstat' ),
+				'l-ka' => __( 'Georgian', 'wp-slimstat' ),
+				'l-ka-ge' => __( 'Georgian (Georgia)', 'wp-slimstat' ),
+				'l-kk' => __( 'Kazakh', 'wp-slimstat' ),
+				'l-kk-kz' => __( 'Kazakh (Kazakhstan)', 'wp-slimstat' ),
+				'l-kn' => __( 'Kannada', 'wp-slimstat' ),
+				'l-kn-in' => __( 'Kannada (India)', 'wp-slimstat' ),
+				'l-ko' => __( 'Korean', 'wp-slimstat' ),
+				'l-ko-kr' => __( 'Korean (Korea)', 'wp-slimstat' ),
+				'l-kok' => __( 'Konkani', 'wp-slimstat' ),
+				'l-kok-in' => __( 'Konkani (India)', 'wp-slimstat' ),
+				'l-ky' => __( 'Kyrgyz', 'wp-slimstat' ),
+				'l-ky-kg' => __( 'Kyrgyz (Kyrgyzstan)', 'wp-slimstat' ),
+				'l-lt' => __( 'Lithuanian', 'wp-slimstat' ),
+				'l-lt-lt' => __( 'Lithuanian (Lithuania)', 'wp-slimstat' ),
+				'l-lv' => __( 'Latvian', 'wp-slimstat' ),
+				'l-lv-lv' => __( 'Latvian (Latvia)', 'wp-slimstat' ),
+				'l-mi' => __( 'Maori', 'wp-slimstat' ),
+				'l-mi-nz' => __( 'Maori (New Zealand)', 'wp-slimstat' ),
+				'l-mk' => __( 'FYRO Macedonian', 'wp-slimstat' ),
+				'l-mk-ml' => __( 'FYRO Macedonian (Former Yugoslav Republic of Macedonia)', 'wp-slimstat' ),
+				'l-mn' => __( 'Mongolian', 'wp-slimstat' ),
+				'l-mn-mn' => __( 'Mongolian (Mongolia)', 'wp-slimstat' ),
+				'l-mr' => __( 'Marathi', 'wp-slimstat' ),
+				'l-mr-in' => __( 'Marathi (India)', 'wp-slimstat' ),
+				'l-ms' => __( 'Malay', 'wp-slimstat' ),
+				'l-ms-bn' => __( 'Malay (Brunei Darussalam)', 'wp-slimstat' ),
+				'l-ms-my' => __( 'Malay (Malaysia)', 'wp-slimstat' ),
+				'l-mt' => __( 'Maltese', 'wp-slimstat' ),
+				'l-mt-mt' => __( 'Maltese (Malta)', 'wp-slimstat' ),
+				'l-nb' => __( 'Norwegian (Bokmål)', 'wp-slimstat' ),
+				'l-nb-no' => __( 'Norwegian (Bokmål) (Norway)', 'wp-slimstat' ),
+				'l-nl' => __( 'Dutch', 'wp-slimstat' ),
+				'l-nl-be' => __( 'Dutch (Belgium)', 'wp-slimstat' ),
+				'l-nl-nl' => __( 'Dutch (Netherlands)', 'wp-slimstat' ),
+				'l-nn-no' => __( 'Norwegian (Nynorsk) (Norway)', 'wp-slimstat' ),
+				'l-ns' => __( 'Northern Sotho', 'wp-slimstat' ),
+				'l-ns-za' => __( 'Northern Sotho (South Africa)', 'wp-slimstat' ),
+				'l-pa' => __( 'Punjabi', 'wp-slimstat' ),
+				'l-pa-in' => __( 'Punjabi (India)', 'wp-slimstat' ),
+				'l-pl' => __( 'Polish', 'wp-slimstat' ),
+				'l-pl-pl' => __( 'Polish (Poland)', 'wp-slimstat' ),
+				'l-ps' => __( 'Pashto', 'wp-slimstat' ),
+				'l-ps-ar' => __( 'Pashto (Afghanistan)', 'wp-slimstat' ),
+				'l-pt' => __( 'Portuguese', 'wp-slimstat' ),
+				'l-pt-br' => __( 'Portuguese (Brazil)', 'wp-slimstat' ),
+				'l-pt-pt' => __( 'Portuguese (Portugal)', 'wp-slimstat' ),
+				'l-qu' => __( 'Quechua', 'wp-slimstat' ),
+				'l-qu-bo' => __( 'Quechua (Bolivia)', 'wp-slimstat' ),
+				'l-qu-ec' => __( 'Quechua (Ecuador)', 'wp-slimstat' ),
+				'l-qu-pe' => __( 'Quechua (Peru)', 'wp-slimstat' ),
+				'l-ro' => __( 'Romanian', 'wp-slimstat' ),
+				'l-ro-ro' => __( 'Romanian (Romania)', 'wp-slimstat' ),
+				'l-ru' => __( 'Russian', 'wp-slimstat' ),
+				'l-ru-ru' => __( 'Russian (Russia)', 'wp-slimstat' ),
+				'l-sa' => __( 'Sanskrit', 'wp-slimstat' ),
+				'l-sa-in' => __( 'Sanskrit (India)', 'wp-slimstat' ),
+				'l-se' => __( 'Sami (Northern)', 'wp-slimstat' ),
+				'l-se-fi' => __( 'Sami (Northern) (Finland)', 'wp-slimstat' ),
+				'l-se-no' => __( 'Sami (Northern) (Norway)', 'wp-slimstat' ),
+				'l-se-se' => __( 'Sami (Northern) (Sweden)', 'wp-slimstat' ),
+				'l-sk' => __( 'Slovak', 'wp-slimstat' ),
+				'l-sk-sk' => __( 'Slovak (Slovakia)', 'wp-slimstat' ),
+				'l-sl' => __( 'Slovenian', 'wp-slimstat' ),
+				'l-sl-si' => __( 'Slovenian (Slovenia)', 'wp-slimstat' ),
+				'l-sq' => __( 'Albanian', 'wp-slimstat' ),
+				'l-sq-al' => __( 'Albanian (Albania)', 'wp-slimstat' ),
+				'l-sr-ba' => __( 'Serbian (Latin) (Bosnia and Herzegovina)', 'wp-slimstat' ),
+				'l-sr-rs' => __( 'Serbian (Serbia and Montenegro)', 'wp-slimstat' ),
+				'l-sr-sp' => __( 'Serbian (Latin) (Serbia and Montenegro)', 'wp-slimstat' ),
+				'l-sv' => __( 'Swedish', 'wp-slimstat' ),
+				'l-sv-fi' => __( 'Swedish (Finland)', 'wp-slimstat' ),
+				'l-sv-se' => __( 'Swedish (Sweden)', 'wp-slimstat' ),
+				'l-sw' => __( 'Swahili', 'wp-slimstat' ),
+				'l-sw-ke' => __( 'Swahili (Kenya)', 'wp-slimstat' ),
+				'l-ta' => __( 'Tamil', 'wp-slimstat' ),
+				'l-ta-in' => __( 'Tamil (India)', 'wp-slimstat' ),
+				'l-te' => __( 'Telugu', 'wp-slimstat' ),
+				'l-te-in' => __( 'Telugu (India)', 'wp-slimstat' ),
+				'l-th' => __( 'Thai', 'wp-slimstat' ),
+				'l-th-th' => __( 'Thai (Thailand)', 'wp-slimstat' ),
+				'l-tl' => __( 'Tagalog', 'wp-slimstat' ),
+				'l-tl-ph' => __( 'Tagalog (Philippines)', 'wp-slimstat' ),
+				'l-tn' => __( 'Tswana', 'wp-slimstat' ),
+				'l-tn-za' => __( 'Tswana (South Africa)', 'wp-slimstat' ),
+				'l-tr' => __( 'Turkish', 'wp-slimstat' ),
+				'l-tr-tr' => __( 'Turkish (Turkey)', 'wp-slimstat' ),
+				'l-tt' => __( 'Tatar', 'wp-slimstat' ),
+				'l-tt-ru' => __( 'Tatar (Russia)', 'wp-slimstat' ),
+				'l-ts' => __( 'Tsonga', 'wp-slimstat' ),
+				'l-uk' => __( 'Ukrainian', 'wp-slimstat' ),
+				'l-uk-ua' => __( 'Ukrainian (Ukraine)', 'wp-slimstat' ),
+				'l-ur' => __( 'Urdu', 'wp-slimstat' ),
+				'l-ur-pk' => __( 'Urdu (Islamic Republic of Pakistan)', 'wp-slimstat' ),
+				'l-uz' => __( 'Uzbek (Latin)', 'wp-slimstat' ),
+				'l-uz-uz' => __( 'Uzbek (Cyrillic) (Uzbekistan)', 'wp-slimstat' ),
+				'l-vi' => __( 'Vietnamese', 'wp-slimstat' ),
+				'l-vi-vn' => __( 'Vietnamese (Viet Nam)', 'wp-slimstat' ),
+				'l-xh' => __( 'Xhosa', 'wp-slimstat' ),
+				'l-xh-za' => __( 'Xhosa (South Africa)', 'wp-slimstat' ),
+				'l-zh' => __( 'Chinese', 'wp-slimstat' ),
+				'l-zh-cn' => __( 'Chinese (S)', 'wp-slimstat' ),
+				'l-zh-hk' => __( 'Chinese (Hong Kong)', 'wp-slimstat' ),
+				'l-zh-mo' => __( 'Chinese (Macau)', 'wp-slimstat' ),
+				'l-zh-sg' => __( 'Chinese (Singapore)', 'wp-slimstat' ),
+				'l-zh-tw' => __( 'Chinese (T)', 'wp-slimstat' ),
+				'l-zu' => __( 'Zulu', 'wp-slimstat' ),
+				'l-zu-za' => __( 'Zulu (South Africa)', 'wp-slimstat' ),
+
+				// Operating Systems
+				'aix' => __( 'IBM AIX', 'wp-slimstat' ),
+				'amiga' => __( 'Amiga', 'wp-slimstat' ),
+				'android' => __( 'Android', 'wp-slimstat' ),
+				'beos' => __( 'BeOS', 'wp-slimstat' ),
+				'blackberry os' => __( 'BlackBerry OS', 'wp-slimstat' ),
+				'centos' => __( 'CentOS', 'wp-slimstat' ),
+				'chromeos' => __( 'ChromeOS', 'wp-slimstat' ),
+				'commodore64' => __( 'Commodore 64', 'wp-slimstat' ),
+				'cygwin' => __( 'Cygwin', 'wp-slimstat' ),
+				'debian' => __( 'Debian', 'wp-slimstat' ),
+				'digital unix' => __( 'Digital Unix', 'wp-slimstat' ),
+				'fedora' => __( 'Fedora', 'wp-slimstat' ),
+				'firefoxos' => __( 'Firefox OS', 'wp-slimstat' ),
+				'freebsd' => __( 'FreeBSD', 'wp-slimstat' ),
+				'gentoo' => __( 'Gentoo', 'wp-slimstat' ),
+				'hp-ux' => __( 'HP-UX', 'wp-slimstat' ),
+				'ios' => __( 'iPhone OS', 'wp-slimstat' ),
+				'iphone os' => __( 'iPhone OS', 'wp-slimstat' ),
+				'iphone osx' => __( 'iPhone OS X', 'wp-slimstat' ),
+				'irix' => __( 'SGI / IRIX', 'wp-slimstat' ),
+				'java' => __( 'Java', 'wp-slimstat' ),
+				'kanotix' => __( 'Kanotix Linux', 'wp-slimstat' ),
+				'knoppix' => __( 'Knoppix Linux', 'wp-slimstat' ),
+				'linux' => __( 'Linux Generic', 'wp-slimstat' ),
+				'mac' => __( 'Mac', 'wp-slimstat' ),
+				'mac68k' => __( 'Mac 68k', 'wp-slimstat' ),
+				'macos' => __( 'Mac OS X', 'wp-slimstat' ),
+				'macosx' => __( 'Mac OS X', 'wp-slimstat' ),
+				'macppc' => __( 'Mac PowerPC', 'wp-slimstat' ),
+				'mandrake' => __( 'Mandrake Linux', 'wp-slimstat' ),
+				'mandriva' => __( 'MS-DOS', 'wp-slimstat' ),
+				'mepis' => __( 'MEPIS Linux', 'wp-slimstat' ),
+				'ms-dos' => __( 'MS-DOS', 'wp-slimstat' ),
+				'netbsd' => __( 'NetBSD', 'wp-slimstat' ),
+				'nintendo' => __( 'Nintendo', 'wp-slimstat' ),
+				'openbsd' => __( 'OpenBSD', 'wp-slimstat' ),
+				'openvms' => __( 'OpenVMS', 'wp-slimstat' ),
+				'os/2' => __( 'IBM OS/2', 'wp-slimstat' ),
+				'palm' => __( 'Palm OS', 'wp-slimstat' ),
+				'palmos' => __( 'Palm OS', 'wp-slimstat' ),
+				'pclinuxos' => __( 'PCLinux OS', 'wp-slimstat' ),
+				'playstation' => __( 'Playstation', 'wp-slimstat' ),
+				'powertv' => __( 'PowerTV', 'wp-slimstat' ),
+				'redhat' => __( 'RedHat Linux', 'wp-slimstat' ),
+				'rim os' => __( 'Blackberry', 'wp-slimstat' ),
+				'risc os' => __( 'Risc OS', 'wp-slimstat' ),
+				'slackware' => __( 'Slackware Linux', 'wp-slimstat' ),
+				'solaris' => __( 'Solaris', 'wp-slimstat' ),
+				'sunos' => __( 'Sun OS', 'wp-slimstat' ),
+				'suse' => __( 'SuSE Linux', 'wp-slimstat' ),
+				'symbianos' => __( 'Symbian OS', 'wp-slimstat' ),
+				'ubuntu' => __( 'Java', 'wp-slimstat' ),
+				'unix' => __( 'Unix', 'wp-slimstat' ),
+				'unknown' => __( 'Unknown', 'wp-slimstat' ),
+				'xandros' => __( 'Xandros Linux', 'wp-slimstat' ),
+				'wap' => __( 'WAP', 'wp-slimstat' ),
+				'webos' => __( 'WebOS', 'wp-slimstat' ),
+				'win10' => __( 'Windows 10', 'wp-slimstat' ),
+				'win16' => __( 'Windows 16-bit', 'wp-slimstat' ),
+				'win2000' => __( 'Windows 2000', 'wp-slimstat' ),
+				'win2003' => __( 'Windows 2003', 'wp-slimstat' ),
+				'win31' => __( 'Windows 3.1', 'wp-slimstat' ),
+				'win32' => __( 'Windows 32-bit', 'wp-slimstat' ),
+				'win7' => __( 'Windows 7', 'wp-slimstat' ),
+				'win7' => __( 'Windows 7', 'wp-slimstat' ),
+				'win8' => __( 'Windows 8', 'wp-slimstat' ),
+				'win8.1' => __( 'Windows 8.1', 'wp-slimstat' ),
+				'win95' => __( 'Windows 95', 'wp-slimstat' ),
+				'win98' => __( 'Windows 98', 'wp-slimstat' ),
+				'wince' => __( 'Windows CE', 'wp-slimstat' ),
+				'winme' => __( 'Windows ME', 'wp-slimstat' ),
+				'winnt' => __( 'Windows NT', 'wp-slimstat' ),
+				'winphone7' => __( 'Windows Phone', 'wp-slimstat' ),
+				'winphone7.5' => __( 'Windows Phone', 'wp-slimstat' ),
+				'winphone8' => __( 'Windows Phone', 'wp-slimstat' ),
+				'winphone8.1' => __( 'Windows RT / Runtime', 'wp-slimstat' ),
+				'winrt' => __( 'Windows Phone', 'wp-slimstat' ),
+				'winvista' => __( 'Windows Vista', 'wp-slimstat' ),
+				'winxp' => __( 'Windows XP', 'wp-slimstat' ),
+				'wyderos' => __( 'WyderOS', 'wp-slimstat' ),
+				'zaurus' => __( 'Zaurus WAP', 'wp-slimstat' ),
+
+				// Operating System Families
+				'p-unk' => __( 'Unknown', 'wp-slimstat' ),
+				'p-' => __( 'Unknown', 'wp-slimstat' ),
+
+				'p-and' => __( 'Android', 'wp-slimstat' ),
+				'p-bla' => __( 'BlackBerry', 'wp-slimstat' ),
+				'p-chr' => __( 'Chrome OS', 'wp-slimstat' ),
+				'p-fir' => __( 'Fire OS', 'wp-slimstat' ),
+				'p-fre' => __( 'Linux FreeBSD', 'wp-slimstat' ),
+				'p-ios' => __( 'Apple iOS', 'wp-slimstat' ),
+				'p-jav' => __( 'Java-based OS', 'wp-slimstat' ),
+				'p-lin' => __( 'Linux', 'wp-slimstat' ),
+				'p-mac' => __( 'Apple', 'wp-slimstat' ),
+				'p-rim' => __( 'Blackberry', 'wp-slimstat' ),
+				'p-sym' => __( 'Symbian OS', 'wp-slimstat' ),
+				'p-ubu' => __( 'Linux', 'wp-slimstat' ),
+				'p-win' => __( 'Microsoft', 'wp-slimstat' )
+			);
+
+			// set_transient( 'slimstat_dynamic_strings', self::$dynamic_strings, 86400 );
+		}
+	}
+
+	public static function get_country_codes() {
+		if ( empty( self::$dynamic_strings ) ) {
+			self::init_dynamic_strings();
+		}
+
+		$country_codes = array();
+		foreach ( array_keys( self::$dynamic_strings ) as $a_code ) {
+			if ( strpos( $a_code, 'c-', 0 ) !== false && strlen( $a_code ) > 2 && $a_code != 'c-xx' && $a_code != 'c-xy' ) {
+				$country_codes[ strtolower( str_replace( 'c-', '', $a_code ) ) ] = self::$dynamic_strings[ $a_code ];
+			}
+		}
+
+		return $country_codes;
+	}
+
+	public static function get_string( $_code = '' ) {
+		if ( empty( self::$dynamic_strings ) ) {
+			self::init_dynamic_strings();
+		}
+
+		if ( !isset( self::$dynamic_strings[ $_code ] ) ) {
+			return $_code;
+		}
+
+		return self::$dynamic_strings[ $_code ];
+	}
+}
+
 // Ok, let's go, Sparky!
 if ( function_exists( 'add_action' ) ) {
 	// Since we use sendBeacon, this function sends raw POST data, which does not populate the $_POST variable automatically
@@ -2063,7 +2623,7 @@ if ( function_exists( 'add_action' ) ) {
 
 	// From the codex: You can't call register_activation_hook() inside a function hooked to the 'plugins_loaded' or 'init' hooks (or any other hook). These hooks are called before the plugin is loaded or activated.
 	if ( is_admin() ) {
-		include_once( WP_PLUGIN_DIR . '/wp-slimstat/admin/wp-slimstat-admin.php' );
+		include_once( plugin_dir_path( __FILE__ ) . 'admin/index.php' );
 		register_activation_hook( __FILE__, array( 'wp_slimstat_admin', 'init_environment' ) );
 		register_deactivation_hook( __FILE__, array( 'wp_slimstat_admin', 'deactivate' ) );
 	}

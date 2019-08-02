@@ -4,6 +4,7 @@
 -------------------------------*/
 
 .core {
+	display: none;
 	background-color: $black;
 	border-bottom: 1px solid rgba($white,0.2);
 	overflow-x: scroll;
@@ -11,7 +12,6 @@
 }
 .core__inner {
 	width: 100%;
-	min-width: 840px;
 	margin: auto;
 	display: flex;
 	flex-direction: row;
@@ -33,7 +33,6 @@
 .core__nav {
 	display: flex;
   flex: 1 0 auto;
-	padding-left: 10px;
 }
 .core__nav-item {}
 .core__nav-link {
@@ -59,6 +58,11 @@
 	padding: 8px 8px;
 }
 .core__subnav-link:hover, .core__subnav-link--orange { color: $orange; }
+
+@include bp($sm){
+	.core { display: block; }
+	.core__inner { max-width: $sm; }
+}
 
 @include bp($lg){
 	.core__inner { max-width: 840px; }

@@ -15,6 +15,18 @@
 		<?php endif; ?>
 
 		<?php the_title( '<h1 class="entry-title">', '</h1>' ); ?>
+
+		<div class="entry-details">
+			<ul class="list list--lined-horizontal">
+				<?php
+					escapist_post_author();
+					escapist_post_date();
+					escapist_post_categories();
+					escapist_post_tags();
+				?>
+			</ul>
+		</div>
+
 	</header><!-- .entry-header -->
 
 	<div class="entry-content">

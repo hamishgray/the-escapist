@@ -8,7 +8,7 @@ input[type="button"],
 input[type="reset"],
 input[type="submit"] {
 	background: $orange;
-	border: 2px solid $orange;
+	border: 0;
 	color: $white;
 	font-family: Lato, sans-serif;
 	font-weight: bold;
@@ -101,7 +101,6 @@ textarea:focus {
 }
 .search-form .search-submit {
 	background: transparent;
-	border: 1px solid #ddd;
 	border-radius: 50%;
 	color: transparent;
 	display: block;

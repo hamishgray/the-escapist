@@ -12,13 +12,6 @@ get_header(); ?>
 		<div id="primary" class="content-area">
 			<main id="main" class="site-main site-main--no-sidebar" role="main">
 
-				<div class="entry-details">
-					<?php
-						escapist_post_categories();
-						escapist_entry_meta(); 
-					?>
-				</div>
-
 				<?php while ( have_posts() ) : the_post(); ?>
 
 					<?php get_template_part( 'content', 'post-feature' ); ?>

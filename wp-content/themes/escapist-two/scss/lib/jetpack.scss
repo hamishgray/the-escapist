@@ -441,49 +441,6 @@ div#jp-relatedposts a:focus {
 
 
 /*--------------------------------------------------------------
-## Site Logo
---------------------------------------------------------------*/
-.site-logo-link {
-	align-items: center;
-	display: block;
-	display: -webkit-box;
-	display: -moz-box;
-	display: -ms-flexbox;
-	display: -webkit-flex;
-	display: flex;
-	-webkit-justify-content: center;
-	justify-content: center;
-	margin: 0 auto;
-	max-height: 90px;
-	max-width: 100%;
-	padding: 0 60px;
-}
-.site-logo-link:active,
-.site-logo-link:focus,
-.site-logo-link:hover {
-	// opacity: 0.7;
-}
-.site-logo-link:focus {
-	outline: none;
-}
-.site-logo-link img {
-	display: block;
-	height: auto;
-	max-height: 90px;
-	max-width: 100%;
-}
-
-@include bp($xs){
-	/* Logo */
-	.site-logo-link {
-		max-width: 580px;
-		padding: 0 90px;
-	}
-}
-
-
-
-/*--------------------------------------------------------------
 ## Widgets
 --------------------------------------------------------------*/
 /* Contact Info */

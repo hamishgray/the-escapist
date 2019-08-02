@@ -1,18 +1,14 @@
 <?php
-// Avoid direct access to this piece of code
+// Avoid direct access
 if ( !function_exists( 'add_action' ) ) {
 	exit(0);
-}
-
-if ( wp_slimstat::$settings[ 'async_load' ] == 'on' && ( !defined( 'DOING_AJAX' ) || !DOING_AJAX ) ) {
-	return '';
 }
 
 $is_dashboard = empty( $_REQUEST[ 'page' ] ) || $_REQUEST[ 'page' ] != 'slimview1';
 
 // Available icons
 $supported_browser_icons = array( 'Android', 'Anonymouse', 'Baiduspider', 'BlackBerry', 'BingBot', 'CFNetwork', 'Chrome', 'Chromium', 'Default Browser', 'Edge', 'Exabot/BiggerBetter', 'FacebookExternalHit', 'FeedBurner', 'Feedfetcher-Google', 'Firefox', 'Internet Archive', 'Googlebot', 'Google Bot', 'Google Feedfetcher', 'Google Web Preview', 'IE', 'IEMobile', 'iPad', 'iPhone', 'iPod Touch', 'Maxthon', 'Mediapartners-Google', 'Microsoft-WebDAV', 'msnbot', 'Mozilla', 'NewsGatorOnline', 'Netscape', 'Nokia', 'Opera', 'Opera Mini', 'Opera Mobi', 'Pingdom', 'Python', 'PycURL', 'Safari', 'W3C_Validator', 'WordPress', 'Yahoo! Slurp', 'YandexBot' );
-$supported_os_icons = array( 'android',' blackberry os', 'cellos', 'chromeos', 'ios', 'iphone osx', 'java', 'linux', 'macos', 'macosx', 'rim os', 'symbianos', 'win7', 'win8', 'win8.1', 'win10', 'winphone7', 'winphone7.5', 'winphone8', 'winphone8.1', 'winvista', 'winxp', 'unknown' );
+$supported_os_icons = array( 'android',' blackberry os', 'cellos', 'chromeos', 'ios', 'iphone osx', 'java', 'linux', 'macos', 'macosx', 'rim os', 'symbianos', 'win7', 'win8', 'win8.1', 'win10', 'winphone7', 'winphone7.5', 'winphone8', 'winphone8.1', 'winvista', 'winxp' );
 $supported_browser_types = array( __( 'Human', 'wp-slimstat' ), __( 'Bot/Crawler', 'wp-slimstat' ), __( 'Mobile Device', 'wp-slimstat' ), __( 'Syndication Reader', 'wp-slimstat' ) );
 
 $plugin_url = plugins_url( '', dirname( __FILE__ ) );
@@ -32,12 +28,17 @@ $count_page_results = count( $results );
 // Echo the debug message
 echo wp_slimstat_db::$debug_message;
 
+if ( $count_page_results == 0 ) {
+	echo '<p class="nodata">' . __( 'No data to display', 'wp-slimstat' ) . '</p>';
+	return 0;
+}
+
 // Return the results if we are not echoing them (export, email, etc)
 if ( isset( $_args[ 'echo' ] ) && $_args[ 'echo' ] === false ) {
 
 	// Process the data before returning it
 	if ( wp_slimstat::$settings[ 'convert_ip_addresses' ] == 'on' ) {
-		for ( $i=0; $i < $count_page_results; $i++ ) {
+		for ( $i = 0; $i < $count_page_results; $i++ ) {
 			// When the IP conversion feature is enabled, data is stored in the "notes" field, so that it doesn't need to be calculated over and over again
 			$gethostbyaddr = '';
 			if ( strpos( $results[ $i ][ 'notes' ], 'hostbyaddr:' ) === false ) {
@@ -67,13 +68,8 @@ if ( isset( $_args[ 'echo' ] ) && $_args[ 'echo' ] === false ) {
 	return $results;
 }
 
-if ( $count_page_results == 0 ) {
-	echo '<p class="nodata">' . __( 'No data to display', 'wp-slimstat' ) . '</p>';
-	return 0;
-}
-
 // Pagination
-echo wp_slimstat_reports::report_pagination( $count_page_results, $count_all_results, true, wp_slimstat::$settings[ 'number_results_raw_data' ] );
+echo wp_slimstat_reports::report_pagination( $count_page_results, $count_all_results, !$is_dashboard, wp_slimstat::$settings[ 'number_results_raw_data' ] );
 
 // Show delete button? (only those who can access the settings can see it)
 $current_user_can_delete = ( current_user_can( wp_slimstat::$settings[ 'capability_can_admin' ] ) && !is_network_admin() );
@@ -109,7 +105,7 @@ for ( $i=0; $i < $count_page_results; $i++ ) {
 		}
 	}
 
-	$date_time = "<i class='spaced slimstat-font-clock slimstat-tooltip-trigger' title='".__( 'Date and Time', 'wp-slimstat' )."'></i> " . date_i18n( wp_slimstat::$settings[ 'date_format' ] . ' ' . wp_slimstat::$settings[ 'time_format' ], $results[ $i ][ 'dt' ], true );
+	$date_time = "<i class='spaced slimstat-font-clock slimstat-tooltip-trigger' title='".__( 'Date and Time', 'wp-slimstat' )."'></i> " . date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $results[ $i ][ 'dt' ], true );
 
 	// Print visit header?
 	if ( $i == 0 || $results[ $i - 1 ][ 'visit_id' ] != $results[ $i ][ 'visit_id' ] || $results[ $i - 1 ][ 'ip' ] != $results[ $i ][ 'ip' ] || $results[ $i - 1 ][ 'browser' ] != $results[ $i ][ 'browser' ] || $results[ $i - 1 ][ 'platform' ] != $results[ $i ][ 'platform' ] || $results[ $i - 1 ][ 'username' ] != $results[ $i ][ 'username' ] ) {
@@ -118,39 +114,48 @@ for ( $i=0; $i < $count_page_results; $i++ ) {
 		$highlight_row = !empty( $results[ $i ][ 'searchterms' ] ) ? ' is-search-engine' : ( ( $results[ $i ][ 'browser_type' ] != 1 ) ? ' is-direct' : '' );
 
 		// Country
-		$country_filtered = '';
 		if ( !empty( $results[ $i ][ 'country' ] ) && $results[ $i ][ 'country' ] != 'xx' ) {
-			$country_filtered = "<a class='slimstat-filter-link inline-icon' href='" . wp_slimstat_reports::fs_url( 'country equals ' . $results[ $i ][ 'country' ] ) . "'><img class='slimstat-tooltip-trigger' src='$plugin_url/images/flags/{$results[$i]['country']}.png' width='16' height='16' title='" . __( 'c-' . $results[ $i ][ 'country' ], 'wp-slimstat' ) . "'></a>";
+			$country_filter = "<a class='slimstat-filter-link inline-icon' href='" . wp_slimstat_reports::fs_url( 'country equals ' . $results[ $i ][ 'country' ] ) . "'><img class='slimstat-tooltip-trigger' src='$plugin_url/assets/images/flags/{$results[ $i ][ 'country' ]}.png' width='16' height='16' title='" . slim_i18n::get_string( 'c-' . $results[ $i ][ 'country' ] ) . "'></a>";
+		}
+		else {
+			$country_filter = "<a class='slimstat-filter-link inline-icon' href='" . wp_slimstat_reports::fs_url( 'country is_empty #' ) . "'><img class='slimstat-tooltip-trigger' src='$plugin_url/assets/images/flags/xx.png' width='16' height='16' title='" . slim_i18n::get_string( 'c-' ) . "'></a>";
 		}
 
 		// City, if tracked
-		$city_filtered = '';
+		$city_filter = '';
 		if ( !empty( $results[ $i ][ 'city' ] ) ) {
-			$city_filtered = "<a class='slimstat-filter-link' href='" . wp_slimstat_reports::fs_url( 'city equals ' . $results[ $i ][ 'city' ] ) . "'>{$results[ $i ][ 'city' ]}</a>";
+			$city_filter = "<a class='slimstat-filter-link' href='" . wp_slimstat_reports::fs_url( 'city equals ' . $results[ $i ][ 'city' ] ) . "'>{$results[ $i ][ 'city' ]}</a>";
 		}
 
 		// Browser
 		if ( empty( $results[ $i ][ 'browser_version' ] ) ) {
-			$results[$i]['browser_version'] = '';
+			$results[ $i ][ 'browser_version' ] = '';
 		}
 		$browser_title = ( wp_slimstat::$settings[ 'show_complete_user_agent_tooltip' ] != 'on' ) ? "{$results[ $i ][ 'browser' ]} {$results[ $i ][ 'browser_version' ]}" : $results[ $i ][ 'user_agent' ];
-		$browser_icon = $plugin_url . '/images/browsers/other-browsers-and-os.png';
+		$browser_icon = $plugin_url . '/assets/images/browsers/other-browsers-and-os.png';
 		if ( in_array( $results[ $i ][ 'browser' ], $supported_browser_icons ) ) {
-			$browser_icon = $plugin_url . '/images/browsers/' . sanitize_title( $results[ $i ][ 'browser' ] ) . '.png';
+			$browser_icon = $plugin_url . '/assets/images/browsers/' . sanitize_title( $results[ $i ][ 'browser' ] ) . '.png';
 		}
-		$browser_filtered = "<a class='slimstat-filter-link inline-icon' href='" . wp_slimstat_reports::fs_url( 'browser equals ' . $results[ $i ][ 'browser' ] ) . "'><img class='slimstat-tooltip-trigger' src='$browser_icon' width='16' height='16' title='{$browser_title}'></a>";
+		$browser_filter = "<a class='slimstat-filter-link inline-icon' href='" . wp_slimstat_reports::fs_url( 'browser equals ' . $results[ $i ][ 'browser' ] ) . "'><img class='slimstat-tooltip-trigger' src='$browser_icon' width='16' height='16' title='{$browser_title}'></a>";
 
-		// Platform
-		$platform_icon = $plugin_url . '/images/browsers/other-browsers-and-os.png';
-		if ( in_array( strtolower( $results[ $i ][ 'platform' ] ), $supported_os_icons ) ) {
-			$platform_icon = $plugin_url . '/images/platforms/' . sanitize_title( $results[ $i ][ 'platform' ] ) . '.png';
+		// Operating System
+		if ( !empty( $results[ $i ][ 'platform' ] ) && $results[ $i ][ 'platform' ] != 'unknown' ) {
+			$platform_filter = "<a class='slimstat-filter-link inline-icon' href='" . wp_slimstat_reports::fs_url( 'platform equals ' . $results[ $i ][ 'platform' ] ) . "'><img class='slimstat-tooltip-trigger' src='$plugin_url/assets/images/platforms/{$results[ $i ][ 'platform' ]}.png' width='16' height='16' title='" . slim_i18n::get_string( $results[ $i ][ 'platform' ] ) . "'></a>";
 		}
-		$platform_filtered = "<a class='slimstat-filter-link inline-icon' href='" . wp_slimstat_reports::fs_url( 'platform equals ' . $results[ $i ][ 'platform' ] ) . "'><img class='slimstat-tooltip-trigger' src='$platform_icon' width='16' height='16' title='" . __( $results[ $i ][ 'platform' ], 'wp-slimstat' ) . "'></a>";
+		else {
+			$platform_filter = "<a class='slimstat-filter-link inline-icon' href='" . wp_slimstat_reports::fs_url( 'platform is_empty #' ) . "'><img class='slimstat-tooltip-trigger' src='$plugin_url/assets/images/browsers/other-browsers-and-os.png' width='16' height='16' title='" . slim_i18n::get_string( 'unknown' ) . "'></a>";
+		}
+
+		// Language
+		$language_filter = '';
+		// if ( !empty( $results[ $i ][ 'language' ] ) && $results[ $i ][ 'language' ] != 'xx' ) {
+		// 	$language_filter = '<span class="pageview-language"><a class="slimstat-filter-link" href="' . wp_slimstat_reports::fs_url( 'language equals ' . $results[ $i ][ 'language' ] ) . '">' . slim_i18n::get_string( 'l-' . $results[ $i ][ 'language' ] ) . '</a>';
+		// }
 
 		// Browser Type
-		$browser_type_filtered = '';
+		$browser_type_filter = '';
 		if ( $results[ $i ][ 'browser_type' ] != 0 ) {
-			$browser_type_filtered = "<a class='slimstat-filter-link inline-icon' href='" . wp_slimstat_reports::fs_url( 'browser_type equals ' . $results[ $i ][ 'browser_type' ] ) . "'><img class='slimstat-tooltip-trigger' src='$plugin_url/images/browsers/type{$results[$i]['browser_type']}.png' width='16' height='16' title='{$supported_browser_types[$results[$i]['browser_type']]}'></a>";
+			$browser_type_filter = "<a class='slimstat-filter-link inline-icon' href='" . wp_slimstat_reports::fs_url( 'browser_type equals ' . $results[ $i ][ 'browser_type' ] ) . "'><img class='slimstat-tooltip-trigger' src='$plugin_url/assets/images/browsers/type{$results[ $i ][ 'browser_type' ]}.png' width='16' height='16' title='{$supported_browser_types[ $results[ $i ][ 'browser_type' ] ]}'></a>";
 		}
 
 		// IP Address and user
@@ -176,22 +181,9 @@ for ( $i=0; $i < $count_page_results; $i++ ) {
 		}
 
 		// Originating IP Address
-		$other_ip_address = intval( $results[ $i ][ 'other_ip' ] );
-		if ( !empty( $other_ip_address ) ) {
+		$other_ip_address = '';
+		if ( !empty( $results[ $i ][ 'other_ip' ] ) ) {
 			$other_ip_address = "(<a class='slimstat-font-location-1 whois' href='" . wp_slimstat::$settings[ 'ip_lookup_service' ] . "{$results[ $i ][ 'other_ip' ]}' target='_blank' title='WHOIS: {$results[ $i ][ 'other_ip' ]}'></a> <a class='slimstat-filter-link' href='" . wp_slimstat_reports::fs_url( 'other_ip equals '. $results[ $i ][ 'other_ip' ] ) . "'>" . __( 'Originating IP', 'wp-slimstat' ) . ": {$results[$i]['other_ip']})</a>";
-		}
-		else {
-			$other_ip_address = '';
-		}
-
-		// Plugins
-		$plugins = '';
-		if ( !empty( $results[ $i ][ 'plugins' ] ) ) {
-			$results[ $i ][ 'plugins' ] = explode( ',', $results[ $i ][ 'plugins' ] );
-			foreach( $results[ $i ][ 'plugins' ] as $a_plugin ) {
-				$a_plugin = str_replace( array( "'", '"' ), '', trim( $a_plugin ) );
-				$plugins .= "<a class='slimstat-filter-link inline-icon' href='" . wp_slimstat_reports::fs_url( 'plugins contains ' . $a_plugin ) . "'><img class='slimstat-tooltip-trigger' src='$plugin_url/images/plugins/$a_plugin.png' width='16' height='16' title='" . __( $a_plugin, 'wp-slimstat' ) . "'></a> ";
-			}
 		}
 
 		// Screen Resolution
@@ -200,7 +192,7 @@ for ( $i=0; $i < $count_page_results; $i++ ) {
 			$screen_resolution = "<span class='pageview-screenres'>{$results[ $i ][ 'screen_width' ]}x{$results[ $i ][ 'screen_height' ]}</span>";
 		}
 
-		$row_output = "<p class='header$highlight_row'>$browser_filtered $platform_filtered $browser_type_filtered $country_filtered $whois_pin $city_filtered $ip_address $other_ip_address <span class='plugins'>$plugins</span> $screen_resolution</p>";
+		$row_output = "<p class='header$highlight_row'>$browser_filter $platform_filter $browser_type_filter $country_filter $whois_pin $city_filter $ip_address $other_ip_address $screen_resolution $language_filter</p>";
 
 		// Strip all the filter links, if this information is shown on the frontend
 		if ( !is_admin() ) {
@@ -336,3 +328,31 @@ for ( $i=0; $i < $count_page_results; $i++ ) {
 if ( $count_page_results > 20 ) {
 	echo wp_slimstat_reports::report_pagination( $count_page_results, $count_all_results, true, wp_slimstat::$settings[ 'number_results_raw_data' ] );
 }
+
+?>
+
+<script type="text/javascript">
+var slimstat_refresh_timer = 0;
+
+function slimstat_refresh_countdown() {
+	slimstat_refresh_timer--;
+	minutes = parseInt( slimstat_refresh_timer / 60 );
+	seconds = parseInt( slimstat_refresh_timer % 60 );
+
+	jQuery( '.refresh-timer' ).html( minutes + ':' + ( ( seconds < 10 ) ? '0' : '' ) + seconds );
+
+	if ( slimstat_refresh_timer == 0 ) {
+		// Request the data from the server
+		refresh = SlimStatAdmin.refresh_report( 'slim_p7_02' );
+		refresh();
+
+		// Reset the countdown timer
+		slimstat_refresh_timer = parseInt( SlimStatAdminParams.refresh_interval );
+	}
+}
+
+if ( jQuery( '.refresh-timer' ).length > 0 && typeof SlimStatAdminParams.refresh_interval != 'undefined' ) {
+	slimstat_refresh_timer = SlimStatAdminParams.refresh_interval;
+	SlimStatAdmin.refresh_handle = window.setInterval( slimstat_refresh_countdown, 1000 );
+}
+</script>

@@ -53,12 +53,12 @@
 }
 .featured-content .hentry:hover .post-thumbnail,
 .featured-content .hentry .post-thumbnail:focus {
-	background-color: #000;
+	background-color: $black;
 	opacity: 0.3;
 }
 .featured-content .hentry:not(.has-post-thumbnail):hover .post-thumbnail,
 .featured-content .hentry:not(.has-post-thumbnail) .post-thumbnail:focus {
-	background: $orange;
+	background: $grey-darkest;
 	opacity: 1;
 }
 .featured-content .entry-header {
@@ -68,14 +68,23 @@
 .featured-content .entry-title {
 	font-size: 25px;
 	line-height: 1.2;
-	padding: 0 30px 30px;
+	padding: 0 15px 15px;
 }
 .featured-content .entry-meta {
-	padding-left: 30px;
-	padding-right: 30px;
+	padding-left: 15px;
+	padding-right: 15px;
 	width: 100%;
 }
 
+@include bp($sm) {
+	.featured-content .entry-title {
+		padding: 0 30px 30px;
+	}
+	.featured-content .entry-meta {
+		padding-left: 30px;
+		padding-right: 30px;
+	}
+}
 
 
 @include bp($sm) {

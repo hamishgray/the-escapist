@@ -8,7 +8,13 @@
  */
 ?>
 
-	</div><!-- #content -->
+</div><!-- #content -->
+
+<div class="site-footer">
+
+	<div class="site-footer__logo">
+		<?php escapist_the_site_logo(); ?>
+	</div>
 
 	<?php get_sidebar( 'footer' ); ?>
 
@@ -46,9 +52,16 @@
 			?>
 		</nav><!-- .social-navigation -->
 	<?php endif; ?>
-</div><!-- #page -->
 
-<?php wp_footer(); ?>
+	<div id="core-footer"></div>
+
+	<hr class="hr--center hr--white20">
+	<small class="text--center text--grey">© Copyright <?php echo date('Y'); ?> Secret Escapes</small>
+</div><!-- .site-footer -->
+
+	<?php wp_footer(); ?>
+
+</div><!-- #page -->
 
 </body>
 </html>

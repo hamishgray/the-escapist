@@ -4,9 +4,11 @@
 
 .home-content {
   padding-top: 60px;
+  // center anything not in an article summary card
   & > :not(.display-posts-listing) {
     text-align: center;
     max-width: $md;
-    margin: auto;
+    margin-left: auto;
+    margin-right: auto;
   }
 }

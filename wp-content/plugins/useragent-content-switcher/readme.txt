@@ -1,11 +1,11 @@
 === UserAgent Content Switcher ===
 Contributors: Katsushi Kawamori
-Donate link: https://riverforest-wp.info/donate/
+Donate link: https://shop.riverforest-wp.info/donate/
 Tags:  Browser, phone, platform, user agent, useragent, web, web browser
 Requires at least: 3.0.1
-Requires PHP: 5.3.0
-Tested up to: 4.9
-Stable tag: 2.38
+Requires PHP: 5.6
+Tested up to: 5.2
+Stable tag: 2.39
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -60,6 +60,9 @@ none
 2. Edit & Quick Tag
 
 == Changelog ==
+
+= 2.39 =
+Conformed to the WordPress coding standard.
 
 = 2.38 =
 Removed unnecessary code.

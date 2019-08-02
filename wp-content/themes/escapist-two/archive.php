@@ -9,7 +9,7 @@
 
 get_header(); ?>
 
-	<div class="site-content-inner">
+	<div class="site-content-inner archive-page">
 		<div id="primary" class="content-area">
 			<main id="main" class="site-main" role="main">
 
@@ -17,9 +17,25 @@ get_header(); ?>
 
 				<header class="page-header">
 					<?php
-						the_archive_title( '<h1 class="page-title">', '</h1>' );
+						the_archive_title( '<h1 class="archive-page-title">', '</h1>' );
 						the_archive_description( '<div class="taxonomy-description">', '</div>' );
 					?>
+
+					<div class="sub-cats">
+						<?php
+							if (is_category()) {
+								$this_category = get_category($cat);
+								$this_category = wp_list_categories('orderby=name&show_option_none=0&depth=1&show_count=0
+								&title_li=&use_desc_for_title=1&child_of='.$this_category->cat_ID.
+								"&echo=0");
+								if ($this_category) {
+									echo "<ul>";
+									echo $this_category;
+									echo "</ul>";
+								}
+							}
+						?>
+					</div><!-- end .sub-cats-->
 				</header><!-- .page-header -->
 
 				<?php /* Start the Loop */ ?>

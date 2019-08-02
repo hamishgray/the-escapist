@@ -28,3 +28,37 @@ dt {
 dd {
 	margin: 0 0 30px;
 }
+
+
+.list {
+	// Line separated vertical list
+	&--lined {
+		list-style: none;
+		& li {
+			border-top: 1px solid $grey-lighter;
+			display: block;
+			padding: 5px 0;
+			&:last-child { border-bottom: 1px solid $grey-lighter; }
+		}
+	}
+	// Line separated horizontal list
+	&--lined-horizontal {
+		list-style: none;
+		position: relative;
+		margin: auto;
+		& li {
+			border-right: 0;
+			display: block;
+			padding: 5px 0;
+			&:last-child { border-right: 0; }
+		}
+		@include bp($xxl) {
+			& li {
+				border-right: 1px solid $grey-lighter;
+				display: inline;
+				padding: 5px 15px;
+				&:last-child { border-right: 0; }
+			}
+		}
+	}
+}

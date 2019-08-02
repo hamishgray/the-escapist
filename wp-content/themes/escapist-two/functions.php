@@ -218,6 +218,8 @@ function escapist_scripts() {
 
 	wp_enqueue_script( 'escapist-search', get_template_directory_uri() . '/js/search.js', array( 'jquery' ), '20150507', true );
 
+	wp_enqueue_script( 'escapist-site', get_template_directory_uri() . '/js/site.js', array( 'jquery' ), '20190731', true );
+
 	if ( ( is_single() && ( has_post_thumbnail() && ( ! has_post_format() || has_post_format( 'aside' ) || has_post_format( 'image' ) || has_post_format( 'gallery' ) ) ) ) || ( is_page() && has_post_thumbnail() ) ) {
 		wp_enqueue_script( 'escapist-single-thumbnail', get_template_directory_uri() . '/js/single-thumbnail.js', array( 'jquery' ), '20150416', true );
 	}
@@ -295,3 +297,59 @@ function be_dps_template_part( $output, $original_atts ) {
 	return $output;
 }
 add_action( 'display_posts_shortcode_output', 'be_dps_template_part', 10, 2 );
+
+
+/**
+ * Limit excerpt length by words
+ * @see https://smallenvelop.com/limit-post-excerpt-length-in-wordpress/
+ * example: echo excerpt(30)
+ */
+function excerpt($limit) {
+  $excerpt = explode(' ', get_the_excerpt(), $limit);
+  if (count($excerpt)>=$limit) {
+    array_pop($excerpt);
+    $excerpt = implode(" ",$excerpt).'...';
+  } else {
+    $excerpt = implode(" ",$excerpt);
+  }
+  $excerpt = preg_replace('`[[^]]*]`','',$excerpt);
+  return $excerpt;
+}
+
+function content($limit) {
+  $content = explode(' ', get_the_content(), $limit);
+  if (count($content)>=$limit) {
+    array_pop($content);
+    $content = implode(" ",$content).'...';
+  } else {
+    $content = implode(" ",$content);
+  }
+  $content = preg_replace('/[.+]/','', $content);
+  $content = apply_filters('the_content', $content);
+  $content = str_replace(']]>', ']]>', $content);
+  return $content;
+}
+
+
+// Function to create a button link
+function button_shortcode( $atts ) {
+	$atts = shortcode_atts(
+	  array(
+		  'link'  => 'link',
+		  'style' => 'outline',
+			'size'  => 'md',
+		  'text'  => 'Read more',
+	  ), $atts, 'button'
+	);
+	$text  = $atts['text'];
+	$link  = $atts['link'];
+	$style = $atts['style'];
+	$size  = $atts['size'];
+
+	return( '
+		<div class="text--center">
+			<a class="btn btn--' . $style . ' btn--' . $size . '" href=' . $link . '>' . $text . '</a>
+			<div class="space--xl"></div>
+		</div>');
+}
+add_shortcode('button', 'button_shortcode');

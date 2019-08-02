@@ -4,7 +4,7 @@
 -------------------------------*/
 
 html {
-	font-family: sans-serif;
+	font-family: 'Source Sans Pro', sans-serif;
 	-webkit-text-size-adjust: 100%;
 	-ms-text-size-adjust:     100%;
 	box-sizing: border-box;
@@ -164,7 +164,7 @@ input[type="search"]::-webkit-search-decoration {
 	-webkit-appearance: none;
 }
 fieldset {
-	border: 1px solid #c0c0c0;
+	border: 1px solid $grey-lighter;
 	margin: 0 2px;
 	padding: 0.35em 0.625em 0.75em;
 }

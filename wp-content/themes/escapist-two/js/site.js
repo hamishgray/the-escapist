@@ -1,6 +1,5 @@
 
 
-
 /* GET COOKIES
  * Function to get cookies to assign logged in user to analytics
 ==================================*/
@@ -20,4 +19,31 @@ function getCookie(cname) {
   }
   return '';
 }
-// console.log( getCookie('seuid') );
+
+
+/* SCRAPE FOOTER NAV
+ * Function to get footer nav links from core site
+==================================*/
+
+var getHTML = function ( url, callback ) {
+	if ( !window.XMLHttpRequest ) return;
+	// Create new request
+	var xhr = new XMLHttpRequest();
+	// Setup callback
+	xhr.onload = function() {
+		if ( callback && typeof( callback ) === 'function' ) {
+			callback( this.responseXML );
+		}
+	}
+	// Get the HTML
+	xhr.open( 'GET', url );
+	xhr.responseType = 'document';
+	xhr.send();
+};
+
+getHTML( 'https://www.secretescapes.com/current-sales', function (response) {
+  var targetElem = document.querySelector('.footer__sitemap');
+	var remoteElem = response.querySelector('#core-footer');
+	targetElem.innerHTML = remoteElem.innerHTML;
+});
+
