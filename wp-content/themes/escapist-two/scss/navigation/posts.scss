@@ -6,26 +6,42 @@
 .post-navigation,
 .posts-navigation {
 	clear: both;
-	font-family: Lato, sans-serif;
+	font-family: 'Source Sans Pro', sans-serif;
 	margin: 0 0 30px;
 	overflow: hidden;
 }
 .posts-navigation {
-	border-top: 1px solid $grey-lightest;
 	padding: 30px 0 0;
 }
 .posts-navigation a {
-	background: $turquoise;
+	background-color: $turquoise;
 	color: $white;
 	display: inline-block;
-	font-size: 16px;
-	line-height: 1.875;
-	padding: 5.5px 13px;
+	font-size: 14px;
+	font-weight: 600;
+	letter-spacing: 0.06em;
+	line-height: 2.3;
+	padding: 5.5px 30px;
 	text-transform: uppercase;
-	width: 100%;
 	border-radius: 100px;
 	text-align: center;
 }
+.posts-navigation a:active,
+.posts-navigation a:focus,
+.posts-navigation a:hover {
+	background-color: darken($turquoise,10);
+}
+.posts-navigation .nav-previous {
+	float: left;
+	width: 50%;
+}
+.posts-navigation .nav-next {
+	float: right;
+	text-align: right;
+	width: 50%;
+}
+
+
 .post-navigation a {
 	border: 1px solid $grey-lightest;
 	color: $grey-darkest;
@@ -65,31 +81,12 @@
 .post-navigation a:hover .post-title {
 	color: $orange;
 }
-.posts-navigation a:active,
-.posts-navigation a:focus,
-.posts-navigation a:hover {
-	background: $orange;
-	border-color: $orange;
-	color: $white;
-}
-.posts-navigation .nav-previous {
-	float: left;
-	width: 50%;
-}
-.posts-navigation .nav-next {
-	float: right;
-	text-align: right;
-	width: 50%;
-}
 
 @include bp($xs){
 
 	.post-navigation,
 	.posts-navigation {
 		margin-bottom: 60px;
-	}
-	.posts-navigation  {
-		padding-top: 60px;
 	}
 	.posts-navigation .nav-next a:after,
 	.posts-navigation .nav-previous a:before {

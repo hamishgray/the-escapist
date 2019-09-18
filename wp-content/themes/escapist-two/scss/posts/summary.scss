@@ -15,6 +15,7 @@
 
 .listing-item {
 
+	.blog & { border-top: 0; }
 	& img { display: block; }
 	&:first-of-type { margin-top: 0 !important; padding-top: 0 !important; } // overwrite default style
 
