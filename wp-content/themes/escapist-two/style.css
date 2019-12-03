@@ -550,6 +550,30 @@ p + .wp-caption, img.alignnone {
 .title--xxl {
   font-size: 2.4rem;
 }
+/*==============================================
+ ARTICLE TITLE STYLES
+ Having less stylistic difference based on HTML tag allows for SEO optimisation
+ ==============================================*/
+.entry-content h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+.entry-content h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+.entry-content h4 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+.entry-content h5 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  line-height: 1.1;
+}
 /*=============================
  #  Typography / Text
  -------------------------------*/
@@ -1940,12 +1964,20 @@ input[type="text"]:focus, input[type="email"]:focus, input[type="url"]:focus, in
 .offer__title, .offer__location, .offer__description, .offer__discount {
   display: inline-block;
   margin-bottom: 4px;
-}
-.offer__title {
-  font-size: 20px;
-  font-weight: 700;
+  font-size: 14px;
   line-height: 1.3;
-  font-family: 'Source Serif Pro', serif;
+}
+.offer__title-link {
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+.offer__location {
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 0;
 }
 .offer__location:before {
   content: "";
@@ -1959,7 +1991,13 @@ input[type="text"]:focus, input[type="email"]:focus, input[type="url"]:focus, in
   margin-right: 6px;
   vertical-align: middle;
 }
+.offer__description {
+  margin-bottom: 8px;
+}
 .offer__discount {
+  display: none;
+}
+.offer__discount-num {
   font-size: 18px;
   font-weight: 600;
 }

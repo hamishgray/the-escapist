@@ -102,7 +102,7 @@ function escapist_post_categories() {
 		/* translators: used between list items, there is a space after the comma */
 		$categories_list = get_the_category_list( __( ', ', 'escapist' ) );
 		if ( $categories_list && escapist_categorized_blog() ) {
-			printf( '<li>Categories: <span class="cat">%1$s</span></li>', $categories_list );
+			printf( '<li><span class="cat">%1$s</span></li>', $categories_list );
 		}
 	}
 }
@@ -116,7 +116,7 @@ function escapist_post_tags() {
 	/* translators: used between list items, there is a space after the comma */
 	$tags_list = get_the_tag_list( '', __( ', ', 'escapist' ) );
 	if ( $tags_list ) {
-		printf( '<li>Tags: <span class="tags-links">%1$s</span></li>', $tags_list );
+		printf( '<li><span class="tags-links">%1$s</span></li>', $tags_list );
 	}
 }
 endif;
@@ -131,7 +131,7 @@ function escapist_post_author() {
 		esc_url( get_author_posts_url( get_the_author_meta( 'ID' ) ) ),
 		esc_html( get_the_author() )
 	);
-	printf( '<li>By: <span class="byline"> ' . $byline . '</span></li>' );
+	printf( '<li><span class="byline"> ' . $byline . '</span></li>' );
 }
 endif;
 
@@ -151,7 +151,7 @@ function escapist_post_date() {
 		esc_html( get_the_modified_date() )
 	);
 	$posted_on = sprintf( '<a href="%1$s" rel="bookmark">%2$s</a>', esc_url( get_permalink() ), $time_string );
-	printf( '<li>Posted on: <span class="posted-on">' . $posted_on . '</span></li>' );
+	printf( '<li><span class="posted-on">' . $posted_on . '</span></li>' );
 }
 endif;
 
