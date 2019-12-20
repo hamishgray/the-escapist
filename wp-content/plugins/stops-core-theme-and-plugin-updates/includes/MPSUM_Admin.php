@@ -231,7 +231,7 @@ class MPSUM_Admin {
 	 * @return void
 	 */
 	public function maybe_disable_plugin_information_bar() {
-		
+
 		// When the more details modal shows up on the plugins tab, it displays an information footer for active
 		// or inactive installs. It also shows when a plugin is available to update.
 		// This will inject styles into the modal hiding the information bar to prevent
@@ -353,8 +353,8 @@ class MPSUM_Admin {
 			'automatic_theme_updates_individual_status'  => __('Automatic updates for themes can be customized in the Themes tab.', 'stops-core-theme-and-plugin-updates'),
 			'disable_updates'                            => __('Disable all updates', 'stops-core-theme-and-plugin-updates'),
 			'disable_updates_description'                => __('This is a master switch and will enable or disable updates for the WordPress installation. Switching updates off is not recommended.', 'stops-core-theme-and-plugin-updates'),
-			'disable_updates_label_on'                   => __('Enable All Updates', 'stops-core-theme-and-plugin-updates'),
-			'disable_updates_label_on_status'            => __('All updates are allowed, however, you still need to configure the updates below.', 'stops-core-theme-and-plugin-updates'),
+			'disable_updates_label_on'                   => __('Enable Updates', 'stops-core-theme-and-plugin-updates'),
+			'disable_updates_label_on_status'            => __('Updates are allowed; however, you still need to configure the updates below.', 'stops-core-theme-and-plugin-updates'),
 			'disable_updates_label_off'                  => __('Disable All Updates', 'stops-core-theme-and-plugin-updates'),
 			'disable_updates_label_off_status'           => __('All updates are disabled. Individual updates settings (i.e. for automatic updates and for plugin/theme/translation updates) below will be ignored.', 'stops-core-theme-and-plugin-updates'),
 			'logs'                                       => _x('Logs', 'Log what is stored when assets update', 'stops-core-theme-and-plugin-updates'),
@@ -447,9 +447,9 @@ class MPSUM_Admin {
 	 * @param WP_Admin_Bar $wp_admin_bar WordPress Admin bar Instance
 	 */
 	public function add_admin_bar($wp_admin_bar) {
-		
+
 		if (defined('EASY_UPDATES_MANAGER_ADMIN_BAR') && !EASY_UPDATES_MANAGER_ADMIN_BAR) return;
-		
+
 		// Check for valid permissions
 		if (is_multisite() && !current_user_can('manage_network')) {
 			return;
@@ -707,7 +707,7 @@ class MPSUM_Admin {
 	 */
 	public function add_networkadmin_page() {
 		global $wp_admin_bar;
-		
+
 		if (!is_object($wp_admin_bar) || !is_super_admin() || !function_exists('is_admin_bar_showing') || !is_admin_bar_showing()) {
 			return;
 		}

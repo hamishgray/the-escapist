@@ -36,5 +36,5 @@ if (is_array($users) && !empty($users)) {
 		printf('<input type="checkbox" name="mpsum_excluded_users[]" id="mpsum_user_%1$d" value="%1$d" %3$s %4$s />&nbsp;<label for="mpsum_user_%1$d">%2$s</label><br />', esc_attr($user_id), esc_html($user->display_name), checked(true, in_array($user_id, $excluded_users), false), $disabled);
 	}
 }
-printf('<p class="submit"><input type="submit" name="submit" id="save-excluded-users" class="button button-primary" value="%s"></p>', esc_attr('Save Users', 'stops-core-theme-and-plugin-updates'));
+printf('<p class="submit"><input type="submit" name="submit" id="save-excluded-users" class="button button-primary" value="%s"></p>', esc_attr__('Save Users', 'stops-core-theme-and-plugin-updates'));
 echo '</div>';

@@ -1,11 +1,11 @@
 === Easy Updates Manager ===
 Contributors: davidanderson, kidsguide, ronalfy, roary86, bigwing, webulous
 Tags: updates manager, easy updates manager, disable updates manager, disable updates, update control, plugin updates, theme updates, core updates, automatic updates, multisite, logs
-Requires at least: 4.6
+Requires at least: 4.7
 Requires PHP: 5.3
 Donate link: https://easyupdatesmanager.com
-Tested up to: 5.2
-Stable tag: 8.0.5
+Tested up to: 5.3
+Stable tag: 8.2.0
 License: GPLv2 or later
 
 Manage all your WordPress updates, including individual updates, automatic updates, logs, and loads more. This also works very well with WordPress Multisite.
@@ -52,6 +52,7 @@ Premium features include:
 <li>Check plugins: runs a check of plugins that have been removed from the WordPress Plugin Directory</li>
 <li>Webhook: integrates with third-party services to run automatic updates via cron or even Zapier</li>
 <li>Export logs: exports logs for printing, or downloads a CSV or JSON file for a date range</li>
+<li>Version control protection: prevent updates from occuring to plugins and themes under version control</li>
 </ul>
 
 > For more information on Easy Updates Manager Premium, <a href="https://easyupdatesmanager.com">check out our website at easyupdatesmanager.com</a>.
@@ -117,13 +118,46 @@ https://vimeo.com/291084061
 
 = Does Easy Updates Manager work with third-party plugins and themes? =
 
-Since third-party providers use custom update mechanisms, we cannot guarantee that they will work with Easy Updates Manager.
+Since third-party providers use custom update mechanisms, we cannot always guarantee that they will work with Easy Updates Manager. Most will, but there are a number of common mistakes that plugin authors can make.
 
 = Additional Information and FAQ =
 
 For additional information and FAQs for Easy Updates Manager <a href="https://easyupdatesmanager.com">check out our website</a>.
 
 == Changelog ==
+
+= 8.2.0 - 2019-10-30 =
+
+* FEATURE: (Premium) Safe mode now checks themes for compatibility.
+* FEATURE: (Premium) Version controlled assets now show in the EUM plugins and themes tabs. 
+* FIX: Delayed updates were delaying automatic updates to WordPress core when no delay was requested
+* TWEAK: Divi theme can now be auto-upgraded.
+* TWEAK: Bump required WP version from 4.6 to 4.7. We've not introduced anything to make it incompatible so it will likely stil work; but this is the support requirement.
+
+= 8.1.1 - 2019-10-23 =
+
+* FIX: Fixed uninstall script error when deleting the plugin.
+
+= 8.1.0 - 2019-10-08 =
+
+* FEATURE: Notes section added to log to show why an automatic update failed.
+* FEATURE: (Premium) Adding version control protection so that version controlled plugins or themes will not be updated.
+* FIX: Fixed saving error when toggling auto-update on individual themes
+* FIX: Don't wipe settings when removing the free version, if premium is installed. Or vice versa.
+* FIX: Enabling/disabling admin bar was resetting General options.
+* FIX: Disabling Core updates will no longer block other automatic updates.
+* FIX: Translation updates are run after automatic updates have completed.
+* FIX: Translation updates now show the correct label.
+* FIX: (Premium) Slack logging now shows the site name from where the event came from.
+* TWEAK: UI Fix: Prevent notices about EUM-Premium from appearing in the premium version of the plugin
+* TWEAK: Do not allow null values to be passed to an INSERT on the version_from field in the log table
+* TWEAK: Add some missing translation domains
+* TWEAK: Code-styling tweak to avoid use of extract()
+* TWEAK: Adding dashboard notice if automatic updates are disabled through constants.
+* TWEAK: Prevent unnecessary PHP notice when controlling via UpdraftCentral
+* TWEAK: Database logging is now always turned on, to aid troubleshooting. (The storage overhead is tiny, since updates are infrequent events compared with other things going on in a WP database).
+* TWEAK: Update updater class to latest series (1.8)
+* TWEAK: Automatic update emails are only sent once every twenty four hours.
 
 = 8.0.5 - 2019-03-28 =
 
@@ -239,4 +273,5 @@ For additional information and FAQs for Easy Updates Manager <a href="https://ea
 For past changelogs, <a href="https://easyupdatesmanager.com/blog/">please visit our blog</a>.
 
 == Upgrade Notice ==
-* 8.0.5: Various small tweaks and improvements, plus a security fix. A recommended update for all.
+
+* 8.2.0 : Various tweaks and improvements and a fix for an unwanted delay in WP core updates - a recommended update for all

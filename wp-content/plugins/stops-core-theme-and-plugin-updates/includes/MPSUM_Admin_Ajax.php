@@ -127,14 +127,15 @@ class MPSUM_Admin_Ajax {
 	 */
 	public function ajax_handler() {
 
-		if (empty($_REQUEST)) return;
+		if (empty($_REQUEST) || empty($_REQUEST['subaction']) || empty($_REQUEST['nonce'])) return;
 
-		extract($_REQUEST);
+		$subaction = $_REQUEST['subaction'];
+		$nonce = $_REQUEST['nonce'];
+		$data = empty($_REQUEST['data']) ? array() : $_REQUEST['data'];
 
 		if (!wp_verify_nonce($nonce, 'eum_nonce') || empty($subaction) || 'axios_ajax_handler' == $subaction) die('Security check');
 
 		$results = array();
-		$data = isset($data) ? $data : array();
 		if (!method_exists($this, $subaction)) {
 			do_action('eum_premium_ajax_handler', $subaction, $data);
 			error_log("EUM: ajax_handler: no such command (".$subaction.")");
@@ -191,7 +192,7 @@ class MPSUM_Admin_Ajax {
 	 * @return array An array of core options
 	 */
 	public function save_core_options($data) {
-	
+
 		if (!current_user_can('manage_options')) return;
 
 		$id = $data['id'];
@@ -310,15 +311,6 @@ class MPSUM_Admin_Ajax {
 					$options['all_updates'] = 'on';
 				} else {
 					$options['all_updates'] = 'off';
-				}
-				break;
-			case 'logs':
-				if ('on' == $value) {
-					update_site_option('mpsum_log_table_version', 0);
-					$options['logs'] = 'on';
-				} else {
-					MPSUM_Logs::drop();
-					$options['logs'] = 'off';
 				}
 				break;
 			case 'core-updates':
@@ -942,7 +934,7 @@ class MPSUM_Admin_Ajax {
 	 */
 	public function disable_admin_bar() {
 		if (!current_user_can('manage_options')) return array();
-		$options = MPSUM_Updates_Manager::get_options('options');
+		$options = MPSUM_Updates_Manager::get_options('core', true);
 		$options['enable_admin_bar'] = 'off';
 		MPSUM_Updates_Manager::update_options($options, 'core');
 		wp_send_json(array('message' => __('The admin bar has been disabled.', 'stops-core-theme-and-plugin-updates')));
@@ -955,7 +947,7 @@ class MPSUM_Admin_Ajax {
 	 */
 	public function enable_admin_bar() {
 		if (!current_user_can('manage_options')) return array();
-		$options = MPSUM_Updates_Manager::get_options('options');
+		$options = MPSUM_Updates_Manager::get_options('core', true);
 		$options['enable_admin_bar'] = 'on';
 		MPSUM_Updates_Manager::update_options($options, 'core');
 		wp_send_json(array('message' => __('The admin bar has been enabled. Please refresh to see the admn bar menu.', 'stops-core-theme-and-plugin-updates')));
@@ -998,8 +990,8 @@ class MPSUM_Admin_Ajax {
 		delete_site_transient('eum_all_sites_active_plugins');
 		delete_site_transient('eum_all_sites_active_themes');
 
-		// Remove logs table
-		MPSUM_Logs::drop();
+		// Empty logs table
+		MPSUM_Logs::clear();
 
 		// Remove Plugin Check Options and Transients
 		delete_site_transient('eum_plugins_removed_from_directory');

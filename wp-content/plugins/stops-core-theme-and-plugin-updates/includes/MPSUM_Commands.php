@@ -185,8 +185,6 @@ class MPSUM_Commands {
 	 */
 	public function get_logs_contents($data) {
 
-		$disable_logs = isset($data['data']['disable_logs']) ? $data['data']['disable_logs'] : false;
-		$enable_logs = isset($data['data']['enable_logs']) ? $data['data']['enable_logs'] : false;
 		$paged = isset($data['data']['paged']) ? $data['data']['paged'] : '1';
 		$view = isset($data['data']['view']) ? $data['data']['view'] : 'all';
 		$m = isset($data['data']['m']) ? $data['data']['m'] : 'all';
@@ -197,7 +195,7 @@ class MPSUM_Commands {
 		$is_search = isset($data['data']['is_search']) ? $data['data']['is_search'] : false;
 		$search_term = isset($data['data']['search_term']) ? $data['data']['search_term'] : '';
 
-		$args = array('paged' => $paged, 'view' => $view, 'status' => $status, 'action_type' => $action_type, 'type' => $type, 'm' => $m, 'is_search' => $is_search, 'search_term' => $search_term, 'order' => $order, 'disable_logs' => $disable_logs, 'enable_logs' => $enable_logs );
+		$args = array('paged' => $paged, 'view' => $view, 'status' => $status, 'action_type' => $action_type, 'type' => $type, 'm' => $m, 'is_search' => $is_search, 'search_term' => $search_term, 'order' => $order);
 		return Easy_Updates_Manager()->include_template('admin-tab-logs.php', true, $args);
 	}
 
@@ -467,6 +465,34 @@ class MPSUM_Commands {
 			return __('User has insufficient capability to manage options', 'stops-core-theme-and-plugin-updates');
 		}
 		return $this->premium_admin_ajax->disable_safe_mode($data);
+	}
+
+	/**
+	 * Enables Version Control Protection
+	 *
+	 * @param array $data An array of updated options
+	 *
+	 * @return string Confirmation message
+	 */
+	public function enable_version_control($data) {
+		if (!current_user_can('manage_options')) {
+			return __('User has insufficient capability to manage options', 'stops-core-theme-and-plugin-updates');
+		}
+		return $this->premium_admin_ajax->enable_version_control_protection($data);
+	}
+
+	/**
+	 * Disables Version Control Protection
+	 *
+	 * @param array $data An array of updated options
+	 *
+	 * @return string Confirmation message
+	 */
+	public function disable_version_control($data) {
+		if (!current_user_can('manage_options')) {
+			return __('User has insufficient capability to manage options', 'stops-core-theme-and-plugin-updates');
+		}
+		return $this->premium_admin_ajax->disable_version_control_protection($data);
 	}
 
 	/**

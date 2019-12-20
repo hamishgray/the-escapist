@@ -63,6 +63,7 @@ class MPSUM_Admin_Core {
 		 */
 		return (array) apply_filters('mpsum_default_options', array(
 			'all_updates'                     => 'on',
+			'version_control'                 => 'off',
 			'core_updates'                    => 'on',
 			'plugin_updates'                  => 'on',
 			'theme_updates'                   => 'on',
@@ -179,7 +180,8 @@ class MPSUM_Admin_Core {
 		?>
 		<form action="<?php echo esc_url(add_query_arg(array())); ?>" method="post">
 		<?php
-		$logs = isset($options['logs']) ? $options['logs'] : 'off';
+		// This used to be an option; but now we always have it on, because of how useful it is to tracing issues.
+		$logs = 'on';
 		?>
 		<input type="hidden" name="options[logs]" value="<?php echo esc_attr($logs); ?>" />
 		<h3><?php esc_html_e('Global Settings', 'stops-core-theme-and-plugin-updates'); ?></h3>

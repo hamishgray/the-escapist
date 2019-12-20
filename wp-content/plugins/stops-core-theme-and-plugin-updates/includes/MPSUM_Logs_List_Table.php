@@ -9,7 +9,7 @@ if (!defined('ABSPATH')) die('No direct access.');
  * @access private
  */
 class MPSUM_Logs_List_Table extends MPSUM_List_Table {
-	
+
 	private $tab = 'logs';
 
 	private $action_type = '';
@@ -58,7 +58,7 @@ class MPSUM_Logs_List_Table extends MPSUM_List_Table {
 
 		if (isset($_REQUEST['action']) && ('eum_ajax' === $_REQUEST['action'] || 'eum_export_logs' === $_REQUEST['action'] || 'eum_export_csv' === $_REQUEST['action'] || 'eum_export_json' === $_REQUEST['action'])) {
 			$this->action_type = isset($_REQUEST['action_type']) ? $_REQUEST['action_type'] : 'all';
-			
+
 			$this->type = isset($_REQUEST['type']) ? $_REQUEST['type'] : 'all';
 			if (isset($_REQUEST['m']) && strlen($_REQUEST['m']) > 4) {
 				$this->month = $_REQUEST['m'];
@@ -159,7 +159,7 @@ class MPSUM_Logs_List_Table extends MPSUM_List_Table {
 			// If no user, search the name field
 			if (!$maybe_user) {
 				$wild = '%';
-				$select = "select log_id, user_id, name, type, version_from, version, action, status, date from $tablename WHERE 1=1 AND name LIKE %s";
+				$select = "select log_id, user_id, name, type, version_from, version, action, status, date, notes from $tablename WHERE 1=1 AND name LIKE %s";
 				$term = $wild . $this->search_term . $wild;
 				$orderby = " order by log_id DESC";
 				$limit = " limit %d,%d";
@@ -176,7 +176,7 @@ class MPSUM_Logs_List_Table extends MPSUM_List_Table {
 				$this->items = $wpdb->get_results($query);
 			} else {
 				$user_id = $maybe_user->ID;
-				$select = "select log_id, user_id, name, type, version_from, version, action, status, date from $tablename WHERE 1=1 AND user_id = %d";
+				$select = "select log_id, user_id, name, type, version_from, version, action, status, date, notes from $tablename WHERE 1=1 AND user_id = %d";
 
 				$orderby = " order by log_id DESC";
 				$limit = " limit %d,%d";
@@ -196,7 +196,7 @@ class MPSUM_Logs_List_Table extends MPSUM_List_Table {
 			if (isset($this->month) && strlen($this->month) > 4) {
 				$where .= " AND YEAR($tablename.date)=" . substr($this->month, 0, 4);
 				if (strlen($this->month) > 5) {
-					$where .= " AND MONTH($tablename.date)=" . substr($this->month, 4, 2);
+					$where .= " AND MONTH($tablename.date)=" . esc_sql(substr($this->month, 4, 2));
 				}
 			}
 
@@ -217,7 +217,7 @@ class MPSUM_Logs_List_Table extends MPSUM_List_Table {
 			}
 
 
-			$select = "select log_id, user_id, name, type, version_from, version, action, status, date from $tablename WHERE 1=1 ";
+			$select = "select log_id, user_id, name, type, version_from, version, action, status, date, notes from $tablename WHERE 1=1 ";
 			$orderby = ' order by ' . sanitize_sql_orderby("log_id {$this->order}");
 			$limit = " limit %d,%d";
 
@@ -494,6 +494,7 @@ class MPSUM_Logs_List_Table extends MPSUM_List_Table {
 			'action'  => _x('Action', 'Column header for logs', 'stops-core-theme-and-plugin-updates'),
 			'status'  => _x('Status', 'Column header for logs', 'stops-core-theme-and-plugin-updates'),
 			'date'    => _x('Date', 'Column header for logs', 'stops-core-theme-and-plugin-updates'),
+			'notes'    => _x('Notes', 'Column header for notes', 'stops-core-theme-and-plugin-updates'),
 		);
 		return $columns;
 	}
@@ -576,6 +577,9 @@ class MPSUM_Logs_List_Table extends MPSUM_List_Table {
 						}
 						break;
 					case 'date':
+						$row_columns[] = $record_data;
+						break;
+					case 'notes':
 						$row_columns[] = $record_data;
 						break;
 					default:
@@ -682,6 +686,12 @@ class MPSUM_Logs_List_Table extends MPSUM_List_Table {
 						break;
 					case 'date':
 						echo esc_html($record_data);
+						break;
+					case 'notes':
+						if (!empty($record_data)) {
+							printf('<a href="#" class="eum-note-expand">%s</a>', esc_html__('Show Notes', 'stops-core-theme-and-plugin-updates'));
+							printf('<div style="display: none">%s</div>', wp_kses_post(wpautop($record_data)));
+						}
 						break;
 					default:
 						break;

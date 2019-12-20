@@ -68,8 +68,10 @@
 }
 .offer__description { margin-bottom: 8px; }
 .offer__discount {
-	display: none;
-	&-num { font-size: 18px; font-weight: 600; }
+	// display: none;
+	&-num {
+		font-size: 16px; font-weight: 600;
+	}
 }
 .offer__button {
 	position: relative;
@@ -83,6 +85,7 @@
   border-radius: 3px;
   cursor: pointer;
   background-color: $orange;
+	margin-left: 10px;
 }
 .offer__button:hover { color: $white; background-color: #db7901; }
 

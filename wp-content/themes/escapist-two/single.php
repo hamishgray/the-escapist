@@ -22,14 +22,6 @@ get_header(); ?>
 						endif;
 					?>
 
-					<?php
-						// Previous/next post navigation.
-						the_post_navigation( array(
-							'next_text' => '<span class="screen-reader-text">' . __( 'Next post:', 'escapist' ) . '</span> ' . '<span class="post-title">%title</span>',
-							'prev_text' => '<span class="screen-reader-text">' . __( 'Previous post:', 'escapist' ) . '</span> ' . '<span class="post-title">%title</span>',
-				) );
-					?>
-
 				<?php endwhile; // end of the loop. ?>
 
 			</main><!-- #main -->

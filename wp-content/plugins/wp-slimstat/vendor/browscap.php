@@ -1,19 +1,10 @@
 <?php
 
 class slim_browser {
-	public static $browser = array();
 	public static $browscap_autoload_path = '';
 	public static $browscap_local_version = 0;
 
 	public static function init() {
-		self::$browser = array(
-			'browser' => 'Default Browser',
-			'browser_version' => '',
-			'browser_type' => 0,
-			'platform' => 'unknown',
-			'user_agent' => self::_get_user_agent()
-		);
-
 		// Path to the Browscap data and library
 		self::$browscap_autoload_path = wp_slimstat::$upload_dir . '/browscap-db-master/composer/autoload_real.php';
 		
@@ -22,7 +13,6 @@ class slim_browser {
 		if ( file_exists( wp_slimstat::$upload_dir . '/browscap-db-master/version.txt' ) ) {
 			self::$browscap_local_version = @file_get_contents( wp_slimstat::$upload_dir . '/browscap-db-master/version.txt' );
 			if ( false === self::$browscap_local_version ) {
-				wp_slimstat::slimstat_save_options();
 				return array( 4, __( 'The Browscap Library could not be opened on your filesystem. Please check your server permissions and try again.', 'wp-slimstat' ) );
 			}
 		}
@@ -39,28 +29,36 @@ class slim_browser {
 	 * Converts the USER AGENT string into a more user-friendly browser data structure, with name, version and operating system
 	 */
 	public static function get_browser( $_user_agent = '' ) {
-		if ( empty( self::$browser[ 'user_agent' ] ) ) {
-			return self::$browser;
+		$browser = array(
+			'browser' => 'Default Browser',
+			'browser_version' => '',
+			'browser_type' => 0,
+			'platform' => 'unknown',
+			'user_agent' => self::_get_user_agent()
+		);
+
+		if ( empty( $browser[ 'user_agent' ] ) ) {
+			return $browser;
 		}
 
 		if ( method_exists( 'slimBrowscapConnector', 'get_browser_from_browscap' ) ) {
-			self::$browser = slimBrowscapConnector::get_browser_from_browscap( self::$browser, wp_slimstat::$upload_dir . '/browscap-db-master/cache/' );
+			$browser = slimBrowscapConnector::get_browser_from_browscap( $browser, wp_slimstat::$upload_dir . '/browscap-db-master/cache/' );
 		}
 
-		if ( self::$browser[ 'browser' ] == 'Default Browser' ) {
+		if ( $browser[ 'browser' ] == 'Default Browser' ) {
 			require_once( plugin_dir_path( __FILE__ ) . 'uadetector.php' );
-			self::$browser = slim_uadetector::get_browser( self::$browser[ 'user_agent' ] );
+			$browser = slim_uadetector::get_browser( $browser[ 'user_agent' ] );
 		}
-		else if ( empty( self::$browser[ 'browser_version' ] ) ) {
+		else if ( empty( $browser[ 'browser_version' ] ) ) {
 			require_once( plugin_dir_path( __FILE__ ) . 'uadetector.php' );
-			$browser_version = slim_uadetector::get_browser( self::$browser[ 'user_agent' ] );
-			self::$browser[ 'browser_version' ] = $browser_version[ 'browser_version' ];
+			$browser_version = slim_uadetector::get_browser( $browser[ 'user_agent' ] );
+			$browser[ 'browser_version' ] = $browser_version[ 'browser_version' ];
 		}
 
 		// Let third-party tools manipulate the data
-		self::$browser = apply_filters( 'slimstat_filter_browscap', self::$browser );
+		$browser = apply_filters( 'slimstat_filter_browscap', $browser );
 
-		return self::$browser;
+		return $browser;
 	}
 	// end get_browser
 
@@ -102,8 +100,6 @@ class slim_browser {
 			if ( empty( wp_slimstat::$settings[ 'browscap_last_modified' ] ) ) {
 				wp_slimstat::$settings[ 'browscap_last_modified' ] = $current_timestamp;
 			}
-
-			wp_slimstat::slimstat_save_options();
 		}
 
 		// Check for updates once a week ( 604800 seconds ), if $_force_download is not true
@@ -117,7 +113,6 @@ class slim_browser {
 				// Now check the version number on the server
 				$response = wp_remote_get( 'https://raw.githubusercontent.com/slimstat/browscap-db/master/version.txt' );
 				if ( !is_array( $response ) || is_wp_error( $response ) || 200 != wp_remote_retrieve_response_code( $response ) ) {
-					wp_slimstat::slimstat_save_options();
 					return array( 5, __( 'There was an error checking the remote library version. Please try again later.', 'wp-slimstat' ) );
 				}
 
@@ -135,14 +130,12 @@ class slim_browser {
 
 			if ( !file_exists( $browscap_zip ) ) {
 				wp_slimstat::$settings[ 'browscap_last_modified' ] = $current_timestamp;
-				wp_slimstat::slimstat_save_options();
 				return array( 6, __( 'There was an error saving the Browscap data file on your server. Please check your folder permissions.', 'wp-slimstat' ) );
 			}
 
 			if ( is_wp_error( $response ) || 200 != wp_remote_retrieve_response_code( $response ) ) {
 				@unlink( $browscap_zip );
 				wp_slimstat::$settings[ 'browscap_last_modified' ] = $current_timestamp;
-				wp_slimstat::slimstat_save_options();
 				return array( 7, __( 'There was an error downloading the Browscap data file from our server. Please try again later.', 'wp-slimstat' ) );
 			}
 
@@ -151,7 +144,6 @@ class slim_browser {
 			if ( !function_exists( 'wp_filesystem' ) ) {
 				@unlink( $browscap_zip );
 				wp_slimstat::$settings[ 'browscap_last_modified' ] = $current_timestamp;
-				wp_slimstat::slimstat_save_options();
 				return array( 8, __( 'Could not initialize the WP Filesystem API. Please check your folder permissions and PHP configuration.', 'wp-slimstat' ) );
 			}
 
@@ -166,7 +158,6 @@ class slim_browser {
 			if ( !$unzip_done || !file_exists( self::$browscap_autoload_path ) ) {
 				$GLOBALS[ 'wp_filesystem' ]->rmdir( dirname( self::$browscap_autoload_path ) . '/', true );
 				wp_slimstat::$settings[ 'browscap_last_modified' ] = $current_timestamp;
-				wp_slimstat::slimstat_save_options();
 				return array( 9, __( 'There was an error uncompressing the Browscap data file on your server. Please check your folder permissions and PHP configuration.', 'wp-slimstat' ) );
 			}
 

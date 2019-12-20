@@ -16,8 +16,8 @@ class MPSUM_Disable_Updates_WordPress {
 	 */
 	public function __construct() {
 		add_action('admin_init', array($this, 'admin_init'));
-		
-		
+
+
 		/*
 		 * Disable Core Updates
 		 * 2.8 to 3.0
@@ -28,7 +28,7 @@ class MPSUM_Disable_Updates_WordPress {
 		 * 3.0
 		 */
 		add_filter('pre_site_transient_update_core', array($this, 'last_checked_now'), 10, 2);
-		
+
 
 		/*
 		 * Disable All Automatic Updates
@@ -36,7 +36,6 @@ class MPSUM_Disable_Updates_WordPress {
 		 *
 		 * @author	sLa NGjI's @ slangji.wordpress.com
 		 */
-		add_filter('automatic_updater_disabled', '__return_true');
 		add_filter('allow_minor_auto_core_updates', '__return_false');
 		add_filter('allow_major_auto_core_updates', '__return_false');
 		add_filter('allow_dev_auto_core_updates', '__return_false');
@@ -45,10 +44,9 @@ class MPSUM_Disable_Updates_WordPress {
 		add_filter('auto_core_update_send_email', '__return_false');
 		add_filter('send_core_update_notification_email', '__return_false');
 		add_filter('automatic_updates_send_debug_email', '__return_false');
-		add_filter('automatic_updates_is_vcs_checkout', '__return_true');
-		
+
 	} //end constructor
-	
+
 	/**
 	 * Initialize and load the plugin stuff
 	 *
@@ -63,14 +61,14 @@ class MPSUM_Disable_Updates_WordPress {
 		remove_action('wp_version_check', 'wp_version_check');
 		remove_action('admin_init', '_maybe_update_core');
 		wp_clear_scheduled_hook('wp_version_check');
-		
-		
+
+
 		/*
 		 * 3.0
 		 */
 		wp_clear_scheduled_hook('wp_version_check');
-		
-		
+
+
 		/*
 		 * 3.7+
 		 */
@@ -93,7 +91,7 @@ class MPSUM_Disable_Updates_WordPress {
 			delete_site_transient('eum_core_checked');
 		}
 	}
-	
+
 	/**
 	 * Last checked core updates
 	 *

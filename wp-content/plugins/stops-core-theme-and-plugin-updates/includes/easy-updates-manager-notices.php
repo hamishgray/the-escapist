@@ -123,10 +123,11 @@ class Easy_Updates_Manager_Notices extends Updraft_Notices_1_0 {
 				'button_link' => 'https://easyupdatesmanager.com/',
 				'button_meta' => 'eum_premium',
 				'dismiss_time' => 'dismiss_season_notice_until',
-				'discount_code' => 'blackfridaysale2018',
-				'valid_from' => '2018-11-20 00:00:00',
-				'valid_to' => '2018-11-30 23:59:59',
+				'discount_code' => 'blackfridaysale2019',
+				'valid_from' => '2019-11-20 00:00:00',
+				'valid_to' => '2019-11-30 23:59:59',
 				'supported_positions' => $this->dashboard_top_or_report,
+				'validity_function' => 'is_premium_installed',
 			),
 			'christmas' => array(
 				'prefix' => '',
@@ -136,10 +137,11 @@ class Easy_Updates_Manager_Notices extends Updraft_Notices_1_0 {
 				'button_link' => 'https://easyupdatesmanager.com/',
 				'button_meta' => 'eum_premium',
 				'dismiss_time' => 'dismiss_season_notice_until',
-				'discount_code' => 'christmassale2018',
-				'valid_from' => '2018-12-01 00:00:00',
-				'valid_to' => '2018-12-25 23:59:59',
+				'discount_code' => 'christmassale2019',
+				'valid_from' => '2019-12-01 00:00:00',
+				'valid_to' => '2019-12-25 23:59:59',
 				'supported_positions' => $this->dashboard_top_or_report,
+				'validity_function' => 'is_premium_installed',
 			),
 			'newyear' => array(
 				'prefix' => '',
@@ -149,10 +151,11 @@ class Easy_Updates_Manager_Notices extends Updraft_Notices_1_0 {
 				'button_link' => 'https://easyupdatesmanager.com/',
 				'button_meta' => 'eum_premium',
 				'dismiss_time' => 'dismiss_season_notice_until',
-				'discount_code' => 'newyearsale2019',
-				'valid_from' => '2018-12-26 00:00:00',
-				'valid_to' => '2019-01-14 23:59:59',
+				'discount_code' => 'newyearsale2020',
+				'valid_from' => '2019-12-26 00:00:00',
+				'valid_to' => '2020-01-14 23:59:59',
 				'supported_positions' => $this->dashboard_top_or_report,
+				'validity_function' => 'is_premium_installed',
 			),
 			'spring' => array(
 				'prefix' => '',
@@ -166,6 +169,7 @@ class Easy_Updates_Manager_Notices extends Updraft_Notices_1_0 {
 				'valid_from' => '2019-04-01 00:00:00',
 				'valid_to' => '2019-04-30 23:59:59',
 				'supported_positions' => $this->dashboard_top_or_report,
+				'validity_function' => 'is_premium_installed',
 			),
 			'summer' => array(
 				'prefix' => '',
@@ -179,6 +183,7 @@ class Easy_Updates_Manager_Notices extends Updraft_Notices_1_0 {
 				'valid_from' => '2019-07-01 00:00:00',
 				'valid_to' => '2019-07-31 23:59:59',
 				'supported_positions' => $this->dashboard_top_or_report,
+				'validity_function' => 'is_premium_installed',
 			)
 		);
 
@@ -250,6 +255,15 @@ class Easy_Updates_Manager_Notices extends Updraft_Notices_1_0 {
 	 */
 	protected function is_metaslider_installed($product = 'ml-slider', $also_require_active = false) {
 		return parent::is_plugin_installed($product, $also_require_active);
+	}
+
+	/**
+	 * This function will check if the premium EUM is installed and if so return false, otherwise true
+	 *
+	 * @return boolean - false if EUM premium is installed otherwise true
+	 */
+	protected function is_premium_installed() {
+		return MPSUM_Updates_Manager::get_instance()->is_premium() ? false : true;
 	}
 
 

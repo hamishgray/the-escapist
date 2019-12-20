@@ -5,8 +5,9 @@ Plugin Name: Easy Updates Manager
 Plugin URI: https://easyupdatesmanager.com
 Description: Manage and disable WordPress updates, including core, plugin, theme, and automatic updates - Works with Multisite and has built-in logging features.
 Author: Easy Updates Manager Team
-Version: 8.0.5
-Requires at least: 4.6
+Version: 8.2.0
+Requires at least: 4.7
+Tested up to: 5.3
 Author URI: https://easyupdatesmanager.com
 Contributors: kidsguide, ronalfy
 Text Domain: stops-core-theme-and-plugin-updates
@@ -18,7 +19,7 @@ Network: true
 
 if (!defined('ABSPATH')) die('No direct access allowed');
 if (!defined('EASY_UPDATES_MANAGER_MAIN_PATH')) define('EASY_UPDATES_MANAGER_MAIN_PATH', plugin_dir_path(__FILE__));
-if (!defined('EASY_UPDATES_MANAGER_VERSION')) define('EASY_UPDATES_MANAGER_VERSION', '8.0.4');
+if (!defined('EASY_UPDATES_MANAGER_VERSION')) define('EASY_UPDATES_MANAGER_VERSION', '8.2.0');
 if (!defined('EASY_UPDATES_MANAGER_URL')) define('EASY_UPDATES_MANAGER_URL', plugin_dir_url(__FILE__));
 if (!defined('EASY_UPDATES_MANAGER_SITE_URL')) define('EASY_UPDATES_MANAGER_SITE_URL', 'https://easyupdatesmanager.com/');
 if (!defined('EASY_UPDATES_MANAGER_SLUG')) define('EASY_UPDATES_MANAGER_SLUG', plugin_basename(__FILE__));
@@ -240,7 +241,7 @@ if (!class_exists('MPSUM_Updates_Manager')) {
 			if ('advanced' === $context) {
 				$options = self::maybe_migrate_excluded_users_options($options);
 			}
-			
+
 			// Store options
 			if (!is_array($options)) {
 				$options = array();
@@ -396,7 +397,7 @@ if (!class_exists('MPSUM_Updates_Manager')) {
 		 * @internal Uses plugins_loaded action
 		 */
 		public function plugins_loaded() {
-			
+
 			// Skip disable updates if a user is excluded
 			$disable_updates_skip = false;
 			if (current_user_can('update_plugins')) {
@@ -579,6 +580,15 @@ if (!class_exists('MPSUM_Updates_Manager')) {
 
 			$this->register_template_directories();
 
+			// Check for WP Constants that disable updates and display a notice.
+			$upgrade_constants = MPSUM_Constant_Checks::get_instance();
+			if ($upgrade_constants->is_config_options_disabled()) {
+				$upgrade_constant_notice = get_site_option('easy_updates_manager_dismiss_constant_notices', 0);
+				if (!$upgrade_constant_notice) {
+					add_action('all_admin_notices', array($this, 'show_autoupdate_constant_warning'));
+				}
+			}
+
 			if ('index.php' != $pagenow) return;
 			if (current_user_can('update_plugins') || (defined('EASY_UPDATES_MANAGER_FORCE_DASHNOTICE') && EASY_UPDATES_MANAGER_FORCE_DASHNOTICE)) {
 				$dismissed_until = get_site_option('easy_updates_manager_dismiss_dash_notice_until', 0);
@@ -605,6 +615,14 @@ if (!class_exists('MPSUM_Updates_Manager')) {
 					add_action('all_admin_notices', array($this->get_notices(), 'do_notice'));
 				}
 			}
+		}
+		/**
+		 * Display Constant Warnings
+		 *
+		 * @return void
+		 */
+		public function show_autoupdate_constant_warning() {
+			$this->include_template('notices/dashboard-constant-warning.php');
 		}
 		/**
 		 * Display welcome dashboard
@@ -668,6 +686,8 @@ if (!class_exists('MPSUM_Updates_Manager')) {
 				update_site_option('easy_updates_manager_dismiss_season_notice_until', (time() + 84 * 86400));
 			} elseif ('dismiss_survey_notice_until' == $subaction) {
 				update_site_option('easy_updates_manager_dismiss_survey_notice_until', (time() + 366 * 86400));
+			} elseif ('dismiss_constant_notices' == $subaction) {
+				update_site_option('easy_updates_manager_dismiss_constant_notices', true);
 			}
 
 			wp_send_json($results);

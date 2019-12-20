@@ -280,7 +280,7 @@ class MPSUM_Themes_List_Table extends MPSUM_List_Table {
 
 			switch ($type) {
 				case 'all':
-					$text = _nx('All <span class="count">(%s)</span>', 'All <span class="count">(%s)</span>', $count, 'themes');
+					$text = _nx('All <span class="count">(%s)</span>', 'All <span class="count">(%s)</span>', $count, 'stops-core-theme-and-plugin-updates');
 					break;
 				case 'update_disabled':
 					$text = _n('Updates Disabled <span class="count">(%s)</span>', 'Updates Disabled <span class="count">(%s)</span>', $count, 'stops-core-theme-and-plugin-updates');
@@ -439,6 +439,7 @@ class MPSUM_Themes_List_Table extends MPSUM_List_Table {
 							$checked = 'true';
 						} else {
 							$disable_class = 'eum-active';
+							$checked = 'false';
 						}
 
 						printf('<input type="hidden" name="themes_automatic[%s]" value="%s">',

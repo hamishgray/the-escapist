@@ -56,6 +56,11 @@ class MPSUM_Admin_Advanced_Preview {
 				'desc' => __('Integrates with third-party services to allow automatic updates to be triggered via cron or tools like Zapier.', 'stops-core-theme-and-plugin-updates'),
 				'icon' => 'all_out'
 			),
+			'version-control-protection' => array(
+				'label' => __('Version Control Protection', 'stops-core-theme-and-plugin-updates'),
+				'desc' => __("Prevent updates to themes and plugins under version control.", 'stops-core-theme-and-plugin-updates'),
+				'icon' => 'code'
+			),
 			'plugin-safe-mode' => array(
 				'label' => __('Plugin safe mode', 'stops-core-theme-and-plugin-updates'),
 				'desc' => __("Prevent updates that are not compatible with your current WordPress version or your server's PHP version.", 'stops-core-theme-and-plugin-updates'),
@@ -77,7 +82,7 @@ class MPSUM_Admin_Advanced_Preview {
 				'icon' => 'label'
 			),
 		);
-		
+
 		$items = apply_filters('mpsum_premium_items_list', $items);
 
 		return is_array($items) ? $items : array();

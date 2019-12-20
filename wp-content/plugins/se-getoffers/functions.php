@@ -67,6 +67,10 @@ function offers_display($atts,$content=null) {
 		$salesCardText['siteUrl'] = 'https://www.secretescapes.se';
 		$salesCardText['percentagePre'] = 'Upp till ';
 		$salesCardText['callToAction'] = 'Se Erbjudande';
+	}else if( $territory == 'de' ){
+		$salesCardText['siteUrl'] = 'https://www.secretescapes.de';
+		$salesCardText['percentagePre'] = 'Ab ';
+		$salesCardText['callToAction'] = 'Zum Angebote';
 	}else{
 		$salesCardText['siteUrl'] = 'https://www.secretescapes.com';
 		$salesCardText['percentagePre'] = 'Up to ';

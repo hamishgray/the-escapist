@@ -23,11 +23,6 @@ if (!MPSUM_Utils::get_instance()->is_automatic_updates_enabled()) {
 	printf('<div class="mpsum-error mpsum-bold">%s</div>', esc_html__('Automatic updates are off, so Force Updates will not work.'));
 }
 
-// Show a notice if core updates are off, which disable automatic updates
-if (isset($options['core_updates']) && 'off' == $options['core_updates']) {
-	printf('<div class="mpsum-error mpsum-bold">%s</div>', esc_html__('Core Updates are off, which disables automatic updates.'));
-}
-
 // Show a warning if delay updates is above zero
 if (isset($options['delay_updates']) && $options['delay_updates'] > 0) {
 	printf('<div class="mpsum-notice mpsum-bold">%s</div>', esc_html__('Delayed updates are on, so some assets may not be updated automatically.'));

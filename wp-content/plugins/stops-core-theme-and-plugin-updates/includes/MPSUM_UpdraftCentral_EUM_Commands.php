@@ -26,6 +26,8 @@ class UpdraftCentral_EUM_Commands extends UpdraftCentral_Commands {
 	public function __call($name, $arguments) {
 		if (!current_user_can('manage_options')) {
 			$result = __('User has insufficient capability to manage options', 'stops-core-theme-and-plugin-updates');
+		} elseif ('_post_action' == $name || '_pre_action' == $name) {
+			return array('result' => 'empty_action');
 		} else {
 			$result = call_user_func_array(array($this->commands, $name), $arguments);
 		}

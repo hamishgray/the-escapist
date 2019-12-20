@@ -47,7 +47,7 @@ CONTENT1;
 			'general' => sprintf('<strong>%s</strong> - %s', esc_html__('General', 'stops-core-theme-and-plugin-updates'), esc_html__('Use this screen to finely tune which updates and automatic updates you would like to see.', 'stops-core-theme-and-plugin-updates')),
 			'plugins' => sprintf('<strong>%s</strong> - %s', esc_html__('Plugins', 'stops-core-theme-and-plugin-updates'), esc_html__('If plugin updates are enabled and/or automatic updates for plugins are enabled, you can configure which plugins will receive updates and/or automatic updates.', 'stops-core-theme-and-plugin-updates')),
 			'themes' => sprintf('<strong>%s</strong> - %s', esc_html__('Themes', 'stops-core-theme-and-plugin-updates'), esc_html__('If theme updates are enabled and/or automatic updates for themes are enabled, you can configure which themes will receive updates and/or automatic updates.', 'stops-core-theme-and-plugin-updates')),
-			'logs' => sprintf('<strong>%s</strong> - %s', esc_html__('Logs', 'stops-core-theme-and-plugin-updates'), esc_html__('Logs all plugin, theme, and core updates. This tab is only visible if enabled in the "General" tab.', 'stops-core-theme-and-plugin-updates')),
+			'logs' => sprintf('<strong>%s</strong> - %s', esc_html__('Logs', 'stops-core-theme-and-plugin-updates'), esc_html__('Logs all plugin, theme, and core updates. This tab is visible by default.', 'stops-core-theme-and-plugin-updates')),
 			'advanced' => sprintf('<strong>%s</strong> - %s', esc_html__('Advanced', 'stops-core-theme-and-plugin-updates'), esc_html__('Reset all options or allow certain users to see all updates regardless of what settings you have set.', 'stops-core-theme-and-plugin-updates')),
 
 		);

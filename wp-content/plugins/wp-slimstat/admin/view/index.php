@@ -63,7 +63,7 @@
 					<a class="slimstat-filter-link noslimstat" href="<?php echo wp_slimstat_reports::fs_url( 'strtotime equals today&&&interval equals -7' ) ?>"><?php _e( 'Last 7 Days', 'wp-slimstat' ) ?></a>
 					<a class="slimstat-filter-link noslimstat" href="<?php echo wp_slimstat_reports::fs_url( 'strtotime equals today&&&interval equals -28' ) ?>"><?php _e( 'Last 4 weeks', 'wp-slimstat' ) ?></a>
 					<a class="slimstat-filter-link noslimstat" href="<?php echo wp_slimstat_reports::fs_url( 'strtotime equals today&&&interval equals -84' ) ?>"><?php _e( 'Last 12 weeks', 'wp-slimstat' ) ?></a>
-					<a class="slimstat-filter-link noslimstat" href="<?php echo wp_slimstat_reports::fs_url( 'strtotime equals today&&&interval equals -364' ) ?>"><?php _e( 'Last Year', 'wp-slimstat' ) ?></a>
+					<a class="slimstat-filter-link noslimstat" href="<?php echo wp_slimstat_reports::fs_url( 'strtotime equals today&&&interval equals -364' ) ?>"><?php _e( 'Last 12 months', 'wp-slimstat' ) ?></a>
 				</div>
 
 				<strong><?php _e( 'Date Range', 'wp-slimstat' ) ?></strong>
@@ -124,7 +124,7 @@
 	</form>
 
 	<?php
-		if ( !file_exists( wp_slimstat::$maxmind_path ) && wp_slimstat::$settings[ 'notice_geolite' ] == 'on' ) {
+		if ( !file_exists( wp_slimstat::$upload_dir . '/maxmind.mmdb' ) && wp_slimstat::$settings[ 'notice_geolite' ] == 'on' ) {
 			wp_slimstat_admin::show_message( sprintf( __( "<a href='%s' class='noslimstat'>Install MaxMind's GeoLite DB</a> to identify your visitors' country of origin.", 'wp-slimstat' ), self::$config_url . '6#wp-slimstat-third-party-libraries' ), 'warning', 'geolite' );
 		}
 
@@ -146,18 +146,9 @@
 	<div class="meta-box-sortables">
 		<form method="get" action=""><input type="hidden" id="meta-box-order-nonce" name="meta-box-order-nonce" value="<?php echo wp_create_nonce('meta-box-order') ?>" /></form><?php
 
-		foreach( wp_slimstat_reports::$reports_info as $a_report_id => $a_report_info ) {
-			if ( !is_array( $a_report_info[ 'classes' ] ) ) {
-				continue;
-			}
-
+		foreach( wp_slimstat_reports::$user_reports[ wp_slimstat_admin::$current_screen ] as $a_report_id ) {
 			wp_slimstat_reports::report_header( $a_report_id );
-
-			// Third party reports can add their own methods via the callback parameter
-			if ( !in_array( 'hidden', $a_report_info[ 'classes' ] ) ) {
-				wp_slimstat_reports::callback_wrapper( array( 'id' => $a_report_id ) );
-			}
-
+			wp_slimstat_reports::callback_wrapper( array( 'id' => $a_report_id ) );
 			wp_slimstat_reports::report_footer();
 		}
 	?></div>
