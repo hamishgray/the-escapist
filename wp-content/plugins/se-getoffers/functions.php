@@ -69,8 +69,8 @@ function offers_display($atts,$content=null) {
 		$salesCardText['callToAction'] = 'Se Erbjudande';
 	}else if( $territory == 'de' ){
 		$salesCardText['siteUrl'] = 'https://www.secretescapes.de';
-		$salesCardText['percentagePre'] = 'Ab ';
-		$salesCardText['callToAction'] = 'Zum Angebote';
+		$salesCardText['percentagePre'] = 'Bis zu ';
+		$salesCardText['callToAction'] = 'Zum Angebot';
 	}else{
 		$salesCardText['siteUrl'] = 'https://www.secretescapes.com';
 		$salesCardText['percentagePre'] = 'Up to ';
@@ -196,8 +196,14 @@ function offers_display($atts,$content=null) {
 
 	// loop through custom array, build sales cards
 	for($i = 0; $i <= $loop_limit; $i++){
-
 		$item = $salesData[$i];
+
+		if ( $item['discount'] > 0 ){
+			$discountStr = "<p class='offer__discount'>".$salesCardText['percentagePre']." <span class='offer__discount-num'>-".$item['discount']."%</span></p>";
+		}else{
+			$discountStr = "";
+		}
+
 		$saleCards.=
 			"<div class='offers-col'>
 				<div class='offer'>
@@ -208,7 +214,7 @@ function offers_display($atts,$content=null) {
 						 <p class='offer__location'>".$item['location']."</p>
 					   <p class='offer__title'><a class='offer__title-link' href='".$salesCardText['siteUrl'].$item['link']."'>".$item['title']."</a></p>
 						 <p class='offer__description'>".$item['description']."</p>
-				 	   <p class='offer__discount'>".$salesCardText['percentagePre']." <span class='offer__discount-num'>-".$item['discount']."%</span></p>
+						 ". $discountStr ."
 						 <a class='offer__button' href='".$salesCardText['siteUrl'].$item['link']."'>".$salesCardText['callToAction']."</a>
 					</div>
 				</div>
