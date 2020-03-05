@@ -10,7 +10,7 @@
 	text-align: center;
 	&__logo {
 		width: 80%;
-		max-width: 260px;
+		max-width: 300px;
 		margin: auto;
 		& .site-logo-link {
 			display: block;
@@ -18,6 +18,15 @@
 			padding: 0;
 			margin-bottom: 20px;
 		}
+	}
+	&__description {
+		color: $white;
+		font-size: 15px;
+		text-align: center;
+		max-width: $md;
+		width: 100%;
+		margin: auto;
+		padding-bottom: 15px;
 	}
 }
 

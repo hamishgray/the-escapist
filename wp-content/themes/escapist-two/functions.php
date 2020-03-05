@@ -353,3 +353,16 @@ function button_shortcode( $atts ) {
 		</div>');
 }
 add_shortcode('button', 'button_shortcode');
+
+
+
+// Add site description field to settings
+add_filter('admin_init', 'add_site_description_field');
+function add_site_description_field() {
+	register_setting('general', 'site_description', 'esc_attr');
+	add_settings_field('site_description', '<label for="site_description">'.__('Site Description' , 'site_description' ).'</label>' , 'my_site_description', 'general');
+}
+function my_site_description() {
+	$site_description = get_option( 'site_description', '' );
+	echo '<textarea id="site_description" style="width: 35%;" rows="4" type="text" name="site_description">' . $site_description . '</textarea>';
+}

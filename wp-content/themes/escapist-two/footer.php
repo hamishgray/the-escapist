@@ -16,6 +16,11 @@
 		<?php escapist_the_site_logo(); ?>
 	</div>
 
+	<div class="site-footer__description">
+		<?php echo get_option( 'site_description', '' ); ?>
+	</div>
+	<hr class="hr--center hr--white20">
+
 	<?php get_sidebar( 'footer' ); ?>
 
 	<?php if ( has_nav_menu( 'footer' ) ) : ?>
@@ -52,8 +57,6 @@
 			?>
 		</nav><!-- .social-navigation -->
 	<?php endif; ?>
-
-	<div id="core-footer"></div>
 
 	<hr class="hr--center hr--white20">
 	<small class="text--center text--grey">© Copyright <?php echo date('Y'); ?> Secret Escapes</small>
