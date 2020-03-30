@@ -366,3 +366,6 @@ function my_site_description() {
 	$site_description = get_option( 'site_description', '' );
 	echo '<textarea id="site_description" style="width: 35%;" rows="4" type="text" name="site_description">' . $site_description . '</textarea>';
 }
+
+/* Disable WordPress Admin Bar for all users but admins. */
+show_admin_bar(false);
