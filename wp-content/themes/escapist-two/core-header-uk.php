@@ -40,5 +40,5 @@
 			</div>
 		</div>
 	';
-	echo do_shortcode('[agentsw ua="sp"]' . $header . '[/agentsw]');
+	echo do_shortcode('[ifurlparam param="fromApp" empty="1"]' . $header . '[/ifurlparam]');
 ?>

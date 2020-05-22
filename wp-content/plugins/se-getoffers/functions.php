@@ -233,7 +233,8 @@ function offers_display($atts,$content=null) {
 
 	// ===================
 	// Return full offer section. (& hide offers on app)
-	$result = do_shortcode('[agentsw ua="sp"]' . $salesSection . '[/agentsw]');
+	$result = do_shortcode('[ifurlparam param="fromApp" empty="1"]' . $salesSection . '[/ifurlparam]');
+
 	return $result;
 
 }
