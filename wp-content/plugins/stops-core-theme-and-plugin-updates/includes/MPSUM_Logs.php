@@ -107,7 +107,27 @@ class MPSUM_Logs {
 	 * @return void
 	 */
 	public function update_translations($update_results) {
-		Language_Pack_Upgrader::async_upgrade();
+		$language_updates = wp_get_translation_updates();
+		if (! $language_updates) {
+			return;
+		}
+		ob_start(); // ob_start is necessary to prevent notices from showing up when UpdraftPlus is running a backup when force updates is run. Since 9.0.1.
+		$language_pack = new Language_Pack_Upgrader();
+		$language_pack->bulk_upgrade($language_updates);
+		ob_end_clean();
+
+		// Log translated updates.
+		if (is_array($language_updates) && ! empty($language_updates)) {
+			foreach ($language_updates as $language_update) {
+				$status = 1;
+				$version = $language_update->version;
+				$version_from = $version;
+				$slug = $language_update->slug;
+				$name = $this->get_name_for_update($language_update->type, $slug);
+				$name = $name . ' (' . $language_update->language . ')';
+				$this->insert_log($name, 'translation', $version_from, $version, 'automatic', $status);
+			}
+		}
 	}
 
 	/**
@@ -263,6 +283,7 @@ class MPSUM_Logs {
 	public function automatic_updates($update_results) {
 		if (empty($update_results)) return;
 		$this->log_messages = $this->get_cached_version_information();
+		delete_site_option('eum_auto_backups'); // Remove option that is needed to prevent duplicate backups. Since 9.0.1.
 		foreach ($update_results as $type => $results) {
 			switch ($type) {
 				case 'core':

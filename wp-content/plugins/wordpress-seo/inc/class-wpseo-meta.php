@@ -142,7 +142,7 @@ class WPSEO_Meta {
 		],
 		'advanced' => [
 			'meta-robots-noindex'  => [
-				'type'          => 'select',
+				'type'          => 'hidden',
 				'title'         => '', // Translation added later.
 				'default_value' => '0', // = post-type default.
 				'options'       => [
@@ -152,7 +152,7 @@ class WPSEO_Meta {
 				],
 			],
 			'meta-robots-nofollow' => [
-				'type'          => 'radio',
+				'type'          => 'hidden',
 				'title'         => '', // Translation added later.
 				'default_value' => '0', // = follow.
 				'options'       => [
@@ -161,7 +161,7 @@ class WPSEO_Meta {
 				],
 			],
 			'meta-robots-adv'      => [
-				'type'          => 'multiselect',
+				'type'          => 'hidden',
 				'title'         => '', // Translation added later.
 				'default_value' => '',
 				'description'   => '', // Translation added later.
@@ -172,19 +172,19 @@ class WPSEO_Meta {
 				],
 			],
 			'bctitle'              => [
-				'type'          => 'text',
+				'type'          => 'hidden',
 				'title'         => '', // Translation added later.
 				'default_value' => '',
 				'description'   => '', // Translation added later.
 			],
 			'canonical'            => [
-				'type'          => 'text',
+				'type'          => 'hidden',
 				'title'         => '', // Translation added later.
 				'default_value' => '',
 				'description'   => '', // Translation added later.
 			],
 			'redirect'             => [
-				'type'          => 'text',
+				'type'          => 'url',
 				'title'         => '', // Translation added later.
 				'default_value' => '',
 				'description'   => '', // Translation added later.
@@ -249,7 +249,7 @@ class WPSEO_Meta {
 	public static function init() {
 
 		foreach ( self::$social_networks as $option => $network ) {
-			if ( true === WPSEO_Options::get( $option, false ) ) {
+			if ( WPSEO_Options::get( $option, false ) === true ) {
 				foreach ( self::$social_fields as $box => $type ) {
 					self::$meta_fields['social'][ $network . '-' . $box ] = [
 						'type'          => $type,
@@ -411,13 +411,12 @@ class WPSEO_Meta {
 				break;
 
 
-			case ( $field_def['type'] === 'multiselect' && $meta_key === self::$meta_prefix . 'meta-robots-adv' ):
+			case ( $field_def['type'] === 'hidden' && $meta_key === self::$meta_prefix . 'meta-robots-adv' ):
 				$clean = self::validate_meta_robots_adv( $meta_value );
 				break;
 
 
-			case ( $field_def['type'] === 'text' && $meta_key === self::$meta_prefix . 'canonical' ):
-			case ( $field_def['type'] === 'text' && $meta_key === self::$meta_prefix . 'redirect' ):
+			case ( $field_def['type'] === 'url' || $meta_key === self::$meta_prefix . 'canonical' ):
 				// Validate as url(-part).
 				$url = WPSEO_Utils::sanitize_url( $meta_value );
 				if ( $url !== '' ) {
@@ -446,6 +445,13 @@ class WPSEO_Meta {
 				}
 				break;
 
+			case ( $field_def['type'] === 'hidden' && isset( $field_def['options'] ) ):
+				// Only allow value if it's one of the predefined options.
+				if ( isset( $field_def['options'][ $meta_value ] ) ) {
+					$clean = $meta_value;
+				}
+				break;
+
 			case ( $field_def['type'] === 'textarea' ):
 				if ( is_string( $meta_value ) ) {
 					// Remove line breaks and tabs.
@@ -455,7 +461,7 @@ class WPSEO_Meta {
 				}
 				break;
 
-			case ( 'multiselect' === $field_def['type'] ):
+			case ( $field_def['type'] === 'multiselect' ):
 				$clean = $meta_value;
 				break;
 

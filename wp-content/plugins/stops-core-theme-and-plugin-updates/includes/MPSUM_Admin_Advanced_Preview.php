@@ -61,6 +61,11 @@ class MPSUM_Admin_Advanced_Preview {
 				'desc' => __("Prevent updates to themes and plugins under version control.", 'stops-core-theme-and-plugin-updates'),
 				'icon' => 'code'
 			),
+			'unmaintained-plugins' => array(
+				'label' => __('Unmaintained plugins', 'stops-core-theme-and-plugin-updates'),
+				'desc' => __("Check for unmaintained plugins in the WordPress plugin directory.", 'stops-core-theme-and-plugin-updates'),
+				'icon' => 'hourglass_empty'
+			),
 			'plugin-safe-mode' => array(
 				'label' => __('Plugin safe mode', 'stops-core-theme-and-plugin-updates'),
 				'desc' => __("Prevent updates that are not compatible with your current WordPress version or your server's PHP version.", 'stops-core-theme-and-plugin-updates'),

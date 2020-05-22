@@ -1,11 +1,11 @@
 === UserAgent Content Switcher ===
 Contributors: Katsushi Kawamori
 Donate link: https://shop.riverforest-wp.info/donate/
-Tags:  Browser, phone, platform, user agent, useragent, web, web browser
+Tags: Browser, phone, platform, user agent, useragent, web, web browser
 Requires at least: 3.0.1
 Requires PHP: 5.6
-Tested up to: 5.2
-Stable tag: 2.39
+Tested up to: 5.4
+Stable tag: 3.03
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,6 +14,9 @@ Display the html written between the shortcode of each user agent.
 == Description ==
 
 Display the html written between the shortcode of each user agent.
+
+* Can add a shortcode attribute value and set the corresponding user agent.
+* Sibling plugin -> [UserAgent Themes Switcher](https://wordpress.org/plugins/useragent-themes-switcher/).
 
 == Installation ==
 
@@ -60,6 +63,18 @@ none
 2. Edit & Quick Tag
 
 == Changelog ==
+
+= 3.03 =
+Fixed admin screen.
+
+= 3.02 =
+The admin screen has been changed.
+
+= 3.01 =
+Fixed a problem with the form validation process when adding "Type".
+
+= 3.00 =
+Can add a shortcode attribute value and set the corresponding user agent.
 
 = 2.39 =
 Conformed to the WordPress coding standard.

@@ -72,7 +72,7 @@ class YARPP {
 		}
 
 		if (isset($_REQUEST['yarpp_debug'])) $this->debug = true;
-
+		
 		if (!get_option('yarpp_version')) update_option('yarpp_activated', true);
 
         /**
@@ -84,7 +84,7 @@ class YARPP {
 			$this->enforce();
 		}
 	}
-
+		
 	/*
 	 * OPTIONS
 	 */
@@ -159,10 +159,10 @@ class YARPP {
 			'manually_using_thumbnails' => false,
 		);
 	}
-
+	
 	public function set_option($options, $value = null) {
 		$current_options = $this->get_option();
-
+	
 		/* We can call yarpp_set_option(key,value) if we like. */
 		if (!is_array($options)) {
 			if (isset($value)) {
@@ -171,10 +171,10 @@ class YARPP {
 				return false;
             }
 		}
-
+	
 		$new_options = array_merge($current_options, $options);
 		update_option('yarpp', $new_options);
-
+	
 		// new in 3.1: clear cache when updating certain settings.
 		$clear_cache_options = array('show_pass_post' => 1, 'recent' => 1, 'threshold' => 1, 'past_only' => 1);
 
@@ -202,12 +202,12 @@ class YARPP {
 		$options = array_merge($this->default_options, $options);
 
 		if (is_null($option)) return $options;
-
+	
 		$optionpath     = array();
 		$parsed_option  = array();
 		wp_parse_str($option, $parsed_option);
 		$optionpath = $this->array_flatten($parsed_option);
-
+		
 		$current = $options;
 		foreach ($optionpath as $optionpart) {
 			if (!is_array($current) || !isset($current[$optionpart])) return null;
@@ -231,7 +231,7 @@ class YARPP {
 
         return $out;
     }
-
+	
 	private function array_flatten($array, $given = array()) {
 		foreach ($array as $key => $val) {
 			$given[] = $key;
@@ -262,7 +262,7 @@ class YARPP {
 		if (!(bool) $this->diagnostic_fulltext_disabled()) return $this->diagnostic_fulltext_indices();
 		return true;
 	}
-
+	
 	public function activate() {
 		/*
 		 * If it's not known to be disabled, but the indexes aren't there.
@@ -284,7 +284,7 @@ class YARPP {
 		} else {
 			$this->upgrade();
 		}
-
+	
 		return true;
 	}
 
@@ -304,11 +304,11 @@ class YARPP {
 		}
 		return 'UNKNOWN';
 	}
-
+	
 	function diagnostic_fulltext_disabled() {
 		return get_option('yarpp_fulltext_disabled', false);
 	}
-
+	
 	public function enable_fulltext() {
 		global $wpdb;
         /*
@@ -338,16 +338,16 @@ class YARPP {
             $this->disable_fulltext();
             return false;
         }
-
+		
 		/* Restore previous setting */
 		$wpdb->show_errors($previous_value);
 
         return true;
 	}
-
+	
 	public function disable_fulltext() {
 		if ((bool) get_option('yarpp_fulltext_disabled', false) === true) return;
-
+	
 		/* Remove title and body weights: */
 		$weight = $this->get_option('weight');
 		unset($weight['title']);
@@ -386,26 +386,26 @@ class YARPP {
 
 		return implode('|', $list);
 	}
-
+	
 	public function diagnostic_post_thumbnails() {
 		return current_theme_supports('post-thumbnails', 'post');
 	}
-
+	
 	public function diagnostic_custom_templates() {
 		return count($this->admin->get_templates());
 	}
-
+	
 	public function diagnostic_happy() {
 		$stats = $this->cache->stats();
 
 		if (!(array_sum($stats) > 0)) return false;
-
+		
 		$sum = array_sum(array_map('array_product', array_map(null, array_values($stats), array_keys($stats))));
 		$avg = $sum / array_sum( $stats );
 
 		return ($this->cache->cache_status() > 0.1 && $avg > 2);
 	}
-
+	
 	public function diagnostic_generate_thumbnails() {
 		return (defined('YARPP_GENERATE_THUMBNAILS') && YARPP_GENERATE_THUMBNAILS);
 	}
@@ -423,7 +423,7 @@ class YARPP {
 
 		$dimensions = $_wp_additional_image_sizes['yarpp-thumbnail'];
 		$dimensions['size'] = 'yarpp-thumbnail';
-
+		
 		/* Ensure YARPP dimensions format: */
 		$dimensions['width']  = (int) $dimensions['width'];
 		$dimensions['height'] = (int) $dimensions['height'];
@@ -482,7 +482,7 @@ class YARPP {
 			}
 		}
 	}
-
+	
 	private $templates = null;
 	public function get_templates() {
 		if (is_null($this->templates)) {
@@ -496,7 +496,7 @@ class YARPP {
 		}
 		return (array) $this->templates;
 	}
-
+	
 	public function get_template_data($file) {
 		$headers = array(
 			'name'          => 'YARPP Template',
@@ -512,11 +512,11 @@ class YARPP {
 
         return $data;
 	}
-
+	
 	/*
 	 * UPGRADE ROUTINES
 	 */
-
+	
 	public function upgrade() {
 		$last_version = get_option('yarpp_version');
 
@@ -530,21 +530,21 @@ class YARPP {
 		if ($last_version && version_compare('3.5.2b2', $last_version) > 0) $this->upgrade_3_5_2b2();
 		if ($last_version && version_compare('3.6b7',   $last_version) > 0) $this->upgrade_3_6b7();
 		if ($last_version && version_compare('4.0.1',   $last_version) > 0) $this->upgrade_4_0_1();
-
+		
 		$this->cache->upgrade($last_version);
 		/* flush cache in 3.4.1b5 as 3.4 messed up calculations. */
 		if ($last_version && version_compare('3.4.1b5', $last_version) > 0) $this->cache->flush();
-
+	
 		$this->version_info(true);
-
+	
 		update_option('yarpp_version', YARPP_VERSION);
 		update_option('yarpp_upgraded', true);
 		$this->delete_transient('yarpp_optin');
 	}
-
+	
 	public function upgrade_3_4b2() {
 		global $wpdb;
-
+	
 		$yarpp_3_3_options = array(
 			'threshold' => 4,
 			'limit' => 4,
@@ -591,7 +591,7 @@ class YARPP {
 			'promote_yarpp' => false,
 			'rss_promote_yarpp' => false
       );
-
+	
 		$yarpp_options = array();
 		foreach ($yarpp_3_3_options as $key => $default) {
 			$value = get_option("yarpp_$key", null);
@@ -606,19 +606,19 @@ class YARPP {
 			$value = stripslashes(stripslashes($value));
 			// value options used to be stored with a blank space at the end... don't ask.
 			$value = rtrim($value, ' ');
-
+			
 			if (is_int($default)) {
 				$yarpp_options[$key] = absint($value);
             } else {
 				$yarpp_options[$key] = $value;
             }
 		}
-
+		
 		// add the options directly first, then call set_option which will ensure defaults,
 		// in case any new options have been added.
 		update_option('yarpp', $yarpp_options);
 		$this->set_option($yarpp_options);
-
+		
 		$option_keys = array_keys($yarpp_options);
 		// append some keys for options which are long deprecated:
 		$option_keys[] = 'ad_hoc_caching';
@@ -629,7 +629,7 @@ class YARPP {
 			$wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name IN {$in}");
 		}
 	}
-
+	
 	public function upgrade_3_4b5() {
 		$options = $this->get_option();
 		$options['exclude'] = array(
@@ -640,7 +640,7 @@ class YARPP {
 		unset($options['discats']);
 		update_option('yarpp', $options);
 	}
-
+	
 	public function upgrade_3_4b8() {
 		$options = $this->get_option();
 		$options['weight'] = array(
@@ -651,7 +651,7 @@ class YARPP {
 				'category' => (int) @$options['categories'],
 			)
 		);
-
+		
 		// ensure that we consider something
 		if ($options['weight']['title'] < 2
             && $options['weight']['body'] < 2
@@ -660,7 +660,7 @@ class YARPP {
         ) {
 			$options['weight'] = $this->default_options['weight'];
         }
-
+			
 		unset($options['title']);
 		unset($options['body']);
 		unset($options['tags']);
@@ -668,7 +668,7 @@ class YARPP {
 
 		update_option('yarpp', $options);
 	}
-
+	
 	public function upgrade_3_4_4b2() {
 		$options = $this->get_option();
 
@@ -686,7 +686,7 @@ class YARPP {
         } else {
 			$options['weight']['body'] = $weight_map[(int) $options['weight']['body']];
         }
-
+		
 		$options['require_tax'] = array();
 		foreach ($options['weight']['tax'] as $tax => $value) {
 			if ($value == 3) $options['require_tax'][$tax] = 1;
@@ -713,7 +713,7 @@ class YARPP {
 
 		update_option( 'yarpp', $options );
 	}
-
+	
 	public function upgrade_3_4_4b3() {
 		$options = $this->get_option();
 
@@ -727,7 +727,7 @@ class YARPP {
 
 		update_option('yarpp', $options);
 	}
-
+	
 	public function upgrade_3_4_4b4() {
 		$options = $this->get_option();
 
@@ -739,7 +739,7 @@ class YARPP {
 
         update_option('yarpp', $options);
 	}
-
+	
 	public function upgrade_3_5_2b2() {
 		// fixing the effects of a previous bug affecting non-MyISAM users
 		if (is_null($this->get_option('weight')) || !is_array( $this->get_option('weight'))) {
@@ -765,7 +765,7 @@ class YARPP {
 
         update_option('yarpp', $options);
 	}
-
+	
 	public function upgrade_4_0_1() {
 		delete_transient('yarpp_version_info');
 	}
@@ -775,7 +775,7 @@ class YARPP {
         $new = array_merge($this->pro_default_options,$this->yarppPro);
         update_option('yarpp_pro', $new);
     }
-
+	
 	/*
 	 * UTILITIES
 	 */
@@ -806,37 +806,37 @@ class YARPP {
 			unset($this->current_post);
 		}
 	}
-
+	
 	private $post_types = null;
 	public function get_post_types($field = 'name') {
 		if (is_null($this->post_types)) {
 			$this->post_types = get_post_types(array(), 'objects');
 			$this->post_types = array_filter($this->post_types, array($this, 'post_type_filter'));
 		}
-
+		
 		if ($field === 'objects') return $this->post_types;
 
 		return wp_list_pluck( $this->post_types, $field );
 	}
-
+	
 	private function post_type_filter($post_type) {
 		if ($post_type->_builtin && $post_type->show_ui) return true;
 		if (isset($post_type->yarpp_support)) return $post_type->yarpp_support;
 		return false;
 	}
-
+	
 	private $taxonomies = null;
 	function get_taxonomies($field = false) {
 		if (is_null($this->taxonomies)) {
 			$this->taxonomies = get_taxonomies(array(), 'objects');
 			$this->taxonomies = array_filter($this->taxonomies, array($this, 'taxonomy_filter'));
 		}
-
+		
 		if ($field) return wp_list_pluck($this->taxonomies, $field);
 
 		return $this->taxonomies;
 	}
-
+	
 	private function taxonomy_filter($taxonomy) {
 		if (!count(array_intersect($taxonomy->object_type, $this->get_post_types()))) return false;
 
@@ -915,7 +915,7 @@ class YARPP {
 		);
 
 		$data['yarpp']['settings']['auto_display_post_types'] = implode('|',$settings['auto_display_post_types']);
-
+		
 		$changed = array();
 		foreach ($check_changed as $key) {
 			if ($this->default_options[$key] !== $settings[$key]) $changed[] = $key;
@@ -930,7 +930,7 @@ class YARPP {
 		}
 
 		$data['yarpp']['changed_settings'] = implode('|', $changed);
-
+		
 		if (method_exists($this->cache, 'cache_status')) $data['yarpp']['cache_status'] = $this->cache->cache_status();
 
         if (method_exists($this->cache, 'stats')) {
@@ -940,7 +940,7 @@ class YARPP {
             foreach ($stats as $key => $value) $flattened[] = "$key:$value";
 			$data['yarpp']['stats'] = implode('|', $flattened);
 		}
-
+			
 		if (method_exists($wpdb, 'db_version')) {
             $data['versions']['mysql'] = preg_replace('/[^0-9.].*/', '', $wpdb->db_version());
         }
@@ -955,7 +955,7 @@ class YARPP {
 		foreach (get_taxonomies(array('public' => true)) as $taxonomy) {
 			$data['stats']['terms'][$taxonomy] = wp_count_terms($taxonomy);
 		}
-
+		
 		if (is_multisite()) {
 			$data['multisite'] = array(
 				'url'   => network_site_url(),
@@ -974,7 +974,7 @@ class YARPP {
 		echo preg_replace("/\n\s*\n/u", "\n", $formatted);
 		echo "</pre>";
 	}
-
+	
 	/*
 	 * CORE LOOKUP + DISPLAY FUNCTIONS
 	 */
@@ -1037,7 +1037,7 @@ class YARPP {
      * @return string
 	 */
 	public function display_related($reference_ID = null, $args = array(), $echo = true) {
-
+        
         /* If we're already in a YARPP loop, stop now. */
         if ($this->cache->is_yarpp_time() || $this->cache_bypass->is_yarpp_time()) return false;
         $this->enforce();
@@ -1128,7 +1128,7 @@ class YARPP {
         } else {
             include(YARPP_DIR.'/includes/template_builtin.php');
         }
-
+        
         $output = trim($output)."\n";
 
         if ($cache_status === YARPP_NO_RELATED) {
@@ -1158,8 +1158,8 @@ class YARPP {
         if ($echo) echo $output;
 		return $output;
 	}
-
-	/*
+	
+	/* 
 	 * @param (int) $reference_ID
 	 * @param (array) $args
 	 */
@@ -1178,7 +1178,7 @@ class YARPP {
 		 * @since 3.5.3: don't compute on revisions.
          */
 		if ($the_post = wp_is_post_revision($reference_ID)) $reference_ID = $the_post;
-
+			
 		$this->setup_active_cache($args);
 
 		$options = array('limit', 'order');
@@ -1186,10 +1186,10 @@ class YARPP {
 
 		$cache_status = $this->active_cache->enforce($reference_ID);
 		if ($cache_status === YARPP_DONT_RUN || $cache_status === YARPP_NO_RELATED) return array();
-
+					
 		/* Get ready for YARPP TIME! */
 		$this->active_cache->begin_yarpp_time($reference_ID, $args);
-
+	
 		$related_query = new WP_Query();
 		$orders = explode(' ',$order);
 		$related_query->query(array(
@@ -1199,7 +1199,7 @@ class YARPP {
 			'showposts' => $limit,
 			'post_type' => (isset($args['post_type'])) ? $args['post_type'] : $this->get_post_types()
 		));
-
+	
 		$related_query->posts = apply_filters(
             'yarpp_results',
             $related_query->posts,
@@ -1209,13 +1209,13 @@ class YARPP {
                 'related_ID'    => $reference_ID
             )
         );
-
+	
 		$this->active_cache->end_yarpp_time();
-
+	
 		return $related_query->posts;
 	}
-
-	/*
+	
+	/* 
 	 * @param (int) $reference_ID
 	 * @param (array) $args
 	 */
@@ -1223,8 +1223,8 @@ class YARPP {
 		/* if we're already in a YARPP loop, stop now. */
 		if ($this->cache->is_yarpp_time() || $this->cache_bypass->is_yarpp_time()) return false;
 
-		$this->enforce();
-
+		$this->enforce();	
+	
 		if (is_numeric($reference_ID)) {
 			$reference_ID = (int) $reference_ID;
         } else {
@@ -1233,11 +1233,11 @@ class YARPP {
 
 		/** @since 3.5.3: don't compute on revisions */
 		if ($the_post = wp_is_post_revision($reference_ID)) $reference_ID = $the_post;
-
+				
 		$this->setup_active_cache($args);
-
+	
 		$cache_status = $this->active_cache->enforce($reference_ID);
-
+	
 		if ($cache_status === YARPP_NO_RELATED) return false;
 
         /* Get ready for YARPP TIME! */
@@ -1248,7 +1248,7 @@ class YARPP {
 			'showposts' => 1,
 			'post_type' => (isset($args['post_type'])) ? $args['post_type'] : $this->get_post_types()
 		));
-
+		
 		$related_query->posts = apply_filters(
             'yarpp_results',
             $related_query->posts,
@@ -1258,15 +1258,15 @@ class YARPP {
                 'related_ID'    => $reference_ID
             )
         );
-
+		
 		$return = $related_query->have_posts();
 		unset($related_query);
 
 		$this->active_cache->end_yarpp_time();
-
+	
 		return $return;
 	}
-
+		
 	/**
 	 * @param array $args
 	 * @param bool $echo
@@ -1275,7 +1275,7 @@ class YARPP {
 	public function display_demo_related($args = array(), $echo = true) {
 	    /* if we're already in a demo YARPP loop, stop now. */
 		if ($this->cache_bypass->demo_time) return false;
-
+	
 		$options = array(
             'domain',
             'limit',
@@ -1284,9 +1284,9 @@ class YARPP {
             'promote_yarpp'
         );
 		extract($this->parse_args($args, $options));
-
+	
 		$this->cache_bypass->begin_demo_time($limit);
-
+	
 		$output = "<div class='";
 		if ($domain === 'website') {
 			$output .= "yarpp-related";
@@ -1298,10 +1298,10 @@ class YARPP {
 		global $wp_query; $wp_query = new WP_Query();
 
         $wp_query->query('');
-
+	
 		$this->prep_query($domain === 'rss');
 		$related_query = $wp_query; // backwards compatibility
-
+	
 		if ((bool) $template && $template === 'thumbnails') {
 			include(YARPP_DIR.'/includes/template_thumbnails.php');
 		} else if ((bool) $template && file_exists(STYLESHEETPATH.'/'.$template)) {
@@ -1313,9 +1313,9 @@ class YARPP {
 			include(YARPP_DIR.'/includes/template_builtin.php');
 		}
 		$output = trim($output)."\n";
-
+		
 		$this->cache_bypass->end_demo_time();
-
+		
 		if ($promote_yarpp) {
 			$output .=
                 '<p>'.
@@ -1329,11 +1329,11 @@ class YARPP {
                 "</p>\n";
         }
 		$output .= "</div>";
-
+	
 		if ($echo) echo $output;
 		return $output;
 	}
-
+	
 	public function parse_args($args, $options) {
 		$options_with_rss_variants = array(
 			'limit',
@@ -1363,20 +1363,20 @@ class YARPP {
             } else {
 				$default = $this->get_option( $option );
             }
-
+			
 			if (isset($args[$option]) && $args[$option] !== $default) {
 				$r[$option] = $args[$option];
 			} else {
 				$r[$option] = $default;
 			}
-
+			
 			if ($option === 'weight' && !isset($r[$option]['tax'])) {
 				$r[$option]['tax'] = array();
             }
 		}
 		return $r;
 	}
-
+	
 	private function setup_active_cache( $args ) {
 		/* the options which the main sql query cares about: */
 		$magic_options = array(
@@ -1398,7 +1398,7 @@ class YARPP {
 			 * limit is a little different... if it's less than what we cache, let it go.
              */
 			if ($option === 'limit' && $args[$option] <= max($defaults['limit'], $defaults['rss_limit']))  continue;
-
+			
 			if ($args[$option] !== $defaults[$option]) {
 				$this->active_cache = $this->cache_bypass;
 				return;
@@ -1407,7 +1407,7 @@ class YARPP {
 
 		$this->active_cache = $this->cache;
 	}
-
+	
 	private function prep_query($is_feed = false) {
 		global $wp_query;
 		$wp_query->in_the_loop = true;
@@ -1418,11 +1418,11 @@ class YARPP {
          */
 		$wp_query->is_single = false;
 	}
-
+	
 	/*
 	 * DEFAULT CONTENT FILTERS
 	 */
-
+	 
 	public function the_content($content) {
 		/* this filter doesn't handle feeds */
 		if (is_feed()) return $content;
@@ -1432,7 +1432,7 @@ class YARPP {
             $content .= $this->display_basic();
             $content .= $this->display_pro('website');
         }
-
+	
 		return $content;
 	}
 
@@ -1449,7 +1449,7 @@ class YARPP {
         }
 
 		$post_types = apply_filters('yarpp_map_post_types', $post_types, 'rss');
-
+	
 		return $content.$this->display_related(
             null,
             array(
@@ -1459,7 +1459,7 @@ class YARPP {
             false
         );
 	}
-
+	
 	public function the_excerpt_rss($content) {
 		if (!$this->get_option('rss_excerpt_display') || !$this->get_option('rss_display')) return $content;
 
@@ -1473,10 +1473,10 @@ class YARPP {
         } else {
 			$type = array('post');
         }
-
+	
 		return $content . $this->clean_pre($this->display_related(null, array('post_type' => $type, 'domain' => 'rss'), false));
 	}
-
+	
 	/*
 	 * UTILS
 	 */
@@ -1488,13 +1488,13 @@ class YARPP {
 		if (!$enforce_cache && false !== ($result = $this->get_transient('yarpp_version_info'))) return $result;
 
 		$version = YARPP_VERSION;
-		$remote = wp_remote_post("http://yarpp.org/checkversion.php?format=php&version={$version}");
+		$remote = wp_remote_post("https://yarpp.org/checkversion.php?format=php&version={$version}");
 
-		if (is_wp_error($remote) || wp_remote_retrieve_response_code($remote) != 200 || !isset($remote['body'])){
+		if (is_wp_error($remote) || wp_remote_retrieve_response_code($remote) != 200 || !isset($remote['body']) || !is_array($remote['body'])){
 			$this->set_transient('yarpp_version_info', null, 60*60);
 			return false;
     }
-
+		
 		if ($result = @unserialize($remote['body'])) $this->set_transient('yarpp_version_info', $result, 60*60*24);
 
 		return $result;
@@ -1506,7 +1506,7 @@ class YARPP {
 	public function optin_ping() {
 		if ($this->get_transient('yarpp_optin')) return true;
 
-		$remote = wp_remote_post('http://yarpp.org/optin/2/', array('body' => $this->optin_data()));
+		$remote = wp_remote_post('https://yarpp.org/optin/2/', array('body' => $this->optin_data()));
 
 		if (is_wp_error($remote)
             || wp_remote_retrieve_response_code($remote) != 200
@@ -1557,7 +1557,7 @@ class YARPP {
 
 		$this->kick_other_caches();
 	}
-
+	
 	private function delete_transient($transient) {
 		delete_option($transient);
 		delete_option($transient.'_timeout');

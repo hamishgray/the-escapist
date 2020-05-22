@@ -14,8 +14,6 @@ add_action( 'admin_menu','resmushit_create_menu');
 
 
 
-
-
 /**
 * 
 * Declares settings entries
@@ -28,19 +26,37 @@ function resmushit_settings_declare() {
 	register_setting( 'resmushit-settings', 'resmushit_qlty' );
 	register_setting( 'resmushit-settings', 'resmushit_statistics' );
 	register_setting( 'resmushit-settings', 'resmushit_logs' );
+	register_setting( 'resmushit-settings', 'resmushit_cron' );
+	register_setting( 'resmushit-settings', 'resmushit_preserve_exif' );
+	register_setting( 'resmushit-settings', 'resmushit_remove_unsmushed' );
 }
 add_action( 'admin_init', 'resmushit_settings_declare' );
 
 
 
+/**
+* 
+* Add Columns to the media panel
+*
+* @param array $columns
+* @return $columns
+*/
 function resmushit_media_list_add_column( $columns ) {
-	$columns["resmushit_disable"] 	= __('Disable of reSmush.it', 'resmushit');
-	$columns["resmushit_status"] 	= __('reSmush.it status', 'resmushit');
+	$columns["resmushit_disable"] 	= __('Disable of reSmush.it', 'resmushit-image-optimizer');
+	$columns["resmushit_status"] 	= __('reSmush.it status', 'resmushit-image-optimizer');
 	return $columns;
 }
 add_filter( 'manage_media_columns', 'resmushit_media_list_add_column' );
 
 
+
+/**
+* 
+* Sort Columns to the media panel
+*
+* @param array $columns
+* @return $columns
+*/
 function resmushit_media_list_sort_column( $columns ) {
 	$columns["resmushit_disable"] 	= "resmushit_disable";
 	$columns["resmushit_status"] 	= "resmushit_status";
@@ -49,6 +65,15 @@ function resmushit_media_list_sort_column( $columns ) {
 add_filter( 'manage_upload_sortable_columns', 'resmushit_media_list_sort_column' );
 
 
+
+/**
+* 
+* Add Value to Columns of the media panel
+*
+* @param string $column_name
+* @param string $identifier of the column
+* @return none
+*/
 function resmushit_media_list_add_column_value( $column_name, $id ) {
 	if ( $column_name == "resmushit_disable" )
 		reSmushitUI::mediaListCustomValuesDisable($id);
@@ -58,20 +83,28 @@ function resmushit_media_list_add_column_value( $column_name, $id ) {
 add_action( 'manage_media_custom_column', 'resmushit_media_list_add_column_value', 10, 2 );
 
 
-/* Add custom field to attachment */
+
+/**
+* 
+* Add custom field to attachment
+*
+* @param array $form_fields
+* @param object $post 
+* @return array
+*/
 function resmushit_image_attachment_add_status_button($form_fields, $post) {
 	if ( !preg_match("/image.*/", $post->post_mime_type) )
 		return $form_fields;
 
 	$form_fields["rsmt-disabled-checkbox"] = array(
-		"label" => __("Disable of reSmush.it"),
+		"label" => __("Disable of reSmush.it", "resmushit-image-optimizer"),
 		"input" => "html",
 		"value" => '',
 		"html"  => reSmushitUI::mediaListCustomValuesDisable($post->ID, true)
 	);
 
 	$form_fields["rsmt-status-button"] = array(
-		"label" => __("reSmush.it status"),
+		"label" => __("reSmush.it status", "resmushit-image-optimizer"),
 		"input" => "html",
 		"value" => '',
 		"html"  => reSmushitUI::mediaListCustomValuesStatus($post->ID, true)
@@ -94,6 +127,7 @@ function resmushit_settings_page() {
 	<div class='rsmt-panels'>	
 		<div class="rsmt-cols w66 iln-block">
 			<?php reSmushitUI::headerPanel();?>
+			<?php reSmushitUI::alertPanel();?>
 			<?php reSmushitUI::bulkPanel();?>
 			<?php reSmushitUI::bigFilesPanel();?>
 			<?php reSmushitUI::statisticsPanel();?>
@@ -121,7 +155,21 @@ function resmushit_register_plugin_assets(){
 	wp_enqueue_style( 'resmushit-css' );
     wp_enqueue_style( 'prefix-style', esc_url_raw( 'https://fonts.googleapis.com/css?family=Roboto+Slab:700' ), array(), null  );
 
-    wp_register_script( 'resmushit-js', plugins_url( 'js/script.js', __FILE__ ) );
+    wp_register_script( 'resmushit-js', plugins_url( 'js/script.js?' . hash_file('crc32',  dirname(__FILE__) . '/js/script.js'), __FILE__ ) );
     wp_enqueue_script( 'resmushit-js' );
 }
 add_action( 'admin_head', 'resmushit_register_plugin_assets' );
+
+
+
+/**
+* 
+* Detect unsmushed files by browsing the library directory
+*
+* @param none
+* @return none
+*/
+function detect_unsmushed_files() {
+	$wp_upload_dir=wp_upload_dir();
+	return glob_recursive($wp_upload_dir['basedir'] . '/*-unsmushed.*');
+}

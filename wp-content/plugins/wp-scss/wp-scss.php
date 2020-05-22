@@ -3,7 +3,7 @@
  * Plugin Name: WP-SCSS
  * Plugin URI: https://github.com/ConnectThink/WP-SCSS
  * Description: Compiles scss files live on WordPress.
- * Version: 1.2.4
+ * Version: 1.2.5
  * Author: Connect Think
  * Author URI: http://connectthink.com
  * License: GPLv3
@@ -127,10 +127,18 @@ if( $scss_dir_setting == false || $css_dir_setting == false ) {
   return 0; //exits
 
 // Checks if directory exists
-} elseif ( !is_dir(WPSCSS_THEME_DIR . $scss_dir_setting) || !is_dir(WPSCSS_THEME_DIR . $css_dir_setting) ) {
+} elseif ( !is_dir(WPSCSS_THEME_DIR . $scss_dir_setting) ) {
   function wpscss_settings_error() {
       echo '<div class="error">
-        <p><strong>Wp-Scss:</strong> One or more specified directories does not exist. Please create the directories or <a href="' . get_bloginfo('wpurl') . '/wp-admin/admin.php?page=wpscss_options">update your settings.</a></p>
+        <p><strong>Wp-Scss:</strong> SCSS directory does not exist (' . WPSCSS_THEME_DIR . $scss_dir_setting . '). Please create the directory or <a href="' . get_bloginfo('wpurl') . '/wp-admin/admin.php?page=wpscss_options">update your settings.</a></p>
+      </div>';
+  }
+  add_action('admin_notices', 'wpscss_settings_error');
+  return 0; //exits
+} elseif ( !is_dir(WPSCSS_THEME_DIR . $css_dir_setting) ) {
+  function wpscss_settings_error() {
+      echo '<div class="error">
+        <p><strong>Wp-Scss:</strong> CSS directory does not exist (' . WPSCSS_THEME_DIR . $css_dir_setting . '). Please create the directory or <a href="' . get_bloginfo('wpurl') . '/wp-admin/admin.php?page=wpscss_options">update your settings.</a></p>
       </div>';
   }
   add_action('admin_notices', 'wpscss_settings_error');
@@ -174,7 +182,7 @@ function wp_scss_needs_compiling() {
   }
 }
 
-add_action('wp_head', 'wp_scss_needs_compiling');
+add_action('wp_loaded', 'wp_scss_needs_compiling');
 
 function wp_scss_compile() {
   global $wpscss_compiler;

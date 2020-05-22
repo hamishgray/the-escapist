@@ -69,17 +69,10 @@ class MPSUM_Admin_Core {
 			'theme_updates'                   => 'on',
 			'translation_updates'             => 'on',
 			'automatic_development_updates'   => 'off',
-			'automatic_major_updates'         => 'off',
-			'automatic_minor_updates'         => 'on',
-			'automatic_plugin_updates'        => 'default',
-			'automatic_theme_updates'         => 'default',
-			'automatic_translation_updates'   => 'on',
 			'notification_core_update_emails' => 'on',
-			'misc_browser_nag'                => 'on',
-			'misc_wp_footer'                  => 'on',
 			'logs'                            => 'on',
 			'email_addresses'                 => array(),
-			'automatic_updates'               => 'unset',
+			'ratings_nag'                     => 'on',
 		));
 	}
 

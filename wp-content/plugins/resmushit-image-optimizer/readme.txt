@@ -1,13 +1,13 @@
-=== reSmush.it Image Optimizer  ===
+=== reSmush.it : the only free Image Optimizer & compress plugin  ===
 Contributors: resmushit
 Tags: image, optimizer, image optimization, resmush.it, smush, jpg, png, gif, optimization, compression, Compress, Images, Pictures, Reduce Image Size, Smush, Smush.it
 Requires at least: 4.0.0
-Tested up to: 5.3.1
-Stable tag: 0.1.23
+Tested up to: 5.4.1
+Stable tag: 0.3.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Use reSmush.it Image Optimizer for FREE to optimize your pictures file sizes. Improve your performances by using reSmush.it, the 4 billion images API optimizer.
+The FREE Image Optimizer which will compress your pictures and improve your SEO & performances by using reSmush.it, the 8 billion images API optimizer.
 
 == Description ==
 
@@ -34,11 +34,19 @@ This plugin has initially been developped by [Maecia Agency](http://www.maecia.c
 
 = How great is reSmush.it ? =
 
-Since we've optimized more than 6,000,000,000 pictures, we've risen new skills. Our service is still in development to bring you new crazy functionalities.
+Since we've optimized more than 8,000,000,000 pictures, we've risen new skills. Our service is still in development to bring you new crazy functionalities.
+
+= What about WebP and next generation image formats ? =
+
+We're working on a new offer to bring you the best of these new features. Please be patient, it will come soon :)
 
 = Is there an "Optimize on upload" feature ? =
 
 Absolutely, this feature is enabled for all new pictures to be added, and can be disabled on will.
+
+= Is there a CRON feature ? =
+
+Yes, for big (and even for small) media Libraries, you can optimize your pictures using Cronjobs.
 
 = Can I choose an optimisation level ? =
 
@@ -50,7 +58,7 @@ Yes, by excluding/reverting this asset you'll have your original image available
 
 = Is it possible to exclude some pictures from the optimizer ? =
 
-Yes, since version 0.12, you can easily exclude an asset from the optimizer.
+Yes, since version 0.1.2, you can easily exclude an asset from the optimizer.
 
 = Have I a risk to lose my existing pictures ? =
 
@@ -65,6 +73,54 @@ Yes ! Absolutely free, the only restriction is to send images below 5MB.
 1. The simple interface
 
 == Changelog ==
+
+= 0.3.6 =
+* Fix : cron multiple run issue. 
+
+= 0.3.5 =
+* New header image, new WP description for plugin page.
+
+= 0.3.4 =
+* Issue in version number
+
+= 0.3.3 =
+* Fix double cron launch. Timeout added
+* Fix "Reduce by 0 (0 saved)" message if statistics are disabled
+* Return error if attachment file not found on disk
+
+= 0.3.2 =
+* Fix variable check (generate notice)
+
+= 0.3.1 =
+* Fix log write (permission issue)
+* Fix "Reduce by 0 (0 saved)" error. Optimize single attachment while "Optimize on upload" is disabled
+
+= 0.3.0 =
+* Add Backup deletion option
+* Add script to delete old backups
+* Changed JS inclusion
+
+= 0.2.5 =
+* Add Preserve Exif Feature
+
+= 0.2.4 =
+* Fix issue on SQL request for table prefix different from 'wp_'
+
+= 0.2.3 =
+* Version number issue
+
+= 0.2.2 =
+* Fix settings automatically reinitialized.
+
+= 0.2.1 =
+* Complete French translation
+* Plugin translation fix
+
+= 0.2.0 =
+* Add CRON feature
+* Code refactoring
+* Fix issue for big Media library, with a limitation while fetching attachments
+* Fix log path issues
 
 = 0.1.23 =
 * Add Settings link to Plugin page

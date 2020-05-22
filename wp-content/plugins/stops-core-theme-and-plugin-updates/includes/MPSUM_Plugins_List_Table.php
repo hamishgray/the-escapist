@@ -139,7 +139,7 @@ class MPSUM_Plugins_List_Table extends MPSUM_List_Table {
 
 		// Disable the automatic updates view
 		$core_options = MPSUM_Updates_Manager::get_options('core');
-		if (isset($core_options['automatic_plugin_updates']) && 'individual' !== $core_options['automatic_plugin_updates']) {
+		if (isset($core_options['plugin_updates']) && 'individual' !== $core_options['plugin_updates']) {
 			unset($totals['automatic']);
 			$plugins['automatic'] = array();
 		}
@@ -371,7 +371,7 @@ class MPSUM_Plugins_List_Table extends MPSUM_List_Table {
 		$actions['allow-update-selected'] = esc_html__('Plugin Updates On', 'stops-core-theme-and-plugin-updates');
 		$actions['disallow-update-selected'] = esc_html__('Plugin Updates Off', 'stops-core-theme-and-plugin-updates');
 		$core_options = MPSUM_Updates_Manager::get_options('core');
-		if (isset($core_options['automatic_plugin_updates']) && 'individual' == $core_options['automatic_plugin_updates']) {
+		if (isset($core_options['plugin_updates']) && 'individual' == $core_options['plugin_updates']) {
 			$actions['allow-automatic-selected'] = esc_html__('Automatic Updates On', 'stops-core-theme-and-plugin-updates');
 			$actions['disallow-automatic-selected'] = esc_html__('Automatic Updates Off', 'stops-core-theme-and-plugin-updates');
 		}
@@ -557,7 +557,7 @@ class MPSUM_Plugins_List_Table extends MPSUM_List_Table {
 					// Automatic Link
 					$plugin_automatic_options = MPSUM_Updates_Manager::get_options('plugins_automatic');
 					$core_options = MPSUM_Updates_Manager::get_options('core');
-					if (isset($core_options['automatic_plugin_updates']) && 'individual' == $core_options['automatic_plugin_updates']) {
+					if (isset($core_options['plugin_updates']) && 'individual' == $core_options['plugin_updates']) {
 						printf('<div class="eum-plugins-automatic-wrapper" %s>', ($key) ? 'style="display: none;"' : '');
 						printf('<h4>%s</h4>', esc_html__('Automatic Updates', 'stops-core-theme-and-plugin-updates'));
 						echo '<div class="toggle-wrapper toggle-wrapper-plugins-automatic">';
@@ -647,7 +647,7 @@ class MPSUM_Plugins_List_Table extends MPSUM_List_Table {
 					if (MPSUM_Updates_Manager::get_instance()->is_premium()) {
 						MPSUM_Check_Plugins_Removed::get_instance()->check_if_plugin_removed($plugin_file);
 					}
-					
+
 					// Show active status for blogs
 					if (is_multisite()) {
 						if (is_plugin_active_for_network($plugin_file)) {
@@ -662,7 +662,7 @@ class MPSUM_Plugins_List_Table extends MPSUM_List_Table {
 							printf('<div class="mpsum-error mpsum-bold">%s</div>', esc_html__('This plugin is inactive for your site. Consider removing it.', 'stops-core-theme-and-plugin-updates'));
 						}
 					}
-					
+
 					// Show safe mode options if enabled
 					if (MPSUM_Updates_Manager::get_instance()->is_premium()) {
 						$core_options = MPSUM_Updates_Manager::get_options('core');

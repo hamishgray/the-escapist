@@ -293,7 +293,7 @@ class MPSUM_Logs_List_Table extends MPSUM_List_Table {
 	 * @global wpdb      $wpdb
 	 * @param string $post_type Post type
 	 */
-	protected function months_dropdown($post_type) {
+	protected function months_dropdown($post_type = '') {
 		global $wpdb, $wp_locale;
 		$tablename = $wpdb->base_prefix . 'eum_logs';
 		$query = "SELECT DISTINCT YEAR(date) AS year, MONTH(date) AS month FROM $tablename ORDER BY date DESC";
@@ -409,7 +409,7 @@ class MPSUM_Logs_List_Table extends MPSUM_List_Table {
 	<?php
 		if ('top' === $which && !is_singular()) {
 
-			$this->months_dropdown($this->screen->post_type);
+			$this->months_dropdown(isset($this->screen->post_type) ? $this->screen->post_type : '');
 			$this->status_dropdown();
 			$this->action_dropdown();
 			$this->type_dropdown();

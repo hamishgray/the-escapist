@@ -40,6 +40,34 @@ class MPSUM_Utils {
 	}
 
 	/**
+	 * Validates email addresses and returns an error if not valid
+	 *
+	 * @since 9.0.0
+	 *
+	 * @param string $email_addresses (can be comma separated)
+	 *
+	 * @return array Return an 'errors' key (boolean) and an 'original_emails' key (string) with original passed email addresses. 'emails' key (array) contains validated email addresses.
+	 */
+	public static function validate_emails($email_addresses) {
+		$emails       = explode(',', $email_addresses);
+		$email_errors = false;
+		foreach ($emails as $index => &$email) {
+			$email = trim($email);
+			if (!is_email($email)) {
+
+				// Email error. Get out.
+				$email_errors = true;
+				break;
+			}
+		}
+		return array(
+			'errors'          => $email_errors,
+			'original_emails' => $email_addresses,
+			'emails'          => $emails,
+		);
+	}
+
+	/**
 	 * This function checks whether a specific plugin is installed, and returns information about it
 	 *
 	 * @since 8.0.1
@@ -232,5 +260,22 @@ class MPSUM_Utils {
 			add_action('admin_notices', array(MPSUM_Updates_Manager::get_instance(), 'show_admin_notice_premium'));
 			add_action('network_admin_notices', array(MPSUM_Updates_Manager::get_instance(), 'show_admin_notice_premium'));
 		}
+	}
+
+	/**
+	 * Checks to see if ai plugin is alive in the file system.
+	 *
+	 * @since 9.0.0
+	 *
+	 * @param string $plugin_file Plugin relative to the plugin's directory.
+	 *
+	 * @return true if plugin exists, false if not
+	 */
+	public function plugin_exists( $plugin_file ) {
+		$plugin_dir = WP_PLUGIN_DIR;
+		if (file_exists($plugin_dir . '/' . $plugin_file)) {
+			return true;
+		}
+		return false;
 	}
 }

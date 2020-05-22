@@ -3,13 +3,12 @@
  * Plugin Name: UserAgent Content Switcher
  * Plugin URI:  https://wordpress.org/plugins/useragent-content-switcher/
  * Description: Display the html written between the shortcode of each user agent.
- * Version:     2.39
+ * Version:     3.03
  * Author:      Katsushi Kawamori
  * Author URI:  https://riverforest-wp.info/
  * License:     GPL2
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: useragent-content-switcher
- * Domain Path: /languages
  *
  * @package UserAgent Content Switcher
  */
@@ -40,9 +39,6 @@ function useragent_content_switcher_load_textdomain() {
 	load_plugin_textdomain( 'useragent-content-switcher' );
 }
 
-if ( ! class_exists( 'UserAgentContentSwitcherRegist' ) ) {
-	require_once( dirname( __FILE__ ) . '/lib/class-useragentcontentswitcherregist.php' );
-}
 if ( ! class_exists( 'UserAgentContentSwitcherAdmin' ) ) {
 	require_once( dirname( __FILE__ ) . '/lib/class-useragentcontentswitcheradmin.php' );
 }

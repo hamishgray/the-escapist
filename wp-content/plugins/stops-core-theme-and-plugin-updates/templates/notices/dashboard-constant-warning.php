@@ -9,13 +9,13 @@
 		<?php
 		$html = '<ul>';
 		if (defined('AUTOMATIC_UPDATER_DISABLED') && true === AUTOMATIC_UPDATER_DISABLED) {
-			$html .= sprintf('<li><strong>%s<strong>: %s</li>', 'AUTOMATIC_UPDATER_DISABLED', esc_html__('This constant disables any auto updates.', 'stops-core-theme-and-plugin-updates'));
+			$html .= sprintf('<li><strong>%s</strong>: %s</li>', 'AUTOMATIC_UPDATER_DISABLED', esc_html__('This constant disables any auto updates.', 'stops-core-theme-and-plugin-updates'));
 		}
 		if (defined('WP_AUTO_UPDATE_CORE') && 'minor' === WP_AUTO_UPDATE_CORE) {
-			$html .= sprintf('<li><strong>%s<strong>: %s</li>', 'WP_AUTO_UPDATE_CORE', esc_html__('This constant prevents automatic updates to new major releases of WordPress.', 'stops-core-theme-and-plugin-updates'));
+			$html .= sprintf('<li><strong>%s</strong>: %s</li>', 'WP_AUTO_UPDATE_CORE', esc_html__('This constant prevents automatic updates to new major releases of WordPress.', 'stops-core-theme-and-plugin-updates'));
 		}
 		if (defined('WP_AUTO_UPDATE_CORE') && false === WP_AUTO_UPDATE_CORE) {
-			$html .= sprintf('<li><strong>%s<strong>: %s</li>', 'WP_AUTO_UPDATE_CORE', esc_html__('This constant disables WordPress core from being automatically updated.', 'stops-core-theme-and-plugin-updates'));
+			$html .= sprintf('<li><strong>%s</strong>: %s</li>', 'WP_AUTO_UPDATE_CORE', esc_html__('This constant disables WordPress core from being automatically updated.', 'stops-core-theme-and-plugin-updates'));
 		}
 		$html .= '</ul>';
 		echo $html;

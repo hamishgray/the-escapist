@@ -89,6 +89,15 @@ if (($isPremium && !$freeActive) || ($isFree && !$premiumActive)) {
 		$wpdb->query($safe_mode_sql);
 	}
 
+	// Remove Unmaintained Plugin Transients from the database
+	if (is_multisite()) {
+		$unmaintained_plugin_sql = "delete from {$wpdb->sitemeta} where meta_key like '%eum_plugin_unmaintained_%'";
+		$wpdb->query($unmaintained_plugin_sql);
+	} else {
+		$unmaintained_plugin_sql = "delete from {$wpdb->options} where option_name like '%eum_plugin_unmaintained_%'";
+		$wpdb->query($unmaintained_plugin_sql);
+	}
+
 	// Remove transients when someone disables plugin, theme, or core updates
 	delete_site_transient('eum_core_checked');
 	delete_site_transient('eum_themes_checked');

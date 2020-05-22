@@ -43,6 +43,7 @@ class UserAgentContentSwitcher {
 	 *
 	 * @param array  $atts  atts.
 	 * @param string $content  content.
+	 * @since 1.00
 	 * @return string $content
 	 */
 	public function useragentcontentswitcher_func( $atts, $content = null ) {
@@ -58,31 +59,22 @@ class UserAgentContentSwitcher {
 
 		$ua = $a['ua'];
 
+		$ua_switch = get_option( 'uac_switcher' );
+		if ( ! empty( $ua_switch ) ) {
+			foreach ( $ua_switch as $key => $value ) {
+				if ( $key === $ua || empty( $ua ) ) {
+					if ( $key === $mode ) {
+						return do_shortcode( $content );
+					}
+				}
+			}
+		}
 		if ( 'pc' === $ua || empty( $ua ) ) {
 			if ( 'pc' === $mode ) {
 				return do_shortcode( $content );
-			} else {
-				return '';
-			}
-		} else if ( 'tb' === $ua ) {
-			if ( 'tb' === $mode ) {
-				return do_shortcode( $content );
-			} else {
-				return '';
-			}
-		} else if ( 'sp' === $ua ) {
-			if ( 'sp' === $mode ) {
-				return do_shortcode( $content );
-			} else {
-				return '';
-			}
-		} else if ( 'mb' === $ua ) {
-			if ( 'mb' === $mode ) {
-				return do_shortcode( $content );
-			} else {
-				return '';
 			}
 		}
+		return '';
 
 	}
 
@@ -90,7 +82,7 @@ class UserAgentContentSwitcher {
 	 * Agent check
 	 *
 	 * @return string $mode
-	 * @since 1.0
+	 * @since 1.00
 	 */
 	private function agent_check() {
 
@@ -100,18 +92,14 @@ class UserAgentContentSwitcher {
 			return 'pc';
 		}
 
-		if ( preg_match( '{' . get_option( 'useragentcontentswitcher_useragent_tb' ) . '}', $user_agent ) ) {
-			/* Tablet */
-			$mode = 'tb';
-		} else if ( preg_match( '{' . get_option( 'useragentcontentswitcher_useragent_sp' ) . '}', $user_agent ) ) {
-			/* Smartphone */
-			$mode = 'sp';
-		} else if ( preg_match( '{' . get_option( 'useragentcontentswitcher_useragent_mb' ) . '}', $user_agent ) ) {
-			/* Japanese mobile phone */
-			$mode = 'mb';
-		} else {
-			/* PC or Tablet */
-			$mode = 'pc';
+		$mode = 'pc';
+		$ua_switch = get_option( 'uac_switcher' );
+		if ( ! empty( $ua_switch ) ) {
+			foreach ( $ua_switch as $key => $value ) {
+				if ( preg_match( '{' . $value['agent'] . '}', $user_agent ) ) {
+					$mode = $key;
+				}
+			}
 		}
 
 		return $mode;

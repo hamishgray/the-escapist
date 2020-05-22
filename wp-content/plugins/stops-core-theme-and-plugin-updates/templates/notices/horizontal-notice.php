@@ -39,8 +39,6 @@
 						$button_text = __('Go there', 'stops-core-theme-and-plugin-updates');
 					} elseif ('wpo-premium' == $button_meta) {
 						$button_text = __('Find out more.', 'stops-core-theme-and-plugin-updates');
-					} elseif ('keyy' == $button_meta) {
-						$button_text = __('Get Keyy', 'stops-core-theme-and-plugin-updates');
 					} elseif ('wp-optimize' == $button_meta) {
 						$button_text = __('Get WP-Optimize', 'stops-core-theme-and-plugin-updates');
 					} elseif ('metaslider' == $button_meta) {

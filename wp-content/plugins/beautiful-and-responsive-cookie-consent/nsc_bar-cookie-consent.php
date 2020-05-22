@@ -3,8 +3,8 @@
 Plugin Name: Beautiful and responsive cookie consent
 Description: An easy way to get a beautiful GDPR Cookie Consent Banner. Customize it to match your compliance requirements and website layout. Highly customisable and responsive.
 Author: Nikel Schubert
-Version: 1.7.1
-Author URI: https://nikelschubert.de/
+Version: 2.1
+Author URI: https://nikel.co/
 Text Domain: bar-cookie-consent
 License:     GPLv3
 
@@ -25,45 +25,51 @@ along with Beautiful and responsive cookie consent. If not, see {License URI}.
 if (!defined('ABSPATH')) {
     exit;
 }
+
 define("NSC_BAR_PLUGIN_DIR", dirname(__FILE__));
 define("NSC_BAR_PLUGIN_URL", plugin_dir_url(__FILE__));
 define("ITP_SAVER_COOKIE_NAME", "nsc_bar_cs_done");
+define("NSC_BAR_PLUGIN_VERSION", "2.1");
+define("NSC_BAR_SLUG_DBVERSION", "nsc_bar_db_version");
 
-require dirname(__FILE__) . "/class/class-de-nikelschubert-nsc_bar-plugin.php";
-require dirname(__FILE__) . "/class/class-nsc_bar_cookie_configs.php";
-require dirname(__FILE__) . "/class/class-nsc_bar-cookie-consent.php";
+require dirname(__FILE__) . "/class/class-nsc_bar_admin_error.php";
+require dirname(__FILE__) . "/class/class-nsc_bar_input_validation.php";
+require dirname(__FILE__) . "/class/class-nsc_bar_plugin_configs.php";
+require dirname(__FILE__) . "/class/class-nsc_bar_banner_configs.php";
+require dirname(__FILE__) . "/class/class-nsc_bar_html_formfields.php";
+require dirname(__FILE__) . "/class/class-nsc_bar_frontend.php";
 require dirname(__FILE__) . "/class/class-nsc_bar_save_form_fields.php";
-require dirname(__FILE__) . "/class/class-nsc_bar-wp-backend-settings.php";
-require dirname(__FILE__) . "/class/class-nsc_bar_cookie_saver.php";
+require dirname(__FILE__) . "/class/class-nsc_bar_cookie_handler.php";
+require dirname(__FILE__) . "/class/class-nsc_bar_admin_settings.php";
+require dirname(__FILE__) . "/class/class-nsc_bar_db_upgrader.php";
 
-//backend action
-$save_formfields = new nsc_bar_save_form_fields();
-$save_formfields->nsc_bar_save_submitted_form_fields();
+$nsc_bar_db_upgrader = new nsc_bar_db_upgrader;
+add_action('plugins_loaded', array($nsc_bar_db_upgrader, 'nsc_bar_do_update'));
 
-$nsc_bar_backendpage = new nsc_bar_backendsettings;
-$nsc_bar_backendpage->nsc_bar_cookie_cleanup();
-add_action('get_header', array($nsc_bar_backendpage, 'nsc_bar_save_cookie'));
+$nsc_bar_cookie_handler = new nsc_bar_cookie_handler;
+//admin actions
+if (is_admin()) {
+    $nsc_bar_save_formfields = new nsc_bar_save_form_fields();
+    $nsc_bar_save_formfields->nsc_bar_save_submitted_form_fields();
 
-$nsc_bar_backendpage->nsc_bar_execute_backend_wp_actions();
+    add_action('admin_init', array($nsc_bar_cookie_handler, 'nsc_bar_delete_cookie_for_preview'), 20);
 
-add_filter("plugin_action_links_" . plugin_basename(__FILE__), array($nsc_bar_backendpage, 'nsc_bar_add_settings_link'));
+    $nsc_bar_admin_settings = new nsc_bar_admin_settings;
+    $nsc_bar_admin_settings->nsc_bar_execute_backend_wp_actions();
 
-add_action('admin_enqueue_scripts', 'nsc_bar_enqueue_admin_script_on_cookie_page');
-function nsc_bar_enqueue_admin_script_on_cookie_page($hook)
-{
-    $nsc_bar_backendpage = new nsc_bar_backendsettings;
-    if ($hook == 'settings_page_nsc_bar-cookie-consent' && $nsc_bar_backendpage->nsc_bar_get_option('activate_test_banner') == true) {
-        $nsc_bar_backendpage->nsc_bar_delete_cookie();
-        $nsc_bar_frontend_banner = new nsc_bar_cookie_consent();
-        $nsc_bar_frontend_banner->nsc_bar_set_json_configs($nsc_bar_backendpage->set_and_return_banner_settings_string());
-        $nsc_bar_frontend_banner->nsc_bar_attachHeader();
-    }
+    add_filter("plugin_action_links_" . plugin_basename(__FILE__), array($nsc_bar_admin_settings, 'nsc_bar_add_settings_link'));
 }
 
-//frontend action
+//frontend actions
+add_action('send_headers', array($nsc_bar_cookie_handler, 'nsc_bar_migrate_cookie_detailed_to_savesettings'), 1);
+add_action('send_headers', array($nsc_bar_cookie_handler, 'nsc_bar_cookie_cleanup'), 2);
+add_action('send_headers', array($nsc_bar_cookie_handler, 'nsc_bar_set_itp_cookie'), 5);
+add_action('send_headers', array($nsc_bar_cookie_handler, 'nsc_bar_set_default_cookies'), 10);
 
-if ($nsc_bar_backendpage->nsc_bar_get_option('activate_banner') == true) {
-    $nsc_bar_frontend_banner = new nsc_bar_cookie_consent();
-    $nsc_bar_frontend_banner->nsc_bar_set_json_configs($nsc_bar_backendpage->set_and_return_banner_settings_string());
+$nsc_bar_plugin_configs = new nsc_bar_plugin_configs;
+if ($nsc_bar_plugin_configs->nsc_bar_get_option('activate_banner') == true) {
+    $nsc_bar_banner_config = new nsc_bar_banner_configs();
+    $nsc_bar_frontend_banner = new nsc_bar_frontend();
+    $nsc_bar_frontend_banner->nsc_bar_set_json_configs($nsc_bar_banner_config->nsc_bar_get_banner_config_string());
     $nsc_bar_frontend_banner->nsc_bar_execute_frontend_wp_actions();
 }

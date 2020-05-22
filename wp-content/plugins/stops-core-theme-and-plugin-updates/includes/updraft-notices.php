@@ -78,6 +78,20 @@ abstract class Updraft_Notices_1_0 {
 		if (is_file($plugin_base_dir.'/languages/'.$product_name.'-'.$wplang.'.mo')) return false;
 		return true;
 	}
+	
+	protected function url_start($html_allowed = false, $url, $https = false, $website_home = null) {
+		$proto = ($https) ? 'https' : 'http';
+		if (strpos($url, $website_home) !== false) {
+			return (($html_allowed) ? "<a href=".apply_filters(str_replace('.', '_', $website_home).'_link', $proto.'://'.$url).">" : "");
+		} else {
+			return (($html_allowed) ? '<a href="'.$proto.'://'.$url.'">' : "");
+		}
+	}
+
+	protected function url_end($html_allowed, $url, $https = false) {
+		$proto = (($https) ? 'https' : 'http');
+		return (($html_allowed) ? '</a>' : " (".$proto."://".$url.")");
+	}
 
 	/**
 	 * Renders notice
@@ -89,11 +103,6 @@ abstract class Updraft_Notices_1_0 {
 	 * @return mixed Returns string or echos notice
 	 */
 	public function do_notice($notice = false, $position = 'top', $return_instead_of_echo = false) {
-
-		$enable_notices = get_site_option('easy_updates_manager_enable_notices', 'on');
-		if ('off' === $enable_notices) {
-			return '';
-		}
 
 		$this->notices_init();
 	

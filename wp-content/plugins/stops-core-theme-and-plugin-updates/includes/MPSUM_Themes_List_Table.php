@@ -11,7 +11,7 @@ if (!defined('ABSPATH')) die('No direct access.');
 class MPSUM_Themes_List_Table extends MPSUM_List_Table {
 
 	public $site_id;
-	
+
 	public $is_site_themes;
 
 	private $tab = 'themes';
@@ -129,7 +129,7 @@ class MPSUM_Themes_List_Table extends MPSUM_List_Table {
 
 		// Disable the automatic updates view
 		$core_options = MPSUM_Updates_Manager::get_options('core');
-		if (isset($core_options['automatic_theme_updates']) && 'individual' !== $core_options['automatic_theme_updates']) {
+		if (isset($core_options['theme_updates']) && 'individual' !== $core_options['theme_updates']) {
 			unset($totals['automatic']);
 			$themes['automatic'] = array();
 		}
@@ -323,7 +323,7 @@ class MPSUM_Themes_List_Table extends MPSUM_List_Table {
 		$actions['allow-update-selected'] = esc_html__('Theme Updates On', 'stops-core-theme-and-plugin-updates');
 		$actions['disallow-update-selected'] = esc_html__('Theme Updates Off', 'stops-core-theme-and-plugin-updates');
 		$core_options = MPSUM_Updates_Manager::get_options('core');
-		if (isset($core_options['automatic_theme_updates']) && 'individual' == $core_options['automatic_theme_updates']) {
+		if (isset($core_options['theme_updates']) && 'individual' == $core_options['theme_updates']) {
 			$actions['allow-automatic-selected'] = esc_html__('Automatic Updates On', 'stops-core-theme-and-plugin-updates');
 			$actions['disallow-automatic-selected'] = esc_html__('Automatic Updates Off', 'stops-core-theme-and-plugin-updates');
 		}
@@ -429,7 +429,7 @@ class MPSUM_Themes_List_Table extends MPSUM_List_Table {
 					// Automatic Link
 					$theme_automatic_options = MPSUM_Updates_Manager::get_options('themes_automatic');
 					$core_options = MPSUM_Updates_Manager::get_options('core');
-					if (isset($core_options['automatic_theme_updates']) && 'individual' == $core_options['automatic_theme_updates']) {
+					if (isset($core_options['theme_updates']) && 'individual' == $core_options['theme_updates']) {
 						printf('<div class="eum-themes-automatic-wrapper" %s>', ($key) ? 'style="display: none;"' : '');
 						printf('<h4>%s</h4>', esc_html__('Automatic Updates', 'stops-core-theme-and-plugin-updates'));
 						echo '<div class="toggle-wrapper toggle-wrapper-themes-automatic">';

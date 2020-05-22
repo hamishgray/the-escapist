@@ -1,53 +1,97 @@
-=== Beautiful Cookie Consent Plugin - WordPress Plugin ===
-Tags: cookie consent, cookie banner, itp 2.1, eu cookie law, gdpr cookie, banner, gdpr, dsgvo, cookie, responsive, cookie consent banner, insites, osano, cookieconsent
+=== Beautiful Cookie Consent Banner ===
+Tags: cookie consent, cookie banner, ccpa, eu cookie law, gdpr cookie, banner, gdpr, dsgvo, cookie, responsive, cookie consent banner, insites, osano, cookieconsent
 Requires at least: 4.0
 Donate link: https://www.paypal.me/nikelschubert/6.00EUR
-Tested up to: 5.3
+Tested up to: 5.4
 Requires PHP: 5.2.17
 License: GPLv3
 
 == Description ==
-An easy way to get a beautiful GDPR Cookie Consent Banner. Customize it to match your compliance requirements and website layout.
-**Important** 
-Most Cookie Banner plugins set javascript cookies. In Safari and Firefox these cookies have a limited lifetime of seven days, independent of the setting.
-Consequence: Your user have to opt in every seven days again. And sees the banner every seven days. Which is kind of annoying.
-With this Plugin the consent cookie stays save and is not limited in lifetime. If you set the option.
+A free and beautiful way to get a Cookie Consent Banner for GDPR, CCPA, PIPEDA, LGPD, OAIC, DSGVO and more. Customize it to match your compliance requirements and website layout. This Banner is super responsive and highly customizable.
 
+= Key Features =
+ - fully customizable texts, colors and position of the banner and buttons. 
+ - choose between different compliance types: Just Inform, Opt-in, Opt-out, Differentiated. Cookies will not be stored by default. With differentiated you can define cookie groups, and for each group a user can give a consent.
+ - user preferences can be easily accessed for further development.
+ - show the Banner until user accepts all cookies.
+ - prevent user setting cookie from automatic deletion by many browsers (e.g. ITP => 2.1).
+
+The plugin helps you preparing your website for a lot cookie laws and regulations, for example:
+
+ - GDPR: The General Data Protection Regulation (European Union)
+ - CCPA: The California Consumer Privacy Act (California, United States)
+ - PIPEDA: The Personal Information Protection and Electronic Documents Act (Canada)
+ - LGPD: The Brazilian General Data Protection Law (Brazil)
+ - OAIC: Australia’s Privacy Principles (Australia)
+
+
+= Why backend cookies? (ITP >= 2.1) =
+Most Cookie Banner plugins set javascript cookies. In Safari and Firefox these cookies have a short lifetime, even if the cookie is set with an very long expiration date.
+**Consequence:** Your user have to opt in every seven days again. And sees the banner every seven days. Which is kind of annoying.
+With this Plugin the consent cookie stays save and is not limited in lifetime. If you use the option.
 If you want to save more cookies, check out this plugin: https://wordpress.org/plugins/itp-cookie-saver/.
 
-This really beautiful plugin wraps the solution provided by osano (https://www.osano.com/cookieconsent/download/) into a wordpress plugin.
-This Version uses 3.1.0 from osano. It is optimized for performance and for a low database impact.
+= These cookies are used by this plugin in default =
+You can customize the cookie name, though.
 
-This Banner is super responsive and is highly customizable.
-**Features**
+ - cookieconsent_status -> stores the user setting, if cookies are allowed or not. If you choose "differentiated consent" it stores, if the user closed the banner.
+ - cookieconsent_status_{cookiesuffix} -> only set in case of "differentiated consent". It stores the user setting for the cookie group. One cookie for each group is set.
+
+= Features =
 1. Fully responsive.
 2. Make consent cookie a backend cookie to prevent automatic deletion which many browsers do for javascript/frontend cookies.
 3. reload after acceptance
 4. Show banner until user accepts cookies
 5. Users can easily change cookie settings: choose between an extra tab or with a shortcode.
 6. Fully customizable colors and text.
-7. It is for all kind of compliance: opt-out, opt-in, info only
+7. It is for all kind of compliance: opt-out, opt-in, info only, differentiated
 8. choose between different themes
 9. choose the position on your website
 10. choose cookie name, duration, domain.
-11. cookie setting management via shortcode: [cc_revoke_settings_link_nsc_bar]
+11. cookie setting management via shortcode: [cc_show_cookie_banner_nsc_bar]
+12. preview banner in backend.
 .... and there are a lot more.
+
+= Credits =
+This really beautiful plugin wraps the solution provided by osano (https://www.osano.com/cookieconsent/download/) into a wordpress plugin.
+This Version uses 3.1.0 from osano as basis, but it has a lot adaptions to the original source code. It is optimized for performance and for a low database impact.
+
+= NOTE: Using this plugin alone does not makes your site automatically compliant. As each website and country is different you must make sure you have the right configurations in place. =
 
 == Screenshots ==
 
-1. Admin area with banner example
+1. Mobile Example
 2. Admin area with banner example
 3. Admin area with banner example
 4. Admin area with banner example
 5. Admin area with banner example
 6. Admin area with banner example
 7. Admin area with banner example
-8. Mobile example
+8. Admin area with banner example
+9. Mobile Example
+10. Mobile Example
 
 == Installation ==
 Just install this plugin and go to Settings > Cookie Consent Banner to change the default config and to activate the banner.
 
 == Changelog ==
+
+= upcoming =
+* reload GTM container instead of whole page
+* automatic consent: after time or scroll.
+
+= 2.1 =
+* ADDED: "differentiated consent" with two buttons: "save all" and "save settings"
+* ADDED: Option to block screen, when banner is shown.
+
+= 2.0 =
+* ADDED: "differentiated consent" as compliance type: users can now give consent to only a special type of cookie.
+* ADDED: a shortcode for showing banner again, for managing consent: [cc_show_cookie_banner_nsc_bar].
+* ADDED: more positions for the banner
+* CHANGED: changed revoke tab handling: now possible to use for all banner types.
+* DEPRECATED: shortcode: [cc_revoke_settings_link_nsc_bar]
+* REFACTOR: a lot refactorings, for better feature development in future. A lot.
+* REFACTOR: not using unchanged banner JS from osano anymore.
 
 = 1.7.1 =
 * bug fixes
