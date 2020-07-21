@@ -29,3 +29,7 @@
 	width: auto;
 	z-index: 100000;
 }
+
+@include max-bp($md){
+	.hideApp { display: none !important; }
+}

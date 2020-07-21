@@ -222,6 +222,11 @@ blockquote:before, .back-top:before, .comment-navigation .nav-next a:after, .com
   width: auto;
   z-index: 100000;
 }
+@media (max-width: 840px) {
+  .hideApp {
+    display: none !important;
+  }
+}
 /* Typography */
 /*=============================
  #  Typography / Default

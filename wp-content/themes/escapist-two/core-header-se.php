@@ -35,5 +35,8 @@
 			</div>
 		</div>
 	';
-	echo do_shortcode('[ifurlparam param="fromApp" empty="1"]' . $header . '[/ifurlparam]');
+
+	if(!isset($_COOKIE["fromApp"])) {
+		echo do_shortcode('[ifurlparam param="fromApp" empty="1"]' . $header . '[/ifurlparam]');
+	}
 ?>

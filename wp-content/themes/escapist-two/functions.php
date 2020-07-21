@@ -367,5 +367,31 @@ function my_site_description() {
 	echo '<textarea id="site_description" style="width: 35%;" rows="4" type="text" name="site_description">' . $site_description . '</textarea>';
 }
 
+
 /* Disable WordPress Admin Bar for all users but admins. */
 show_admin_bar(false);
+
+
+/* Change search function to URL structure rather than query */
+function wpb_change_search_url() {
+  if ( is_search() && ! empty( $_GET['s'] ) ) {
+    wp_redirect( home_url( "/search/" ) . urlencode( get_query_var( 's' ) ) );
+    exit();
+  }
+}
+add_action( 'template_redirect', 'wpb_change_search_url' );
+
+
+/* Set cookie if user is in app so that changes persist across the session */
+function set_fromApp_cookie() {
+  $expiry = time() + 3600;
+
+	if (isset($_GET['fromApp'])){
+		$fromAppParam = $_GET['fromApp'];
+	}else $fromAppParam = '';
+
+	if (!isset($_COOKIE['fromApp'])) {
+		setcookie('fromApp', $fromAppParam, $expiry, COOKIEPATH, COOKIE_DOMAIN);
+	}
+}
+add_action( 'init', 'set_fromApp_cookie');

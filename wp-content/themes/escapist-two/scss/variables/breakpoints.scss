@@ -17,6 +17,11 @@ $xxxs: 330px;
   @media (min-width: $width){ @content; }
 }
 
+// Horizontal media query
+@mixin max-bp($width){
+  @media (max-width: $width){ @content; }
+}
+
 // Vertical media query
 @mixin vbp($width){
   @media (min-height: $width){ @content; }

@@ -226,7 +226,7 @@ function offers_display($atts,$content=null) {
 	// ===================
 	// Wrap offers in section
 	$salesSection = "
-		<div class='offers-section' id='related-offers'>
+		<div class='offers-section hideApp' id='related-offers'>
 			<h3 class='offers-title'>".$title."</h3>
 			<div class='offers'>".$saleCards."</div>
 		</div>";

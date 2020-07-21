@@ -7,7 +7,7 @@
 <?php
 
 	$header = '
-		<div class="core">
+		<div class="core hideApp">
 			<div class="core__inner">
 
 				<ul class="core__nav">
@@ -39,5 +39,6 @@
 			</div>
 		</div>
 	';
-	echo do_shortcode('[ifurlparam param="fromApp" empty="1"]' . $header . '[/ifurlparam]');
+
+	echo $header;
 ?>
