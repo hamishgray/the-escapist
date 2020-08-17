@@ -31,5 +31,5 @@
 }
 
 @include max-bp($md){
-	.hideApp { display: none !important; }
+	body.fromApp .hideApp { display: none !important; }
 }
