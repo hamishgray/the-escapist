@@ -584,6 +584,11 @@ body:not(.single) .content-area .format-image .post-thumbnail:before {
 	.search .format-link .entry-header {
 		width: 470px;
 	}
+	.content-area .format-standard.has-post-thumbnail > .entry-meta,
+	.content-area .format-standard.has-post-thumbnail .entry-summary,
+	.content-area .format-standard.has-post-thumbnail .entry-header {
+		width: 470px;
+	}
 
 }
 

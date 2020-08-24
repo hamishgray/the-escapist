@@ -1937,17 +1937,24 @@ input[type="text"]:focus, input[type="email"]:focus, input[type="url"]:focus, in
   flex-direction: row;
 }
 .offers-col {
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 50%;
-  max-width: 50%;
+  width: 100%;
   margin-bottom: 15px;
 }
-.offers-col:nth-child(odd) {
-  padding-right: 10px;
+@media (min-width: 600px) {
+  .offers-col {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 50%;
+    max-width: 50%;
+  }
 }
-.offers-col:nth-child(even) {
-  padding-left: 10px;
+@media (min-width: 600px) {
+  .offers-col:nth-child(odd) {
+    padding-right: 10px;
+  }
+  .offers-col:nth-child(even) {
+    padding-left: 10px;
+  }
 }
 .offer {
   box-shadow: 0 1px 4px rgba(26, 26, 26, 0.2);
@@ -2949,6 +2956,9 @@ body:not(.single) .content-area .format-gallery .post-thumbnail:before, body:not
     width: 220px;
   }
   .archive .format-link .entry-header, .blog .format-link .entry-header, .search .format-link .entry-header {
+    width: 470px;
+  }
+  .content-area .format-standard.has-post-thumbnail > .entry-meta, .content-area .format-standard.has-post-thumbnail .entry-summary, .content-area .format-standard.has-post-thumbnail .entry-header {
     width: 470px;
   }
 }

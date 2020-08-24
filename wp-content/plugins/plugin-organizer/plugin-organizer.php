@@ -3,7 +3,7 @@
 Plugin Name: Plugin Organizer
 Plugin URI: https://www.sterupdesign.com/dev/wordpress/plugins/plugin-organizer/
 Description: A plugin to disable plugins on indivudual pages and change the order that they are loaded in.
-Version: 10.1.3
+Version: 10.1.4
 Author: Jeff Sterup
 Author URI: https://www.sterupdesign.com
 License: GPL2

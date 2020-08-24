@@ -304,12 +304,12 @@ class MPSUM_Logs {
 						$version_from = $this->log_messages[$type][$plugin->item->plugin]['version'];
 						list($version, $status) = $this->set_status_and_version($plugin->result, $version_from, $version, $status);
 						$notes = '';
-						if (isset($plugin->messages ) && is_array($plugin->messages)) {
+						if (isset($plugin->messages) && is_array($plugin->messages)) {
 							foreach ($plugin->messages as $message) {
 								$notes .= $message . "\n\r\n\r";
 							}
 						}
-						$this->insert_log($name, $type, $version_from, $version, 'automatic', $status, 0, $notes );
+						$this->insert_log($name, $type, $version_from, $version, 'automatic', $status, 0, $notes);
 					}
 					break;
 				case 'theme':
@@ -321,7 +321,7 @@ class MPSUM_Logs {
 						$version_from = $this->log_messages[$type][$theme->item->theme]['version'];
 						list($version, $status) = $this->set_status_and_version($theme->result, $version_from, $version, $status);
 						$notes = '';
-						if (isset($theme->messages ) && is_array($theme->messages)) {
+						if (isset($theme->messages) && is_array($theme->messages)) {
 							foreach ($theme->messages as $message) {
 								$notes .= $message . "\n\r";
 							}

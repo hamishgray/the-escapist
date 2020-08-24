@@ -20,14 +20,19 @@
 	flex-direction: row;
 }
 .offers-col {
-	display: flex;
-	flex-direction: column;
-	flex: 1 1 50%;
-  max-width: 50%;
+	width: 100%;
 	margin-bottom: 15px;
+	@include bp($xs){
+		display: flex;
+		flex-direction: column;
+		flex: 1 1 50%;
+	  max-width: 50%;
+	}
 }
-.offers-col:nth-child(odd){ padding-right: 10px; }
-.offers-col:nth-child(even){ padding-left: 10px; }
+@include bp($xs){
+	.offers-col:nth-child(odd){ padding-right: 10px; }
+	.offers-col:nth-child(even){ padding-left: 10px; }
+}
 .offer {
 	box-shadow: 0 1px 4px rgba($grey-darkest,0.2);
 	font-size: 13px;

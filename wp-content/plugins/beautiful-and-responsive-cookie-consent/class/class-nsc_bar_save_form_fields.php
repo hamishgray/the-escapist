@@ -42,6 +42,6 @@ class nsc_bar_save_form_fields
             $this->banner_configs_obj->nsc_bar_save_banner_settings();
         }
         //needed for testing
-        return $this->banner_configs_obj->nsc_bar_get_banner_config_string();
+        return $this->banner_configs_obj->nsc_bar_get_banner_config_array();
     }
 }

@@ -1,30 +1,30 @@
-document.addEventListener("DOMContentLoaded", function(event) {
+document.addEventListener("DOMContentLoaded", function (event) {
   var table_config = {
     label: {
       type: "text",
       headline: "Cookie Type Name",
       maxlength: "100",
       validateRegex: "",
-      validateErrorMessage: ""
+      validateErrorMessage: "",
     },
     checked: {
       type: "checkbox",
       headline: "default checked",
       validateRegex: "",
-      validateErrorMessage: ""
+      validateErrorMessage: "",
     },
     disabled: {
       type: "checkbox",
       headline: "Is disabled",
       validateRegex: "",
-      validateErrorMessage: ""
+      validateErrorMessage: "",
     },
     cookie_suffix: {
       type: "text",
       headline: "Cookie Suffix",
       maxlength: "10",
       validateRegex: /^[a-z_]+$/,
-      validateErrorMessage: "Only lowercase letters and underscore allowed"
+      validateErrorMessage: "Only lowercase letters and underscore allowed",
     },
     delete_icon: {
       type: "html",
@@ -32,15 +32,13 @@ document.addEventListener("DOMContentLoaded", function(event) {
       class: ["dashicons", "dashicons-no-alt"],
       headline: "",
       value: "",
-      clickHandler: delete_row
-    }
+      clickHandler: delete_row,
+    },
   };
 
   //getting values
   try {
-    var cookietypes_json = JSON.parse(
-      document.getElementById("ff_nsc_bar_cookietypes").value
-    );
+    var cookietypes_json = JSON.parse(document.getElementById("ff_nsc_bar_cookietypes").value);
   } catch (err) {
     cookietypes_json = [];
   }
@@ -64,9 +62,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     let tbody = table.createTBody();
 
-    cookietypes_json.forEach(function(cookietype_fields) {
+    cookietypes_json.forEach(function (cookietype_fields) {
       let row = tbody.insertRow();
-      Object.keys(cookietype_fields).forEach(function(field_key) {
+      Object.keys(cookietype_fields).forEach(function (field_key) {
         let cell = row.insertCell();
         let input_field = create_form(cookietype_fields[field_key], field_key);
         cell.setAttribute("data-colname", input_field.placeholder);
@@ -83,7 +81,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
   function generateTableHead(table) {
     let thead = table.createTHead();
     let row = thead.insertRow();
-    Object.keys(table_config).forEach(function(field_key) {
+    Object.keys(table_config).forEach(function (field_key) {
       let th = document.createElement("th");
       let text = document.createTextNode(table_config[field_key].headline);
       th.appendChild(text);
@@ -161,7 +159,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
   function create_html(value, field_key) {
     html_element = document.createElement(table_config[field_key].element);
-    table_config[field_key].class.forEach(function(oneclass) {
+    table_config[field_key].class.forEach(function (oneclass) {
       html_element.classList.add(oneclass);
     });
     html_element.onclick = table_config[field_key].clickHandler;
@@ -180,7 +178,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
   function add_empty_row() {
     var tbody = document.querySelector("#nsc_bar_cookietypes_table > tbody");
     var row = tbody.insertRow();
-    Object.keys(table_config).forEach(function(field_key) {
+    Object.keys(table_config).forEach(function (field_key) {
       let cell = row.insertCell();
       let input_field = create_form("", field_key);
       cell.appendChild(input_field);
@@ -208,9 +206,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     //creating the highest level of json.
     var new_json = [];
 
-    var cookietype_rows = document.querySelectorAll(
-      "#nsc_bar_cookietypes_table > tbody > tr"
-    );
+    var cookietype_rows = document.querySelectorAll("#nsc_bar_cookietypes_table > tbody > tr");
 
     for (var i = 0; i < cookietype_rows.length; i++) {
       var skip_row = false;
@@ -230,10 +226,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
         switch (formfields[r].type) {
           case "checkbox":
-            cookietype_fields[field_key] = get_checkbox_value(
-              formfields[r],
-              field_key
-            );
+            cookietype_fields[field_key] = get_checkbox_value(formfields[r], field_key);
             break;
           default:
             cookietype_fields[field_key] = formfields[r].value;
@@ -269,22 +262,25 @@ document.addEventListener("DOMContentLoaded", function(event) {
       return false;
     }
 
-    document.getElementById("ff_nsc_bar_cookietypes").value = JSON.stringify(
-      new_json
-    );
+    document.getElementById("ff_nsc_bar_cookietypes").value = JSON.stringify(new_json);
     //console.log("new json", new_json);
   }
 });
 
-document.addEventListener("DOMContentLoaded", function(event) {
+document.addEventListener("DOMContentLoaded", function (event) {
   var selector = "[name='nsc_bar_type']";
-  nsc_bar_setVisibility_cookie_settings_text();
+  nsc_bar_setVisibility_after_checkbox(
+    "[id='ff_nsc_bar_onStatusChange']",
+    ["tr_dataLayerName"],
+    true
+  );
+  nsc_bar_setVisibility_after_checkbox("[name='nsc_bar_revokable']", ["tr_content_policy"], true);
   nsc_bar_set_element_visibility();
   var nsc_bar_selector_nodes = document.querySelectorAll(selector);
 
   if (nsc_bar_selector_nodes) {
     for (var i = 0; i < nsc_bar_selector_nodes.length; i++) {
-      nsc_bar_selector_nodes[i].addEventListener("change", function() {
+      nsc_bar_selector_nodes[i].addEventListener("change", function () {
         nsc_bar_set_element_visibility();
       });
     }
@@ -292,8 +288,23 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
   var nsc_bar_revokable = document.querySelector("[name='nsc_bar_revokable']");
   if (nsc_bar_revokable) {
-    nsc_bar_revokable.addEventListener("click", function() {
-      nsc_bar_setVisibility_cookie_settings_text();
+    nsc_bar_revokable.addEventListener("click", function () {
+      nsc_bar_setVisibility_after_checkbox(
+        "[name='nsc_bar_revokable']",
+        ["tr_content_policy"],
+        true
+      );
+    });
+  }
+
+  var nsc_bar_dlName = document.querySelector("[id='ff_nsc_bar_onStatusChange']");
+  if (nsc_bar_dlName) {
+    nsc_bar_dlName.addEventListener("click", function () {
+      nsc_bar_setVisibility_after_checkbox(
+        "[id='ff_nsc_bar_onStatusChange']",
+        ["tr_dataLayerName"],
+        true
+      );
     });
   }
 });
@@ -304,10 +315,7 @@ function nsc_bar_set_element_visibility() {
     return false;
   }
   var selector_value = document.querySelector(selector).value;
-  if (
-    selector_value &&
-    (selector_value == "detailed" || selector_value == "detailedRev")
-  ) {
+  if (selector_value && (selector_value == "detailed" || selector_value == "detailedRev")) {
     document.getElementById("tr_setDiffDefaultCookiesFirstPV").hidden = false;
     document.getElementById("tr_cookietypes").hidden = false;
   } else {
@@ -316,19 +324,16 @@ function nsc_bar_set_element_visibility() {
   }
 }
 
-function nsc_bar_setVisibility_cookie_settings_text() {
-  var nsc_bar_activate_cookie_settings_tab;
-  if (document.querySelector("[name='nsc_bar_revokable']")) {
-    nsc_bar_activate_cookie_settings_tab = document.querySelector(
-      "[name='nsc_bar_revokable']"
-    );
+function nsc_bar_setVisibility_after_checkbox(selector, idsToSetVisibility, visibileIfChecked) {
+  var checkbox;
+  if (document.querySelector(selector)) {
+    checkbox = document.querySelector(selector);
   }
-  if (
-    nsc_bar_activate_cookie_settings_tab &&
-    nsc_bar_activate_cookie_settings_tab.checked
-  ) {
-    document.getElementById("tr_content_policy").hidden = false;
-  } else if (nsc_bar_activate_cookie_settings_tab) {
-    document.getElementById("tr_content_policy").hidden = true;
+  for (var i = 0, len = idsToSetVisibility.length; i < len; i += 1) {
+    if (checkbox && checkbox.checked) {
+      document.getElementById(idsToSetVisibility[i]).hidden = !visibileIfChecked;
+    } else if (checkbox) {
+      document.getElementById(idsToSetVisibility[i]).hidden = visibileIfChecked;
+    }
   }
 }

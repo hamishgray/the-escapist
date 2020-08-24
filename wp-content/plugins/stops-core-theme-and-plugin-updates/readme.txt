@@ -4,8 +4,8 @@ Tags: updates manager, easy updates manager, disable updates manager, disable up
 Requires at least: 5.1
 Requires PHP: 5.3
 Donate link: https://easyupdatesmanager.com
-Tested up to: 5.4
-Stable tag: 9.0.3
+Tested up to: 5.5
+Stable tag: 9.0.6
 License: GPLv2 or later
 
 Manage all your WordPress updates, including individual updates, automatic updates, logs, and loads more. This also works very well with WordPress Multisite.
@@ -125,6 +125,20 @@ Since third-party providers use custom update mechanisms, we cannot always guara
 For additional information and FAQs for Easy Updates Manager <a href="https://easyupdatesmanager.com">check out our website</a>.
 
 == Changelog ==
+
+= 9.0.6 - 2020-08-10 =
+
+* FIX: Fatal error in a template file
+
+= 9.0.5 - 2020-08-10 =
+
+* TWEAK: Some minor code improvements based on PHPCS analysis
+* TWEAK: Updated seasonal notices
+* TWEAK: Add WP 5.5 support. Since EUM's update management facilities are much more sophisticated than WP 5.5's new "automatic upgrades" user-interface additions, the new WP 5.5 options do not map simply onto existing EUM options. Thus the only way they can work together is if EUM replaces those additions with links back to the EUM controls.
+
+= 9.0.4 - 2020-04-27 =
+
+* FEATURE: Allow "every 3 hours" and "every 6 hours" options for the update frequency checks
 
 = 9.0.3 - 2020-04-14 =
 
@@ -300,4 +314,4 @@ For past changelogs, <a href="https://easyupdatesmanager.com/blog/">please visit
 
 == Upgrade Notice ==
 
-* 9.0.3 : Some minor internal tweaks. Now marked as requiring WP 5.1+. A recommended update for all.
+* 9.0.6 : Changes related to WP 5.5 core changes, and a fix to a regression in 9.0.5.

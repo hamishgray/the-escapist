@@ -21,6 +21,10 @@ class nsc_bar_db_upgrader
 
     private function do_update_from_20_to_21($db_version)
     {
+        if (version_compare($db_version, "2.1", ">=")) {
+            return true;
+        }
+
         $banner_configs = new nsc_bar_banner_configs;
         $config_array = $banner_configs->nsc_bar_get_banner_config_array();
         $save = false;

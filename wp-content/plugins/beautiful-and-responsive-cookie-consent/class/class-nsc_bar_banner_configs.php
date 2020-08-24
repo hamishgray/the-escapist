@@ -11,6 +11,7 @@ class nsc_bar_banner_configs
         $this->plugin_configs = new nsc_bar_plugin_configs();
     }
 
+    // be carefull: the states of config array and config string can be different.
     public function nsc_bar_get_banner_config_array()
     {
         if (empty($this->banner_config_array)) {
@@ -30,10 +31,11 @@ class nsc_bar_banner_configs
     public function nsc_bar_update_banner_setting($field_slug, $value, $save_as)
     {
 
-        $this->nsc_bar_get_banner_config_array();
         if (empty($value) && $value !== false && $value !== "" && $value != 0) {
             return false;
         }
+
+        $this->nsc_bar_get_banner_config_array();
 
         $value = $this->convert_to_save_as($value, $save_as);
 
@@ -90,12 +92,23 @@ class nsc_bar_banner_configs
 
     private function remove_deactivated_js_function()
     {
-        if (!isset($this->banner_config_array["onPopupClose"])) {
-            return false;
+        if (isset($this->banner_config_array["onPopupClose"]) && $this->banner_config_array["onPopupClose"] == "0") {
+            unset($this->banner_config_array["onPopupClose"]);
         }
 
-        if ($this->banner_config_array["onPopupClose"] == "0") {
-            unset($this->banner_config_array["onPopupClose"]);
+        if (isset($this->banner_config_array["onStatusChange"]) && $this->banner_config_array["onStatusChange"] == "0") {
+            unset($this->banner_config_array["onStatusChange"]);
+        }
+
+        if (isset($this->banner_config_array["dismissOnScroll"]) && empty($this->banner_config_array["dismissOnScroll"])) {
+            unset($this->banner_config_array["dismissOnScroll"]);
+        }
+
+        if (isset($this->banner_config_array["dismissOnTimeout"]) && empty($this->banner_config_array["dismissOnTimeout"])) {
+            unset($this->banner_config_array["dismissOnTimeout"]);
+        }
+        if (isset($this->banner_config_array["makeButtonsEqual"]) && empty($this->banner_config_array["makeButtonsEqual"])) {
+            unset($this->banner_config_array["makeButtonsEqual"]);
         }
     }
 
@@ -162,7 +175,7 @@ class nsc_bar_banner_configs
         $validate = new nsc_bar_input_validation;
         $banner_config_string = $validate->nsc_bar_check_valid_json_string($banner_config_string);
         if (empty($banner_config_string)) {
-            $banner_config_string = file_get_contents(NSC_BAR_PLUGIN_DIR . "/public/v5/config-default.json");
+            $banner_config_string = $validate->nsc_bar_check_valid_json_string(file_get_contents(NSC_BAR_PLUGIN_DIR . "/public/config-default.json"));
         }
 
         switch ($return_type) {
@@ -180,8 +193,11 @@ class nsc_bar_banner_configs
 
     private function convert_to_save_as($value, $save_as)
     {
-        if ($save_as == "array") {
+        if ($save_as === "array") {
             return json_decode($value, true);
+        }
+        if ($save_as === "integer") {
+            return intval($value);
         }
         return $value;
     }

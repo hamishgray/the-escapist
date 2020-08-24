@@ -29,24 +29,25 @@ class nsc_bar_admin_settings
     public function nsc_bar_enqueue_script_on_admin_page($hook)
     {
         if ($hook == 'settings_page_nsc_bar-cookie-consent') {
-            wp_enqueue_script('nsc_bar_cookietypes_js', NSC_BAR_PLUGIN_URL . '/admin/js/cookietypes.v2.js');
+            wp_enqueue_script('nsc_bar_cookietypes_js', NSC_BAR_PLUGIN_URL . '/admin/js/cookietypes.v2.js', array(), '6');
         }
     }
 
     public function nsc_bar_enqueue_styles_on_admin_page($hook)
     {
         if ($hook == 'settings_page_nsc_bar-cookie-consent') {
-            wp_enqueue_style('nsc_bar_admin_styles', NSC_BAR_PLUGIN_URL . '/admin/css/nsc_bar_admin.css');
+            wp_enqueue_style('nsc_bar_admin_styles', NSC_BAR_PLUGIN_URL . '/admin/css/nsc_bar_admin.css', array(), '6');
         }
     }
 
     public function nsc_bar_enqueue_admin_preview_banner($hook)
     {
-        if ($hook == 'settings_page_nsc_bar-cookie-consent' && $this->plugin_configs->nsc_bar_get_option('activate_test_banner') == true) {
+        if ($this->show_preview($hook)) {
             $nsc_bar_frontend_banner = new nsc_bar_frontend();
             $nsc_bar_banner_config = new nsc_bar_banner_configs();
-            $nsc_bar_frontend_banner->nsc_bar_set_json_configs($nsc_bar_banner_config->nsc_bar_get_banner_config_string());
-            $nsc_bar_frontend_banner->nsc_bar_attachHeader();
+            $nsc_bar_frontend_banner->nsc_bar_set_json_configs($nsc_bar_banner_config);
+            $nsc_bar_frontend_banner->nsc_bar_enqueue_scripts();
+            $nsc_bar_frontend_banner->nsc_bar_attachFooter();
         }
     }
 
@@ -62,5 +63,13 @@ class nsc_bar_admin_settings
         $settings_link = '<a href="options-general.php?page=nsc_bar-cookie-consent">' . __('Settings') . '</a>';
         array_push($links, $settings_link);
         return $links;
+    }
+
+    private function show_preview($hook)
+    {
+        if ($hook == 'settings_page_nsc_bar-cookie-consent' && $this->plugin_configs->nsc_bar_get_option('activate_test_banner') == true) {
+            return true;
+        }
+        return false;
     }
 }

@@ -5,7 +5,7 @@ class nsc_bar_html_formfields
     private $field;
     private $prefix;
 
-    public function return_form_field($field, $prefix)
+    public function nsc_bar_return_form_field($field, $prefix)
     {
         $this->field = $field;
         $this->prefix = $prefix;

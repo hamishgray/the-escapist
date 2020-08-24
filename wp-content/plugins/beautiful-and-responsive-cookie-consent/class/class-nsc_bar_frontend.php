@@ -12,36 +12,86 @@ class nsc_bar_frontend
         $this->plugin_url = NSC_BAR_PLUGIN_URL;
         $this->active_tab = "";
         $this->plugin_configs = new nsc_bar_plugin_configs();
+        $this->customized_font = false;
+        $this->cookietypes = array();
+        $this->cookie_name = "";
+        $this->compliance_type = "";
+        $this->pushToDl = "";
     }
 
-    public function nsc_bar_set_json_configs($json_config)
+    public function nsc_bar_set_json_configs($nsc_bar_banner_config)
     {
-        $this->json_config_string = $json_config;
+        $this->json_config_string = $nsc_bar_banner_config->nsc_bar_get_banner_config_string();
+        $this->customized_font = $nsc_bar_banner_config->nsc_bar_get_cookie_setting("customizedFont", false);
+        $this->cookietypes = $nsc_bar_banner_config->nsc_bar_get_cookie_setting("cookietypes", array());
+        $this->cookie_name = $nsc_bar_banner_config->nsc_bar_get_cookie_setting("cookie_name", $this->plugin_configs->return_settings_field_default_value("cookie_name"));
+        $this->compliance_type = $nsc_bar_banner_config->nsc_bar_get_cookie_setting("type", $this->plugin_configs->return_settings_field_default_value("type"));
+        $this->dataLayerName = $nsc_bar_banner_config->nsc_bar_get_cookie_setting("dataLayerName", $this->plugin_configs->return_settings_field_default_value("dataLayerName"));
+        $this->pushToDl = $nsc_bar_banner_config->nsc_bar_get_cookie_setting("onStatusChange", $this->plugin_configs->return_settings_field_default_value("onStatusChange"));
     }
 
     public function nsc_bar_execute_frontend_wp_actions()
     {
-        add_action('wp_head', array($this, 'nsc_bar_attachHeader'));
+        if ($this->pushToDl === "1") {
+            add_action('wp_print_scripts', array($this, 'nsc_bar_add_dataLayer_push_script'));
+        }
+        add_action('wp_enqueue_scripts', array($this, 'nsc_bar_enqueue_scripts'));
+        add_action('wp_footer', array($this, 'nsc_bar_attachFooter'), 999);
+
         add_shortcode('cc_revoke_settings_link_nsc_bar', array($this, 'nsc_bar_shortcode_revoke_settings_link'));
         add_shortcode('cc_show_cookie_banner_nsc_bar', array($this, 'nsc_bar_shortcode_show_cookie_banner'));
     }
 
-    public function nsc_bar_attachHeader()
+    public function nsc_bar_add_dataLayer_push_script()
     {
-        wp_register_style('nice-cookie-consent', $this->plugin_url . 'public/v5/cookieNSCconsent.min.css');
-        wp_enqueue_style('nice-cookie-consent');
-        wp_register_script('nice-cookie-consent_js', $this->plugin_url . 'public/v5/cookieNSCconsent.min.js');
-        wp_enqueue_script('nice-cookie-consent_js');
+        $cookies = $this->get_consent_cookie_values();
+
+        $dataLayerString = "";
+        foreach ($cookies as $cookie_name => $cookie_values) {
+            $cookie_value = $cookie_values["value"];
+            if (empty($cookie_value)) {
+                $cookie_value = $cookie_values["defaultValue"];
+            }
+
+            // goal: remove dismiss completly from application. Problem: is saved in cookie for "just info". For backward compatibility hard to change.
+            // first step: in datalayer dismiss will never appear.
+            if ($cookie_value === "dismiss") {
+                $cookie_value = "allow";
+            }
+
+            $dataLayerString .= esc_js($cookie_name) . ": '" . esc_js($cookie_value) . "',";
+        }
+        echo "<script>window." . esc_js($this->dataLayerName) . " = window." . esc_js($this->dataLayerName) . " || []; window." . esc_js($this->dataLayerName) . ".push({event: 'beautiful_cookie_consent_initialized', " . $dataLayerString . "})</script>";
+    }
+
+    public function nsc_bar_enqueue_scripts()
+    {
+        wp_register_style('nsc_bar_nice-cookie-consent', $this->plugin_url . 'public/cookieNSCconsent.min.css', array(), '6');
+        if (!empty($this->customized_font)) {
+            wp_add_inline_style('nsc_bar_nice-cookie-consent', '.cc-window { font-family: ' . str_replace("&#039;", "'", esc_html($this->customized_font)) . '}');
+        }
+        wp_enqueue_style('nsc_bar_nice-cookie-consent');
+        wp_register_script('nsc_bar_nice-cookie-consent_js', $this->plugin_url . 'public/cookieNSCconsent.min.js', array(), '6', true);
+        wp_enqueue_script('nsc_bar_nice-cookie-consent_js');
+    }
+
+    public function nsc_bar_attachFooter()
+    {
         echo '<script>window.addEventListener("load", function(){window.cookieconsent.initialise(' . $this->nsc_bar_json_with_js_function() . ')});</script>';
     }
 
     public function nsc_bar_json_with_js_function()
     {
+        $validator = new nsc_bar_input_validation();
+        $cleanedCookieTypes = $validator->esc_array_for_js($this->cookietypes);
         $popUpCloseJsFunction = '"onPopupClose": function(){location.reload();}';
+        $pushToDLFunction = '"onStatusChange": function(status, chosenBefore) { var dataLayerName = "' . esc_js($this->dataLayerName) . '"; var cookieTypes = ' . json_encode($cleanedCookieTypes) . ';var cookieRootName = "' . esc_js($this->cookie_name) . '"; ' . file_get_contents(NSC_BAR_PLUGIN_DIR . "/public/onStatusChange.js") . '}';
         if (is_admin()) {
             $popUpCloseJsFunction = '"onPopupClose": function(){}';
         }
+
         $json_config_string_with_js = str_replace(array('"onPopupClose": "1"', '"onPopupClose":"1"'), $popUpCloseJsFunction, $this->json_config_string);
+        $json_config_string_with_js = str_replace(array('"onStatusChange": "1"', '"onStatusChange":"1"'), $pushToDLFunction, $json_config_string_with_js);
         return $json_config_string_with_js;
     }
 
@@ -110,6 +160,51 @@ class nsc_bar_frontend
         $expire = time() + 60 * 60 * 24 * $cookie_expiry_days;
         $js_code = preg_replace("/\r|\n/", "", file_get_contents(NSC_BAR_PLUGIN_DIR . "/public/revoke_shortcode.js"));
         return "<a id='nsc_bar_optout_link' data-link_text_after_click='" . esc_attr($linktext_after_click) . "' data-link_text_before_click='" . esc_attr($linktext) . "' data-cookiename='" . esc_attr($cookie_name) . "' data-current_cookie_value='" . esc_attr($current_cookie_value) . "'data-cookie_value_after_click='" . esc_attr($cookie_value_after_click) . "' data-expires='" . esc_attr($expire) . "' data-domain='" . esc_attr($hostname) . "' style='cursor: pointer;' onclick='" . $js_code . "'>" . esc_html($linktext) . "</a>";
+    }
+
+    private function get_consent_cookie_values()
+    {
+        if (empty($this->cookietypes)) {
+            return false;
+        }
+        $numberOfCookies = count($this->cookietypes);
+
+        $cookieHandler = new nsc_bar_cookie_handler();
+        $dataLayerEntries = array();
+
+        $dataLayerEntries["cookieconsent_status"] = array("value" => $cookieHandler->nsc_bar_get_cookies_by_name($this->cookie_name), "defaultValue" => $this->calculate_default_consent_setting());
+        if ($this->compliance_type !== "detailed" && $this->compliance_type !== "detailedRev") {
+            return $dataLayerEntries;
+        }
+
+        for ($i = 0; $i < $numberOfCookies; $i++) {
+            $cookie_name = $this->cookie_name . "_" . $this->cookietypes[$i]["cookie_suffix"];
+            $dataLayerEntries["cookieconsent_status_" . $this->cookietypes[$i]["cookie_suffix"]] = array("value" => $cookieHandler->nsc_bar_get_cookies_by_name($cookie_name), "defaultValue" => $this->calculate_default_consent_setting($this->cookietypes[$i]));
+        }
+
+        return $dataLayerEntries;
+    }
+
+    private function calculate_default_consent_setting($cookietype = array())
+    {
+        if ($this->compliance_type === "opt-in") {
+            return "deny";
+        }
+
+        if ($this->compliance_type === "opt-out" || $this->compliance_type === "info") {
+            return "allow";
+        }
+
+        if (empty($cookietype)) {
+            return "nochoice";
+        }
+
+        if ($cookietype["checked"] === "checked") {
+            return "allow";
+        }
+
+        return "deny";
+
     }
 
 }

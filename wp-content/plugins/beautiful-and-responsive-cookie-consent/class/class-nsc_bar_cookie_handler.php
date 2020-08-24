@@ -62,6 +62,15 @@ class nsc_bar_cookie_handler
         }
     }
 
+    public function nsc_bar_get_cookies_by_name($cookie_name)
+    {
+        $input_validation = new nsc_bar_input_validation();
+        if (isset($_COOKIE[$cookie_name])) {
+            return $input_validation->nsc_bar_sanitize_input($_COOKIE[$cookie_name]);
+        }
+        return null;
+    }
+
     public function nsc_bar_delete_cookie_for_preview()
     {
         if ($this->plugin_configs->nsc_bar_get_option('activate_test_banner') == true &&

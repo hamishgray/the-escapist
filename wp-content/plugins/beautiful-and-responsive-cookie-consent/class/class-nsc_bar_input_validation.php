@@ -25,14 +25,31 @@ class nsc_bar_input_validation
             case "nsc_bar_check_cookietypes":
                 $return = $this->nsc_bar_check_cookietypes($return);
                 break;
+            case "nsc_bar_replace_doublequote_with_single":
+                $return = $this->nsc_bar_replace_doublequote_with_single($return);
+                break;
+            case "nsc_bar_integer":
+                $return = $this->nsc_bar_integer($return);
+                break;
         }
         return $return;
     }
 
     public function nsc_bar_sanitize_input($input)
     {
-        $cleandValue = strip_tags(stripslashes($input));
+        $cleandValue = stripslashes($input);
         return sanitize_text_field($cleandValue);
+    }
+
+    public function nsc_bar_integer($input)
+    {
+        $valid = preg_match("/^[0-9]*$/", $input);
+        if (empty($valid) && $input != "") {
+            $this->admin_error_obj->nsc_bar_set_admin_error("Number could not be saved. Please provide an integer. Your input: " . $input);
+            $input = "";
+        }
+        $this->admin_error_obj->nsc_bar_display_errors();
+        return $input;
     }
 
     public function nsc_bar_check_input_color_code($input)
@@ -45,6 +62,11 @@ class nsc_bar_input_validation
         }
         $this->admin_error_obj->nsc_bar_display_errors();
         return $input;
+    }
+
+    public function nsc_bar_replace_doublequote_with_single($input)
+    {
+        return str_replace(['"', "\""], "'", $input);
     }
 
     public function nsc_bar_check_valid_json_string($json_string)
@@ -133,6 +155,27 @@ class nsc_bar_input_validation
             return $old_value;
         }
         return $input;
+    }
+
+    public function esc_array_for_js($array_to_escape)
+    {
+        $escapedArray = array();
+        foreach ($array_to_escape as $key => $value) {
+            $escKey = esc_js($key);
+            if (!is_array($value)) {
+                $escValue = esc_js($value);
+                $escapedArray[$escKey] = $escValue;
+            }
+
+            if (is_array($value)) {
+                foreach ($value as $key_of_v => $value_of_v) {
+                    $escKey_v = esc_js($key_of_v);
+                    $escValue_v = esc_js($value_of_v);
+                    $escapedArray[$escKey][$escKey_v] = $escValue_v;
+                }
+            }
+        }
+        return $escapedArray;
     }
 
     public function return_errors_obj()

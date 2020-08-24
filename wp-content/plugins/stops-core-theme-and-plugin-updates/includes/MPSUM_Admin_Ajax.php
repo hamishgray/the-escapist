@@ -983,7 +983,7 @@ class MPSUM_Admin_Ajax {
 		if (function_exists('wp_maybe_auto_update')) {
 			// Constant to show that a Force Update is in effect. Since 9.0.1.
 			if (!defined('EUM_DOING_FORCE_UPDATES')) {
-				define('EUM_DOING_FORCE_UPDATES', true );
+				define('EUM_DOING_FORCE_UPDATES', true);
 			}
 
 			// Disable auto-backups from occuring with UpdraftPlus Premium as it causes a fatal error when running Force Updates. Since 9.0.1.

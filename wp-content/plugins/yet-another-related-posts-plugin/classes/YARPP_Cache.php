@@ -101,7 +101,7 @@ abstract class YARPP_Cache {
 		}
 		
 		// Publish
-		if ($old_status !== 'publish' && $new_status === 'publish') {
+		if ($new_status === 'publish') {
 			/*
 			 * Find everything which is related to this post, and clear them,
 			 * so that this post might show up as related to them.
@@ -163,18 +163,21 @@ abstract class YARPP_Cache {
 	
 		// SELECT
 		$newsql = "SELECT $reference_ID as reference_ID, ID, "; //post_title, post_date, post_content, post_excerpt,
-	
 		$newsql .= 'ROUND(0';
-		if (isset($weight['body']) && isset($weight['body']) && (int) $weight['body']) {
-			$newsql .= " + (MATCH (post_content) AGAINST ('".esc_sql($keywords['body'])."')) * ".absint($weight['body']);
-        }
-        if (isset($weight['body']) && isset($weight['title']) && (int) $weight['title']) {
-			$newsql .= " + (MATCH (post_title) AGAINST ('".esc_sql($keywords['title'])."')) * ".absint($weight['title']);
-        }
-	
-		// Build tax criteria query parts based on the weights
-		foreach ((array) $weight['tax'] as $tax => $tax_weight) {
-			$newsql .= " + ".$this->tax_criteria($reference_ID, $tax)." * ".intval($tax_weight);
+		if (isset($weight) && is_array($weight)){
+			if (isset($weight['body']) && (int) $weight['body']) {
+				$newsql .= " + (MATCH (post_content) AGAINST ('".esc_sql($keywords['body'])."')) * ".absint($weight['body']);
+			}
+			if (isset($weight['title']) && (int) $weight['title']) {
+				$newsql .= " + (MATCH (post_title) AGAINST ('".esc_sql($keywords['title'])."')) * ".absint($weight['title']);
+			}
+
+			// Build tax criteria query parts based on the weights
+			if(isset($weight['tax']) && is_array($weight['tax'])){
+				foreach ((array) $weight['tax'] as $tax => $tax_weight) {
+					$newsql .= " + ".$this->tax_criteria($reference_ID, $tax)." * ".intval($tax_weight);
+				}
+			}
 		}
 	
 		$newsql .= ',1) as score';
@@ -182,7 +185,7 @@ abstract class YARPP_Cache {
 		$newsql .= "\n from $wpdb->posts \n";
 	
 		$exclude_tt_ids = wp_parse_id_list($exclude);
-		if (count($exclude_tt_ids) || count((array) $weight['tax']) || count($require_tax)) {
+		if (count($exclude_tt_ids) || (isset($weight) && isset($weight['tax']) && count((array) $weight['tax'])) || count($require_tax)) {
 			$newsql .= "left join $wpdb->term_relationships as terms on ( terms.object_id = $wpdb->posts.ID ) \n";
 		}
 	
@@ -223,13 +226,13 @@ abstract class YARPP_Cache {
 		if (isset($args['post_type'])) {
 			$post_types = (array) $args['post_type'];
         } else {
-			$post_types = $this->core->get_post_types();
+			if ($this->core->get_option('cross_relate')) {
+				$post_types = $this->core->get_post_types();
+			} else {
+				$post_types = array(get_post_type($reference_post));
+			}
         }
-		$queries = array();
-		foreach ($post_types as $post_type) {
-			$queries[] = '('.str_replace("post_type = 'post'", "post_type = '{$post_type}'", $newsql).')';
-		}
-		$sql = implode(' union ', $queries);
+		$sql = '('.str_replace("post_type = 'post'", "post_type IN ('" . implode("','",$post_types). "')", $newsql).')';
 	
 		if ($this->core->debug) echo "<!-- $sql -->";
 		

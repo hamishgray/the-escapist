@@ -41,6 +41,28 @@
             "save_in_db": true
           },
           {
+            "field_slug": "onStatusChange",
+            "type": "checkbox",
+            "save_as": "string",
+            "required": false,
+            "pre_selected_value": false,
+            "extra_validation_name": false,
+            "helpertext": "If checked, the events 'beautiful_cookie_consent_initialized' and 'beautiful_cookie_consent_updated' will pushed in your dataLayer after consent or a change of consent.",
+            "name": "Push consent event to dataLayer",
+            "save_in_db": false
+          },
+          {
+            "field_slug": "dataLayerName",
+            "type": "text",
+            "save_as": "string",
+            "required": false,
+            "extra_validation_name": false,
+            "pre_selected_value": "dataLayer",
+            "helpertext": "Caution: only change if you know what you are doing. If you have renamed your default GTM dataLayer you can put the new name here. To this dataLayer the event will pushed.",
+            "name": "DataLayer name",
+            "save_in_db": false
+          },
+          {
             "field_slug": "backend_cookie_conversion",
             "type": "checkbox",
             "save_as": "string",
@@ -54,7 +76,7 @@
         ]
       },
       {
-        "tabname": "Colors & Position",
+        "tabname": "Appearance",
         "tab_description": "",
         "tab_slug": "banner_colors",
         "active": false,
@@ -98,6 +120,17 @@
             "pre_selected_value": "bottom",
             "helpertext": "",
             "name": "Position",
+            "save_in_db": false
+          },
+          {
+            "field_slug": "customizedFont",
+            "type": "longtext",
+            "save_as": "string",
+            "required": false,
+            "extra_validation_name": "nsc_bar_replace_doublequote_with_single",
+            "pre_selected_value": "",
+            "helpertext": "Add you desired Fonts name here, e.g. 'Catamaran-Regular', sans-serif. Please be aware that these fonts should be loaded already. You can only use already existing fonts here. It won't install them.",
+            "name": "Custom font name",
             "save_in_db": false
           },
           {
@@ -334,6 +367,17 @@
             "save_in_db": false
           },
           {
+            "field_slug": "makeButtonsEqual",
+            "type": "checkbox",
+            "save_as": "string",
+            "required": false,
+            "extra_validation_name": false,
+            "pre_selected_value": false,
+            "helpertext": "Per default the button which set the widest consent is highlighted, this can be considered as dark pattern. For some regulations it is neccesary, that both have an equal weight. When ticking this box, they have some size and color.",
+            "name": "Make the buttons look equal",
+            "save_in_db": false
+          },
+          {
             "field_slug": "setDiffDefaultCookiesFirstPV",
             "type": "checkbox",
             "save_as": "string",
@@ -342,6 +386,28 @@
             "pre_selected_value": false,
             "helpertext": "Only for 'Differentiated Consent': It might be useful to have the configured default setting on first page view in a cookie, before any user interaction. Depending on your compliance requirements, it might be a legal issue.",
             "name": "Set cookies with default values on 1st page view",
+            "save_in_db": false
+          },
+          {
+            "field_slug": "dismissOnScroll",
+            "type": "text",
+            "save_as": "integer",
+            "required": false,
+            "extra_validation_name": "nsc_bar_integer",
+            "pre_selected_value": "",
+            "helpertext": "To disable, leave empty. To enable, set to the number of pixels a user must scroll vertically in order to trigger the dismiss.",
+            "name": "Allow on scroll",
+            "save_in_db": false
+          },
+          {
+            "field_slug": "dismissOnTimeout",
+            "type": "text",
+            "save_as": "integer",
+            "required": false,
+            "extra_validation_name": "nsc_bar_integer",
+            "pre_selected_value": "",
+            "helpertext": "To disable, leave empty. To enable set value as time in milliseconds to autodismiss after set time.",
+            "name": "Allow on timeout (ms)",
             "save_in_db": false
           },
           {

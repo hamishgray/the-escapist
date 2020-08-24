@@ -1,4 +1,4 @@
-(function(element) {
+(function (element) {
   var cookiedomain = "domain=" + element.dataset.domain;
 
   if (element.dataset.domain == "") {

@@ -85,6 +85,14 @@ msgstr ""
 msgid "Summer sale - 20% off Easy Updates Manager Premium until July 31st"
 msgstr ""
 
+#: src/includes/easy-updates-manager-notices.php:179
+msgid "The Updraft Plugin Collection Sale"
+msgstr ""
+
+#: src/includes/easy-updates-manager-notices.php:180
+msgid "Get 20% off any of our plugins. But hurry - offer ends 30th September, use this discount code:"
+msgstr ""
+
 #: src/includes/MPSUM_Admin_Advanced_Preview.php:35
 msgid "Automatic backup"
 msgstr ""
@@ -1572,27 +1580,43 @@ msgstr ""
 msgid "This theme is inactive for your site."
 msgstr ""
 
-#: src/main.php:534
+#: src/main.php:536
 msgid "Easy Updates Manager (Free) has been de-activated, because Easy Updates Manager Premium is active."
 msgstr ""
 
-#: src/main.php:833
+#: src/main.php:772, src/main.php:779, src/main.php:792, src/main.php:802, src/main.php:827, src/main.php:830
+msgid "Managed by Easy Updates Manager."
+msgstr ""
+
+#: src/main.php:782
+msgid "Managed by Easy Updates Manager (%s)."
+msgstr ""
+
+#: src/main.php:782
+msgid "on"
+msgstr ""
+
+#: src/main.php:785, src/main.php:788, src/main.php:796, src/main.php:818
+msgid "Disabled in Easy Updates Manager."
+msgstr ""
+
+#: src/main.php:967
 msgid "Error:"
 msgstr ""
 
-#: src/main.php:833
+#: src/main.php:967
 msgid "template not found"
 msgstr ""
 
-#: src/main.php:907
+#: src/main.php:1040
 msgid "Higher PHP version required"
 msgstr ""
 
-#: src/main.php:908, src/main.php:920
+#: src/main.php:1041, src/main.php:1053
 msgid "The %s plugin requires %s version %s or higher - your current version is only %s."
 msgstr ""
 
-#: src/main.php:919
+#: src/main.php:1052
 msgid "Higher WordPress version required"
 msgstr ""
 

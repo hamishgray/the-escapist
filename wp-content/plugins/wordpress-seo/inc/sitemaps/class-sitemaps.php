@@ -435,6 +435,7 @@ class WPSEO_Sitemaps {
 		header( 'Cache-Control: max-age=' . $expires );
 		header( 'Expires: ' . $this->date->format_timestamp( ( time() + $expires ), 'D, d M Y H:i:s' ) . ' GMT' );
 
+		// Don't use WP_Filesystem() here because that's not initialized yet. See https://yoast.atlassian.net/browse/QAK-2043.
 		readfile( WPSEO_PATH . 'css/main-sitemap.xsl' );
 	}
 
@@ -554,7 +555,7 @@ class WPSEO_Sitemaps {
 		}
 
 		if ( empty( $url ) ) {
-			$url = urlencode( WPSEO_Sitemaps_Router::get_base_url( 'sitemap_index.xml' ) );
+			$url = rawurlencode( WPSEO_Sitemaps_Router::get_base_url( 'sitemap_index.xml' ) );
 		}
 
 		// Ping Google and Bing.
